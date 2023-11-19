@@ -2,7 +2,7 @@ from django import forms
 from django.core import validators
 
 from .models import User
-from utils.tools import none_numeric_value
+from utils.tools import none_numeric_value, password_validation
 
 
 
@@ -53,8 +53,8 @@ class UserRegister(forms.Form):
         label='شماره همراه',
         validators=[
             validators.RegexValidator(
-                regex=r'^0\d{10}$',
-                message='شماره تماس وارد شده معتبر نمی‌باشد'
+                regex=r'09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}',
+                message='شماره همراه وارد شده معتبر نمی‌باشد'
             )
         ]
     )
@@ -106,27 +106,14 @@ class UserRegister(forms.Form):
     
     def clean_password(self):
         password = self.cleaned_data.get('password')
-        if not password:
-            raise forms.ValidationError('لطفاً رمز عبور را وارد نمایید')
-        # checking password combination
-        nums = [str(num) for num in range(0, 10)]
-        list_control = []
-        for char in password:
-            if char in nums:
-                list_control.append('n')
-            else:
-                list_control.append('l')
-        if 'n' not in list_control or 'l' not in list_control:
-            raise forms.ValidationError('رمز عبور باید ترکیبی از حروف و اعداد باشد')
-        
-        # checking password similarity to username
-        chars = {'.', '-', '_', '@'}
         username = self.cleaned_data.get('username')
-        username_letters = set(username.lower()) - chars
-        password_letters = set(password.lower()) - chars
-        if username_letters.union(password_letters) == username_letters:
+        validation_result = password_validation(password, username)
+
+        if validation_result == 'combine_err':
+            raise forms.ValidationError('رمز عبور باید ترکیبی از حروف و اعداد باشد')
+        elif validation_result == 'similar_err':
             raise forms.ValidationError('رمز عبور نباید شبیه نام کاربری باشد')
-        
+            
         return password
     
     def clean_confirm_password(self):
@@ -157,7 +144,6 @@ class UserRegister(forms.Form):
         return email
     
 
-
 class UserLogin(forms.Form):
     use_required_attribute = False
 
@@ -186,3 +172,115 @@ class UserLogin(forms.Form):
             raise forms.ValidationError('لطفاً رمز عبور خود را تأیید نمایید')
         
         return password
+
+
+class ChangePassword(forms.Form):
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False,
+        label='رمز عبور کنونی'
+    )
+
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False,
+        label='رمز عبور جدید',
+        validators=[
+            validators.MinLengthValidator(
+                limit_value=8,
+                message='رمز عبور باید حداقل هشت کاراکتر باشد'
+            )
+        ]
+    )
+
+    confirm_new_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False,
+        label='تأیید رمز عبور جدید'
+    )
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not old_password:
+            raise forms.ValidationError('لطفاً رمز عبور کنونی خود را وارد نمایید')
+        
+        return old_password
+    
+    def clean_new_password(self):
+        new_password = self.cleaned_data.get('new_password')
+        if not new_password:
+            raise forms.ValidationError('لطفاً رمز عبور جدید خود را وارد نمایید')
+        
+        return new_password
+    
+    def clean_confirm_new_password(self):
+        new_password = self.cleaned_data.get('new_password')
+        confirm_new_password = self.cleaned_data.get('confirm_new_password')
+        if not confirm_new_password and new_password:
+            raise forms.ValidationError('لطفاً رمز عبور جدید خود تأیید نمایید')
+        if new_password and confirm_new_password != new_password:
+            raise forms.ValidationError('تأیید رمز عبور جدید با رمز عبور جدید یکسان نیست')
+        
+        return confirm_new_password
+
+
+class AccountSettings(forms.Form):
+    use_required_attribute = False
+
+    phone_number = forms.CharField(
+        widget=forms.TextInput(),
+        required=False,
+        label='شماره همراه',
+        validators=[
+            validators.RegexValidator(
+                regex=r'09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}',
+                message='شماره همراه وارد شده معتبر نمی‌باشد'
+            )
+        ]
+    )
+
+    email = forms.EmailField(
+        widget=forms.EmailInput(),
+        required=False,
+        label='آدرس ایمیل',
+        validators=[
+            validators.RegexValidator(
+                regex=r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$",
+                message='آدرس ایمیل وارد شده معتبر نمی‌باشد'
+            )
+        ]
+    )
+
+    first_name = forms.CharField(
+        widget=forms.TextInput(),
+        validators=[none_numeric_value],
+        required=False,
+        label='نام'
+    )
+
+    last_name = forms.CharField(
+        widget=forms.TextInput(),
+        validators=[none_numeric_value],
+        required=False,
+        label='نام خانوادگی'
+    )
+
+    address = forms.CharField(
+        widget=forms.Textarea(),
+        required=False,
+        label='آدرس'
+    )
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if not phone_number:
+            raise forms.ValidationError('لطفاً شماره تماس خود را وارد نمایید')
+        
+        return phone_number
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('لطفاً آدرس ایمیل خود را وارد نمایید')
+        
+        return email

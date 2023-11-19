@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}حساب کاربری{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <h4 class="card-header">اطلاعات حساب کاربری</h4>
+                <!-- Account -->
+                <div class="card-body">
+                  <div class="d-flex align-items-start align-items-sm-center gap-4">
+                    <img
+                      src="{% static 'assets/img/avatars/1.png' %}"
+                      alt="user-avatar"
+                      class="d-block w-px-120 h-px-120 rounded"
+                      id="uploadedAvatar" />
+                  </div>
+                  <p class="h4 mt-3 px-4">{{user.username}}</p>
+                </div>
+                
+                <div class="card-body pt-2 mt-1">
+                  <form>
+                    <div class="row mt-2 gy-4">
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">نام :</legend>
+                          <label style="font-size: 1.1rem;">{{user.first_name}}</label>
+                        </fieldset>
+                      </div>
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">نام خانوادگی :</legend>
+                          <label style="font-size: 1.1rem;">{{user.last_name}}</label>
+                        </fieldset>
+                      </div>
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">آدرس ایمیل :</legend>
+                          <label style="font-size: 1.1rem;">{{user.email}}</label>
+                        </fieldset>
+                      </div>
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">شماره همراه :</legend>
+                          <label style="font-size: 1.1rem;">{{user.phone_number}}</label>
+                        </fieldset>
+                      </div>
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">آدرس :</legend>
+                          <label style="font-size: 1.1rem;">{{user.address}}</label>
+                        </fieldset>
+                      </div>
+
+                      <div class="col-md-6">
+                        <fieldset class="border border-primary p-2 rounded-2">
+                          <legend class="h5">تاریخ عضویت :</legend>
+                          <label style="font-size: 1.1rem;">{{user.date_joined|date}}</label>
+                        </fieldset>
+                      </div>
+
+                    </div>
+                  </form>
+                  <div class="mt-4">
+                    <a href="{% url 'account:edit_account' %}" class="btn btn-primary me-2">ویرایش حساب کاربری</a>
+                  </div>
+
+                </div>
+                <!-- /Account -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

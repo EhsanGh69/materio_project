@@ -9,7 +9,7 @@
         {% csrf_token %}
 
         <div class="form-floating form-floating-outline mb-3">
-            {{ form.username|add_class:"form-control"|attr:"placeholder:نام کاربری خود وارد کنید"|attr:"autofocus" }}
+            {{ form.username|add_class:"form-control"|attr:"placeholder:نام کاربری خود را وارد کنید"|attr:"autofocus" }}
           <label>{{ form.username.label }}</label>
           {% if form.username.errors %}
             {% for error in form.username.errors %}
@@ -75,11 +75,21 @@
         <div class="form-floating form-floating-outline mb-3">
             {{ form.first_name|add_class:"form-control"|attr:"placeholder:نام خود را وارد کنید" }}
             <label>{{ form.first_name.label }} (اختیاری)</label>
+            {% if form.first_name.errors %}
+              {% for error in form.first_name.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
         </div>
 
         <div class="form-floating form-floating-outline mb-3">
             {{ form.last_name|add_class:"form-control"|attr:"placeholder:نام خانوادگی همراه خود را وارد کنید" }}
             <label for="email">{{ form.last_name.label }} (اختیاری)</label>
+            {% if form.last_name.errors %}
+              {% for error in form.last_name.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
         </div>
 
         <button class="btn btn-primary d-grid w-100" type="submit">ثبت نام</button>
