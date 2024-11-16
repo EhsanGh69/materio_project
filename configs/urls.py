@@ -3,12 +3,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-
-from .views import home, logout_user
-from account.views import Login, Register
+from account.views import Login, Register, logout_user
 
 urlpatterns = [
-    path('', home, name='home'),
+    path('', include('panel.urls')),
     path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
     path('logout/', logout_user, name='logout'),
@@ -16,4 +14,5 @@ urlpatterns = [
     path('account/', include('account.urls'))
 ]
 
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

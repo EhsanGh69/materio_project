@@ -113,3 +113,7 @@
   text-align: center;
   margin-top: 1.25rem;
 }
+
+table.table th.text-truncate {
+  font-size: 18px;
+}

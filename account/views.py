@@ -1,10 +1,11 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from sweetify.views import SweetifySuccessMixin
+from django.contrib.auth import logout
 
 from .models import User
 from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings
@@ -19,7 +20,7 @@ class Register(FormView):
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
+        password = make_password(form.cleaned_data.get('password'))
         email = form.cleaned_data.get('email')
         phone_number = form.cleaned_data.get('phone_number')
         first_name = form.cleaned_data.get('first_name')
@@ -44,6 +45,11 @@ class Login(FormView):
         else:
             form.errors['__all__'] = form.error_class(["نام کاربری یا رمز عبور اشتباه است"])
             return super().form_invalid(form)
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
 
 
 class ChangePassword(LoginRequiredMixin, SweetifySuccessMixin, FormView):
