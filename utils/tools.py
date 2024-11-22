@@ -30,3 +30,13 @@ def password_validation(password, username):
         return 'similar_err'
     else:
         return 'not_err'
+
+
+def img_size_ext_check(imgFile, validSize):
+    valid_exts = ['png', 'jpg', 'jpeg', 'gif']
+    if imgFile.size > validSize:
+        return "اندازه فایل بارگذاری شده بیش از حد مجاز است"
+    elif imgFile.name.split('.')[1] not in valid_exts:
+        return "فرمت فایل بارگذاری شده غیرمجاز است"
+    else:
+        return 'valid'

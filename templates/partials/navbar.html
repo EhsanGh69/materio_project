@@ -21,7 +21,7 @@
             data-size="large"
             data-show-count="true"
             aria-label="Star themeselection/materio-bootstrap-html-admin-template-free on GitHub"
-            >Star</a
+            >{{ request.user.username }}</a
           >
         </li>
 
@@ -32,7 +32,9 @@
             href="javascript:void(0);"
             data-bs-toggle="dropdown">
             <div class="avatar avatar-online">
-              <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+              <img src="{{ user_avatar }}" alt="{{ request.user.username }}" 
+              class="w-px-40 h-auto" width='100' height='100'
+              style='border-radius: 50%;' />
             </div>
           </a>
           <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
@@ -41,12 +43,22 @@
                 <div class="d-flex align-items-center">
                   <div class="flex-shrink-0 me-2 pe-1">
                     <div class="avatar avatar-online">
-                      <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="{{ user_avatar }}" alt="{{ request.user.username }}" 
+                      class="w-px-40 h-auto" width='100' height='100' 
+                      style='border-radius: 50%;' />
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h6 class="mb-0">John Doe</h6>
-                    <small class="text-muted">Admin</small>
+                    <h6 class="mb-0">{{ request.user.username }}</h6>
+                    <small class="text-muted">
+                      {% if request.user.is_superuser %}
+                        مدیر
+                      {% elif request.user.is_staff %}
+                        ادمین
+                      {% else %}
+                        کاربر
+                      {% endif %}
+                    </small>
                   </div>
                 </div>
               </a>
@@ -57,22 +69,13 @@
             <li>
               <a class="dropdown-item" href="{% url "account:account_info" %}">
                 <i class="mdi mdi-account-outline me-1 mdi-20px"></i>
-                <span class="align-middle">My Profile</span>
+                <span class="align-middle">پروفایل من</span>
               </a>
             </li>
             <li>
               <a class="dropdown-item" href="#">
                 <i class="mdi mdi-cog-outline me-1 mdi-20px"></i>
-                <span class="align-middle">Settings</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                <span class="d-flex align-items-center align-middle">
-                  <i class="flex-shrink-0 mdi mdi-credit-card-outline me-1 mdi-20px"></i>
-                  <span class="flex-grow-1 align-middle ms-1">Billing</span>
-                  <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-                </span>
+                <span class="align-middle">تنظیمات</span>
               </a>
             </li>
             <li>
@@ -81,7 +84,7 @@
             <li>
               <a class="dropdown-item" href="{% url "logout" %}">
                 <i class="mdi mdi-power me-1 mdi-20px"></i>
-                <span class="align-middle">Log Out</span>
+                <span class="align-middle">خروج</span>
               </a>
             </li>
           </ul>

@@ -6,10 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.hashers import check_password, make_password
 from sweetify.views import SweetifySuccessMixin
 from django.contrib.auth import logout
+from django.core.files.storage import FileSystemStorage
 
-from .models import User
+from .models import User, UserAvatar
 from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings
-from utils.tools import password_validation
+from utils.tools import password_validation, img_size_ext_check
 
 
 
@@ -33,7 +34,7 @@ class Register(FormView):
 class Login(FormView):
     template_name = 'account/login.html'
     form_class = UserLogin
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('panel:home')
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
@@ -89,6 +90,7 @@ class AccountInfo(LoginRequiredMixin, DetailView):
         return get_object_or_404(User, pk=pk)
     
 
+
 class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
     template_name = 'account/edit_account.html'
     form_class = AccountSettings
@@ -109,6 +111,18 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
     
     def form_valid(self, form):
         user = self.request.user
+        user_avatar = self.request.FILES.get('user_avatar')
+        # MAX_UPLOAD_SIZE = 204800 --> 200kb
+        if user_avatar:
+            check_img = img_size_ext_check(user_avatar, 204800)
+            if check_img != "valid":
+                form.errors['__all__'] = form.error_class([check_img])
+                return super().form_invalid(form)
+            else:
+                av_obj = UserAvatar.objects.filter(user=user).first()
+                av_obj.avatar = user_avatar
+                av_obj.save()
+        
         phone_number = form.cleaned_data.get('phone_number')
         is_exists_phone_number = User.objects.filter(phone_number=phone_number).exists()
         if phone_number != user.phone_number and is_exists_phone_number:

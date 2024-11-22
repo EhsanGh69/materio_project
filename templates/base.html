@@ -1,10 +1,11 @@
 {% extends "base_html.html" %}
+{% load render_partial %}
 
 {% block body %}
 <div class="layout-wrapper layout-content-navbar">
   <div class="layout-container" dir="rtl">
       <div class="layout-page">
-        {% include "partials/navbar.html" %}
+        {% render_partial "panel:panel_navbar" %}
         <div class="content-wrapper">
           {% block content %}{% endblock %}
           {% include "partials/footer.html" %}

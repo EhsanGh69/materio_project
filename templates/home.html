@@ -141,7 +141,7 @@
                 <tr>
                   <th class="text-truncate">کاربر</th>
                   <th class="text-truncate">ایمیل</th>
-                  <th class="text-truncate">نوع کاربر</th>
+                  <th class="text-truncate">سطح دسترسی</th>
                   <th class="text-truncate">شماره تماس</th>
                   <th class="text-truncate">وضعیت</th>
                   <th class="text-truncate">اقدام</th>
@@ -153,8 +153,15 @@
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-3">
-                          <img src="{% static 'assets/img/avatars/1.png' %}" alt="Avatar" class="rounded-circle" />
+                        <div class="avatar me-3">
+                          <img src="
+                          {% if user.user_avatar %}
+                            {{ user.user_avatar.avatar.url }}
+                          {% else %}
+                            {% static 'assets/img/avatars/default_avatar.jpg' %}
+                          {% endif %}
+                          " 
+                          alt="{{ user.username }}" class="rounded-circle" />
                         </div>
                         <div>
                           <h6 class="mb-0 text-truncate">{{ user.first_name }} {{ user.last_name }}</h6>
@@ -187,26 +194,48 @@
                       {% endif %}
                     </td>
                     <td>
-                      <button class="btn btn-outline-info p-2">
-                        {% if user.is_active %}
-                          <span class="mdi mdi-account-lock mdi-24px"></span>
-                        {% else %}
-                          <span class="mdi mdi-account-lock-open mdi-24px"></span>
-                        {% endif %}
-                      </button>
-                      <button class="btn btn-outline-danger p-2">
-                        <span class="mdi mdi-account-remove mdi-24px"></span>
-                      </button>
+                      {% if not user.is_superuser %}
+                        <a href="{% url 'panel:change_status' user.id %}" 
+                          class="btn btn-outline-secondary p-2" title="تغییر وضعیت">
+                          {% if user.is_active %}
+                            <span class="mdi mdi-account-lock mdi-24px"></span>
+                          {% else %}
+                            <span class="mdi mdi-account-lock-open mdi-24px"></span>
+                          {% endif %}
+                        </a>
+                        
+                        <a href="{% url 'panel:change_access' user.id %}" 
+                          class="btn btn-outline-info p-2" title="تغییر سطح دسترسی">
+                          <span class="mdi mdi-account-check mdi-24px"></span>
+                        </a>
+
+                        <button class="btn btn-outline-danger p-2" 
+                          onclick="getUserId({{user.id}})" title="حذف کاربر"
+                          data-bs-toggle="modal" data-bs-target="#confirmModal">
+                          <span class="mdi mdi-account-remove mdi-24px"></span>
+                        </button>
+                      {% else %}
+                        <span style="font-size: 20px;">#</span>
+                      {% endif %}
+                      
                     </td>
                   </tr>
                 {% endfor %}
                 
               </tbody>
             </table>
+            {% include "partials/confirm_modal.html" %}
           </div>
         </div>
       </div>
       <!--/ Data Tables -->
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const getUserId = (id) => confirmBtn.attributes.href.value = `/remove_user/${id}`
+  </script>
 {% endblock %}

@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'sweetify',
+    'django_render_partial',
     'utils',
+    'django_cleanup.apps.CleanupConfig',
     'account.apps.AccountConfig',
     'panel.apps.PanelConfig',
 ]
