@@ -14,15 +14,7 @@
       <ul class="navbar-nav flex-row align-items-center ms-auto">
         <!-- Place this tag where you want the button to render. -->
         <li class="nav-item lh-1 me-3">
-          <a
-            class="github-button"
-            href="https://github.com/themeselection/materio-bootstrap-html-admin-template-free"
-            data-icon="octicon-star"
-            data-size="large"
-            data-show-count="true"
-            aria-label="Star themeselection/materio-bootstrap-html-admin-template-free on GitHub"
-            >{{ request.user.username }}</a
-          >
+          <span class="border p-1">Hi {{ request.user.username }}</span>
         </li>
 
         <!-- User -->
@@ -61,21 +53,6 @@
                     </small>
                   </div>
                 </div>
-              </a>
-            </li>
-            <li>
-              <div class="dropdown-divider my-1"></div>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url "account:account_info" %}">
-                <i class="mdi mdi-account-outline me-1 mdi-20px"></i>
-                <span class="align-middle">پروفایل من</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                <i class="mdi mdi-cog-outline me-1 mdi-20px"></i>
-                <span class="align-middle">تنظیمات</span>
               </a>
             </li>
             <li>

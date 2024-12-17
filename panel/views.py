@@ -19,9 +19,6 @@ def panel_navbar(request):
 
     return render(request, "partials/navbar.html", { "user_avatar": user_avatar })
 
-
-
-
 @login_required
 def change_status(request, pk):
     user = get_object_or_404(User, id=pk)

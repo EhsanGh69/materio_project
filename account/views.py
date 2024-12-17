@@ -36,6 +36,12 @@ class Login(FormView):
     form_class = UserLogin
     success_url = reverse_lazy('panel:home')
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('panel:home')
+
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password')
