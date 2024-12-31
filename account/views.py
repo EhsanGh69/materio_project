@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from sweetify.views import SweetifySuccessMixin
 from django.contrib.auth import logout
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.views import PasswordResetView
 
 from .models import User, UserAvatar
 from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings
@@ -15,7 +16,7 @@ from utils.tools import password_validation, img_size_ext_check
 
 
 class Register(FormView):
-    template_name = 'account/register.html'
+    template_name = 'auth/register.html'
     form_class = UserRegister
     success_url = reverse_lazy('login')
 
@@ -32,7 +33,7 @@ class Register(FormView):
     
 
 class Login(FormView):
-    template_name = 'account/login.html'
+    template_name = 'auth/login.html'
     form_class = UserLogin
     success_url = reverse_lazy('panel:home')
 
@@ -60,7 +61,7 @@ def logout_user(request):
 
 
 class ChangePassword(LoginRequiredMixin, SweetifySuccessMixin, FormView):
-    template_name = 'account/change_password.html'
+    template_name = 'auth/password_change.html'
     form_class = ChangePassword
     success_url = reverse_lazy('account:account_info')
     success_message = "رمز عبور شما با موفقیت تغییر یافت"
@@ -85,6 +86,15 @@ class ChangePassword(LoginRequiredMixin, SweetifySuccessMixin, FormView):
         elif validation_result == 'similar_err':
             form.add_error('new_password', 'رمز عبور نباید شبیه نام کاربری باشد')
             return super().form_invalid(form)
+
+
+class ResetPassword(SweetifySuccessMixin, PasswordResetView):
+    template_name = "auth/password_reset.html"
+    email_template_name = "auth/password_reset_email.html"
+    subject_template_name = "auth/password_reset_subject.txt"
+    success_message = "ایمیل بازیابی رمز عبور برای شما ارسال شد"
+    success_url = reverse_lazy('login')
+
 
 
 class AccountInfo(LoginRequiredMixin, DetailView):
@@ -118,6 +128,11 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
     def form_valid(self, form):
         user = self.request.user
         user_avatar = self.request.FILES.get('user_avatar')
+        phone_number = form.cleaned_data.get('phone_number')
+        email = form.cleaned_data.get('email')
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        address = form.cleaned_data.get('address')
         # MAX_UPLOAD_SIZE = 204800 --> 200kb
         if user_avatar:
             check_img = img_size_ext_check(user_avatar, 204800)
@@ -129,11 +144,14 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
                 av_obj.avatar = user_avatar
                 av_obj.save()
         
-        phone_number = form.cleaned_data.get('phone_number')
         is_exists_phone_number = User.objects.filter(phone_number=phone_number).exists()
         if phone_number != user.phone_number and is_exists_phone_number:
             form.add_error('phone_number', 'شماره تماس وارد شده از قبل وجود دارد')
             return super().form_invalid(form)
+
+        User.objects.filter(username=user.username).update(email=email, phone_number=phone_number,
+        first_name=first_name, last_name=last_name, address=address)
+
         return super().form_valid(form)
             
         
