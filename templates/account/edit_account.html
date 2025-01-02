@@ -46,6 +46,7 @@
                         </div>
                       </div>
                     </div>
+                    <a href="{% url 'account:remove_avatar' %}" class="btn btn-danger mt-1">حذف تصویر</a>
                     {% if form.non_field_errors %}
                         {% for err in form.non_field_errors %}
                           <p class="text-danger mt-2">{{ err }}</p>

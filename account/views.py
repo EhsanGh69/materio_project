@@ -4,21 +4,28 @@ from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.hashers import check_password, make_password
-from sweetify.views import SweetifySuccessMixin
 from django.contrib.auth import logout
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import PasswordResetView
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from sweetify.views import SweetifySuccessMixin, sweetify
 
+from utils.tools import password_validation, img_size_ext_check
 from .models import User, UserAvatar
 from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings
-from utils.tools import password_validation, img_size_ext_check
+from .tokens import account_activation_token
 
 
 
-class Register(FormView):
+class Register(SweetifySuccessMixin, FormView):
     template_name = 'auth/register.html'
     form_class = UserRegister
     success_url = reverse_lazy('login')
+    success_message = "لینک فعال سازی به ایمیل شما ارسال شد"
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
@@ -27,10 +34,41 @@ class Register(FormView):
         phone_number = form.cleaned_data.get('phone_number')
         first_name = form.cleaned_data.get('first_name')
         last_name = form.cleaned_data.get('last_name')
-        User.objects.create(username=username, password=password, phone_number=phone_number, email=email,
-                                   first_name=first_name, last_name=last_name)
+        user = User(username=username, password=password, phone_number=phone_number, email=email,
+                                   first_name=first_name, last_name=last_name, is_active=False)
+        user.save()
+        UserAvatar.objects.create(user=user)
+        
+        current_site = get_current_site(self.request)
+        mail_subject = "فعال سازی حساب کاربری"
+        message = render_to_string('account/active_account_email.html', {
+            'username': user.username,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user)
+        })
+        active_email = EmailMessage(mail_subject, message, to=[email])
+        active_email.send()
+
         return super().form_valid(form)
     
+
+def account_activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(Exception):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        sweetify.success(request, "فعال سازی حساب کاربری شما با موفقیت انجام شد")
+        return redirect("login")
+    else:
+        sweetify.error(request, "لینک فعال سازی نامعتبر می باشد")
+        return redirect("register")
+
 
 class Login(FormView):
     template_name = 'auth/login.html'
@@ -48,6 +86,9 @@ class Login(FormView):
         password = form.cleaned_data.get('password')
         user = authenticate(self.request, username=username, password=password)
         if user:
+            if not user.is_active:
+                form.errors['__all__'] = form.error_class(["حساب کاربری شما غیرفعال است"])
+                return super().form_invalid(form)
             login(self.request, user)
             return super().form_valid(form)
         else:
@@ -96,7 +137,6 @@ class ResetPassword(SweetifySuccessMixin, PasswordResetView):
     success_url = reverse_lazy('login')
 
 
-
 class AccountInfo(LoginRequiredMixin, DetailView):
     template_name = 'account/account_info.html'
     context_object_name = "user"
@@ -105,7 +145,6 @@ class AccountInfo(LoginRequiredMixin, DetailView):
         pk = self.request.user.pk
         return get_object_or_404(User, pk=pk)
     
-
 
 class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
     template_name = 'account/edit_account.html'
@@ -153,5 +192,12 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
         first_name=first_name, last_name=last_name, address=address)
 
         return super().form_valid(form)
-            
-        
+
+
+def remove_avatar(request):
+    user_avatar = get_object_or_404(UserAvatar, user=request.user)
+    if user_avatar.avatar.url != '/media/avatars/default_avatar.jpg':
+        user_avatar.avatar.delete(save=False)
+        user_avatar.avatar = '/avatars/default_avatar.jpg'
+        user_avatar.save()
+    return redirect('account:edit_account')

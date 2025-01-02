@@ -17,7 +17,7 @@ class User(AbstractUser):
 
 class UserAvatar(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_avatar', verbose_name='کاربر')
-    avatar = models.ImageField(upload_to=avatar_image_path, verbose_name='تصویر آواتار')
+    avatar = models.ImageField(upload_to=avatar_image_path, default="avatars/default_avatar.jpg", verbose_name='تصویر آواتار')
     create_date = models.DateField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     update_date = models.DateField(auto_now=True, verbose_name='تاریخ آخرین ویرایش')
 

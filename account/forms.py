@@ -92,7 +92,8 @@ class UserRegister(forms.Form):
         is_exists_username = User.objects.filter(username=username).exists()
         if is_exists_username:
             raise forms.ValidationError('نام کاربری واردشده از قبل وجود دارد')
-        # range(48, 58) --> 0 - 9 | range(65, 91) --> A - Z | range(97, 123) --> a - z | [45, 46, 64, 95] --> .,@,-,_
+        # range(48, 58) --> 0 - 9 | range(65, 91) --> A - Z 
+        # range(97, 123) --> a - z | [45, 46, 64, 95] --> .,@,-,_
         valid_ranges = [range(48, 58), range(65, 91), [45, 46, 64, 95]]
         for char in username:
             err_count = 0
@@ -140,6 +141,10 @@ class UserRegister(forms.Form):
         email = self.cleaned_data.get('email')
         if not email:
             raise forms.ValidationError('لطفاً آدرس ایمیل خود را وارد نمایید')
+
+        is_exists_email = User.objects.filter(email=email).exists()
+        if is_exists_email:
+            raise forms.ValidationError('کاربری با ایمیل واردشده از قبل ثبت نام کرده است')
         
         return email
     
