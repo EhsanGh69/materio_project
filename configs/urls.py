@@ -7,7 +7,8 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCom
 from account.views import Login, Register, logout_user, ResetPassword, account_activate
 
 urlpatterns = [
-    path('', include('panel.urls')),
+    path('panel/', include('panel.urls')),
+    path('', include('blog.urls')),
     path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
     path('activate/<uidb64>/<token>/', account_activate, name='activate'),

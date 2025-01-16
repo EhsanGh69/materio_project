@@ -1,5 +1,22 @@
-from django.core.exceptions import ValidationError
+import random
+import string
 
+from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import user_passes_test
+
+
+#* superuser decorator
+def superuser_required(func_view):
+    decorated_view_func = user_passes_test(
+        lambda user: user.is_superuser,
+        login_url='account:account_info',
+        redirect_field_name=None
+    )(func_view)
+    return decorated_view_func
+
+#* generate random string
+def random_str(length):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 
 def none_numeric_value(value):

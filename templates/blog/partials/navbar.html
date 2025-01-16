@@ -1,0 +1,80 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between py-0">
+  <div class="container">
+    <a href="{% url 'blog:index' %}" class="navbar-brand">
+      <h1 class="m-0 display-5 text-uppercase">
+        <img src="{% static 'blog/img/blogger-icon.png' %}" alt="blog icon" width="70">
+        <span class="text-primary">وبلاگ</span>
+      </h1>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <h3>
+              <span class="badge badge-info">سلام {{ request.user.username }}</span>
+            </h3>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'panel:home' %}">
+              {% if request.user.is_superuser %}
+                <i class="fas fa-user-shield"></i>
+                <span>پنل مدیریت</span>
+              {% else %}
+              <i class="fas fa-user-cog"></i>
+                <span>پنل کاربری</span>
+              {% endif %}
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>خروج</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>ورود</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">
+              <i class="fas fa-user-plus"></i>
+              <span>ثبت نام</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <div
+          class="input-group ml-auto"
+        >
+          <input type="text" class="form-control" placeholder="جستجو در وبلاگ..." />
+          <div class="input-group-append">
+            <button class="input-group-text">
+              <i class="fa fa-search text-light"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</nav>

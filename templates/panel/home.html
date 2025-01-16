@@ -1,0 +1,145 @@
+{% extends "panel/base.html" %} 
+{% load static %} 
+
+{% block title %}خانه{%endblock %} 
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="home-page">
+  <div class="row mb-5">
+    <div class="divider divider-primary">
+      <div class="divider-text">
+        <span class="badge bg-primary">آمار کلی وبلاگ</span>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-primary text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-account-group mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کل کاربران</h5>
+          <p class="card-text h3 text-white">20</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-success text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-account-check mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کاربران فعال</h5>
+          <p class="card-text h3 text-white">12</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-secondary text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-account-cancel mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کاربران غیرفعال</h5>
+          <p class="card-text h3 text-white">8</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-danger text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-note-multiple mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کل پست‌ها</h5>
+          <p class="card-text h3 text-white">50</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-info text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-comment-multiple mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کل کامنت‌ها</h5>
+          <p class="card-text h3 text-white">50</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card bg-warning text-white mb-3">
+        <div class="card-header text-white pt-1">
+          <span class="mdi mdi-comment-question mdi-48px"></span>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title text-white">کامنت‌های تایید نشده</h5>
+          <p class="card-text h3 text-white">50</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mb-5">
+    <div class="divider divider-success">
+      <div class="divider-text">
+        <span class="badge bg-success">برترین پست ها</span>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title h4">محبوب ترین</h5>
+          <hr>
+          <h6 class="card-subtitle h5 text-secondary">عنوان پست</h6>
+          <img
+            class="img-fluid d-flex mx-auto my-4 rounded"
+            src="{% static 'blog/img/news-500x280-1.jpg' %}"
+            alt="post image"
+            height="300"
+          />
+          <a href="javascript:void(0);" class="card-link">مشاهده پست</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title h4">پر بازدیدترین</h5>
+          <hr>
+          <h6 class="card-subtitle h5 text-secondary">عنوان پست</h6>
+          <img
+            class="img-fluid d-flex mx-auto my-4 rounded"
+            src="{% static 'blog/img/news-500x280-2.jpg' %}"
+            alt="post image"
+            height="300"
+          />
+          <a href="javascript:void(0);" class="card-link">مشاهده پست</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title h4">داغ ترین</h5>
+          <hr>
+          <h6 class="card-subtitle h5 text-secondary">عنوان پست</h6>
+          <img
+            class="img-fluid d-flex mx-auto my-4 rounded"
+            src="{% static 'blog/img/news-500x280-3.jpg' %}"
+            alt="post image"
+            height="300"
+          />
+          <a href="javascript:void(0);" class="card-link">مشاهده پست</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

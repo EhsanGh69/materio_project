@@ -1,0 +1,48 @@
+<div class="container py-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="swiper">
+        <h3 class="p-0 mb-3 mr-2 text-light">
+          <i class="fab fa-gratipay"></i>
+          <span>محبوب ترین پست ها</span>
+        </h3>
+        <div class="swiper-wrapper">
+          {% for post in fav_posts %}
+            <div class="card swiper-slide">
+              <a href="" title="{{ post.title }}">
+                <img src="{{ post.image.url }}" height="150"
+                class="card-img-top" alt="{{ post.title }}">
+              </a>
+              <div class="card-body">
+                <a href="" class="text-decoration-none text-dark" title="{{ post.title }}">
+                  <h6 class="card-title border-bottom">
+                    {{ post.title|truncatewords:5 }}
+                  </h6>
+                </a>
+                <p class="d-flex flex-column">
+                  <a href="" class="text-decoration-none text-dark">
+                    <img src="{{ post.author.user_avatar.avatar.url }}"
+                    style="border-radius: 50%;" 
+                    alt="{{ post.author.username }}" width="40">
+                    <span dir="ltr">{{ post.author.username }}</span>
+                  </a>
+                  <small class="text-muted">خواندن {{ post.study_time }} دقیقه</small>
+                </p>
+              </div>
+            </div>
+          {% empty %}
+            <div class="card swiper-slide">
+              <div class="card-body">
+                <h5 class="card-title text-danger">هیچ پستی وجود ندارد</h5>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+</div>

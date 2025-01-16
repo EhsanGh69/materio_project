@@ -1,0 +1,70 @@
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="row px-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between rounded bg-light py-2 px-4 mb-3">
+                        <h5 class="m-0">
+                            <i class="fas fa-list"></i>
+                            <span>موضوعات های برتر</span>
+                        </h5>
+                        <a class="text-secondary font-weight-medium text-decoration-none"
+                            href="{% url 'blog:all_categories' %}">
+                            <span>مشاهده موضوعات بیشتر</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    {% for cat in top_cats %}
+                        <a href="{% url 'blog:category_posts' cat.name %}" class="btn btn-outline-primary mb-2 font-weight-bold">
+                            <h5 class="d-inline">
+                                <i class="fas fa-tag"></i>
+                                {{ cat.name }}
+                            </h5>
+                        </a>
+                    {% empty %}
+                        <h4 class="d-inline">
+                            <span class="badge badge-danger">موضوعی وجود ندارد</span>
+                        </h4>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 py-4 py-md-0">
+            <div class="row px-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between rounded bg-light py-2 px-4 mb-3">
+                        <h5 class="m-0">
+                            <i class="fas fa-pen-nib"></i>
+                            <span>نویسندگان برتر</span>
+                        </h5>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    {% for auth in top_auths %}
+                        <a href="#" class="mb-2 font-weight-bold text-decoration-none">
+                            <h5 class="d-inline">
+                                <span class="badge badge-warning">
+                                    <img src="{{ auth.user_avatar.avatar.url }}"
+                                        style="border-radius: 50%;" 
+                                        alt="{{ post.author.username }}" width="40">
+                                    <span dir="ltr">{{ auth.username }}</span>
+                                </span>
+                            </h5>
+                        </a>
+                    {% empty %}
+                        <h4 class="d-inline">
+                            <span class="badge badge-danger">نویسنده‌ایی وجود ندارد</span>
+                        </h4>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+

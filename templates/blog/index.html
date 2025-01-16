@@ -1,0 +1,11 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}خانه{% endblock %}
+
+{% block body %}
+    {% include 'blog/partials/slider.html' %}
+
+    {% include 'blog/partials/categories.html' %}
+    
+    {% include 'blog/partials/latest.html' %}
+{% endblock %}

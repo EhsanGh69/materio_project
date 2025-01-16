@@ -1,0 +1,21 @@
+<div
+  class="modal fade"
+  id="confirmModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3>آیا از حذف این {{ obj_name }} اطمینان دارید؟</h3>
+        {% if obj_name == 'موضوع' %}
+          <h5 id="notice" class="text-bg-danger"></h5>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" data-bs-dismiss="modal">خیر</button>
+        <a href="#" class="btn btn-danger ml-2" id="confirmBtn">بله</a>
+      </div>
+    </div>
+  </div>
+</div>

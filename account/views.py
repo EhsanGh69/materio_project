@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import logout
-from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -73,11 +72,19 @@ def account_activate(request, uidb64, token):
 class Login(FormView):
     template_name = 'auth/login.html'
     form_class = UserLogin
-    success_url = reverse_lazy('panel:home')
+
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            return reverse('panel:home')
+        else:
+            return reverse('blog:index')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('panel:home')
+            if request.user.is_superuser:
+                return redirect('panel:home')
+            else:
+                return redirect('blog:index')
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -97,8 +104,12 @@ class Login(FormView):
 
 
 def logout_user(request):
-    logout(request)
-    return redirect('login')
+    if request.user.is_superuser:
+        logout(request)
+        return redirect('login')
+    else:
+        logout(request)
+        return redirect('blog:index')
 
 
 class ChangePassword(LoginRequiredMixin, SweetifySuccessMixin, FormView):
@@ -138,7 +149,7 @@ class ResetPassword(SweetifySuccessMixin, PasswordResetView):
 
 
 class AccountInfo(LoginRequiredMixin, DetailView):
-    template_name = 'account/account_info.html'
+    template_name = 'panel/account/account_info.html'
     context_object_name = "user"
 
     def get_object(self):
@@ -147,7 +158,7 @@ class AccountInfo(LoginRequiredMixin, DetailView):
     
 
 class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
-    template_name = 'account/edit_account.html'
+    template_name = 'panel/account/edit_account.html'
     form_class = AccountSettings
     success_url = reverse_lazy('account:account_info')
     success_message = 'اطلاعات حساب کاربری شما با موفقیت ویرایش شد'
