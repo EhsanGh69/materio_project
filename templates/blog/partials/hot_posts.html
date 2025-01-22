@@ -1,0 +1,26 @@
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center rounded justify-content-between bg-light py-2 px-4 mb-3">
+                        <h3 class="m-0">
+                            <i class="fas fa-fire-alt"></i>
+                            <span>پست های داغ</span>
+                        </h3>
+                    </div>
+                </div>
+                {% for post in hot_posts %}
+                    {% if post.post_comments.count > 0 %}
+                        {% include "blog/partials/post_card.html" %}
+                    {% endif %}
+                {% empty %}
+                    <div class="col-12 alert alert-danger text-center">
+                        <i class="far fa-times-circle"></i>
+                        <span>در حال حاضر پستی وجود ندارد</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,7 +10,6 @@
       <div class="col-12">
         <div class="card">
           <div class="table-responsive">
-            <h1>{{ perms.user.veiw_user }}</h1>
             <table class="table">
               <thead class="table-light">
                 <tr>
@@ -38,8 +37,8 @@
                           " 
                           alt="{{ user.username }}" class="rounded-circle" />
                         </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">{{ user.first_name }} {{ user.last_name }}</h6>
+                        <div class="me-2">
+                          <h6 class="mb-0 text-truncate">{{ user.get_full_name }}</h6>
                           <small class="text-truncate">{{ user.username }}</small>
                         </div>
                       </div>

@@ -9,18 +9,19 @@
         <div class="swiper-wrapper">
           {% for post in fav_posts %}
             <div class="card swiper-slide">
-              <a href="" title="{{ post.title }}">
+              <a href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
                 <img src="{{ post.image.url }}" height="150"
                 class="card-img-top" alt="{{ post.title }}">
               </a>
               <div class="card-body">
-                <a href="" class="text-decoration-none text-dark" title="{{ post.title }}">
+                <a href="{% url 'blog:post_detail' post.slug %}" class="text-decoration-none text-dark" title="{{ post.title }}">
                   <h6 class="card-title border-bottom">
                     {{ post.title|truncatewords:5 }}
                   </h6>
                 </a>
                 <p class="d-flex flex-column">
-                  <a href="" class="text-decoration-none text-dark">
+                  <a href="{% url 'blog:author_posts' post.author.username %}" 
+                  class="text-decoration-none text-dark">
                     <img src="{{ post.author.user_avatar.avatar.url }}"
                     style="border-radius: 50%;" 
                     alt="{{ post.author.username }}" width="40">

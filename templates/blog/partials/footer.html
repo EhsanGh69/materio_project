@@ -4,7 +4,7 @@
 <footer class="container-fluid">
     <div class="row bg-light pt-5 px-sm-3 px-md-5">
         <div class="col-lg-3 col-md-6 mb-5">
-            <a href="index.html" class="navbar-brand">
+            <a href="{% url 'blog:index' %}" class="navbar-brand">
                 <h1 class="mb-4 display-5 text-uppercase">
                     <img src="{% static 'blog/img/blogger-icon.png' %}" alt="blog icon" width="70">
                     <span class="text-primary">وبلاگ</span>
@@ -22,7 +22,11 @@
             <h4 class="font-weight-bold mb-4">موضوعات کلی</h4>
             <div class="d-flex flex-wrap m-n1">
                 {% for category in categories %}
-                    <a href="" class="btn btn-sm btn-outline-secondary m-1">{{ category.name }}</a>
+                    <a href="{% url 'blog:category_posts' category.name %}" 
+                    class="btn btn-sm btn-outline-secondary m-1">
+                        <i class="fas fa-tag"></i>
+                        {{ category.name }}
+                    </a>
                 {% empty %}
                     <strong class="badge badge-danger" style="font-size: 1rem">
                         <i class="far fa-times-circle"></i>
@@ -35,7 +39,11 @@
             <h4 class="font-weight-bold mb-4">تگ های برگزیده</h4>
             <div class="d-flex flex-wrap m-n1">
                 {% for tag in tags %}
-                    <a href="" class="btn btn-sm btn-outline-secondary m-1">{{ tag }}</a>
+                    <a href="{% url 'blog:tag_posts' tag %}" 
+                        class="btn btn-sm btn-outline-secondary m-1">
+                        <i class="fas fa-hashtag"></i>
+                        {{ tag }}
+                    </a>
                 {% empty %}
                     <strong class="badge badge-danger" style="font-size: 1rem">
                         <i class="far fa-times-circle"></i>
@@ -56,8 +64,6 @@
     <div class="row py-4 px-sm-3 px-md-5">
         <p class="m-0 text-center">
             &copy;تمام حقوق محفوظ است و متعلق است به  <a class="font-weight-bold" href="#">وبلاگ</a>. 
-            
-            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
             طراحی شده توسط &nbsp;<a class="font-weight-bold" dir="ltr" href="#">ehsan</a>
         </p>
     </div>

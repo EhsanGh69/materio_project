@@ -97,6 +97,10 @@ class Login(FormView):
                 form.errors['__all__'] = form.error_class(["حساب کاربری شما غیرفعال است"])
                 return super().form_invalid(form)
             login(self.request, user)
+            next_url = self.request.session.get('next_url', self.success_url)
+            if next_url:
+                return redirect(next_url)
+            
             return super().form_valid(form)
         else:
             form.errors['__all__'] = form.error_class(["نام کاربری یا رمز عبور اشتباه است"])

@@ -30,7 +30,8 @@
         <li class="menu-item border-bottom pb-3
           {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
           <a href="{% url "panel:home" %}" class="menu-link">
-            <div data-i18n="Analytics">خانه</div>
+            <span class="mdi mdi-home-account mdi-24px"></span>
+            <div class="me-2">خانه</div>
           </a>
         </li>
 
@@ -83,7 +84,15 @@
           {% if 'cat' in request.resolver_match.url_name %}active{% endif %}">
           <a href="{% url "panel:all_cats" %}" class="menu-link">
             <span class="mdi mdi-format-list-bulleted-type mdi-24px"></span>
-            <div data-i18n="Analytics">موضوعات</div>
+            <div class="me-2">موضوعات</div>
+          </a>
+      </li>
+
+      <li class="menu-item border-bottom pb-3
+          {% if 'post' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url "panel:all_posts" %}" class="menu-link">
+            <span class="mdi mdi-note-multiple mdi-24px"></span>
+            <div class="me-2">پست ها</div>
           </a>
       </li>
 

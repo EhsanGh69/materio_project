@@ -18,12 +18,14 @@
                 
                 <div class="col-12">
                     {% for cat in top_cats %}
-                        <a href="{% url 'blog:category_posts' cat.name %}" class="btn btn-outline-primary mb-2 font-weight-bold">
-                            <h5 class="d-inline">
-                                <i class="fas fa-tag"></i>
-                                {{ cat.name }}
-                            </h5>
-                        </a>
+                        {% if cat.cat_posts.count > 0 %}
+                            <a href="{% url 'blog:category_posts' cat.name %}" class="btn btn-outline-primary mb-2 font-weight-bold">
+                                <h5 class="d-inline">
+                                    <i class="fas fa-tag"></i>
+                                    {{ cat.name }}
+                                </h5>
+                            </a>
+                        {% endif %}
                     {% empty %}
                         <h4 class="d-inline">
                             <span class="badge badge-danger">موضوعی وجود ندارد</span>
@@ -46,16 +48,19 @@
                 
                 <div class="col-12">
                     {% for auth in top_auths %}
-                        <a href="#" class="mb-2 font-weight-bold text-decoration-none">
-                            <h5 class="d-inline">
-                                <span class="badge badge-warning">
-                                    <img src="{{ auth.user_avatar.avatar.url }}"
-                                        style="border-radius: 50%;" 
-                                        alt="{{ post.author.username }}" width="40">
-                                    <span dir="ltr">{{ auth.username }}</span>
-                                </span>
-                            </h5>
-                        </a>
+                        {% if auth.user_posts.count > 0 %}
+                            <a href="{% url 'blog:author_posts' auth.username %}" 
+                                class="mb-2 font-weight-bold text-decoration-none">
+                                <h5 class="d-inline">
+                                    <span class="badge badge-warning">
+                                        <img src="{{ auth.user_avatar.avatar.url }}"
+                                            style="border-radius: 50%;" 
+                                            alt="{{ post.author.username }}" width="40">
+                                        <span dir="ltr">{{ auth.username }}</span>
+                                    </span>
+                                </h5>
+                            </a>
+                        {% endif %}
                     {% empty %}
                         <h4 class="d-inline">
                             <span class="badge badge-danger">نویسنده‌ایی وجود ندارد</span>

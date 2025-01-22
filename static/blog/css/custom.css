@@ -24,30 +24,40 @@ input:focus {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
-.active{
-  background-color: orange;
-}
 
-.nav-item {
-  padding: 0.9rem;
+.custome-nav-item {
+  background-color: #ddd;
+  padding: 0.9rem 0.6rem 0 0 ;
   margin-left: 0.5rem;
   transition: all 0.5s;
-  border-radius: 5px;
+  border-radius: 100px;
+  width: 120px;
+  height: 65px;
 }
 
-.nav-item:hover {
-  background-color: orange;
+li.dropdown {
+  padding: 0px 0.3rem;
+  width: 100px;
+}
+
+.nav-register:hover {
+  background-color: #868484;
+}
+
+.nav-register .nav-link:hover{
+  color: #ddd !important;
 }
 
 .input-group-text {
   background-color: orange;
-}
+} 
 
 .post-info i{
   font-size: 20px;
 }
 
 .swiper {
+  border-radius: 10px;
   padding: 2rem 1rem 3.5rem 1rem;
   background-color: orange;
   width: 90%;
@@ -69,4 +79,16 @@ input:focus {
 #cat-list li a.text-dark:hover{
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+.image-container{
+  overflow: auto;
+}
+
+.float-image{
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  width: 300px;
+  height: 300px;
 }

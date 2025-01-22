@@ -1,0 +1,62 @@
+<div class="col-lg-6">
+    <div class="d-flex mb-3 bg-light">
+        <div class="w-100 d-flex flex-column justify-content-center 
+             px-3">
+            <div class="mb-1 mt-2" style="font-size: 13px;">
+                <a href="{% url 'blog:author_posts' post.author.username %}" 
+                class="text-decoration-none text-dark">
+                    {% if request.resolver_match.url_name != 'author_posts' %}
+                        <img src="{{ post.author.user_avatar.avatar.url }}"
+                        style="border-radius: 50%;" 
+                        alt="{{ post.author.username }}" width="40">
+                    {% endif %}
+                    
+                    <span dir="ltr" class="h6">{{ post.author.username }}</span>
+                </a>
+                <span> - </span>
+                <span class="text-muted">{{ post.created_at|timesince }} پیش</span>
+            </div>
+            <p class="mt-3">
+                <a class="h5 text-decoration-none text-dark" 
+                href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
+                    <strong>{{ post.title|truncatewords:5 }}</strong>
+                </a>
+            </p>
+            <p>
+                <a class="h6 text-decoration-none text-secondary" 
+                href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
+                    {{ post.content|truncatewords:18 }}
+                </a>
+            </p>
+            <p>
+                <a href="{% url 'blog:category_posts' post.category.name %}" 
+                    class="badge badge-info text-decoration-none">
+                    <span style="font-size: 0.9rem;">
+                        <i class="fas fa-tag"></i>
+                        {{ post.category.name }}
+                    </span>
+                </a>
+                &nbsp;
+                <small class="text-muted">خواندن {{ post.study_time }} دقیقه</small>
+            </p>
+        </div>
+
+        <div class="d-flex flex-column">
+            <a href="#" title="{{ post.title }}">
+                <img src="{{ post.image.url }}" 
+                style="width: 100px; height: 100px; object-fit: cover;" 
+                alt="{{ post.title }}">
+            </a>
+            <span class="mt-3 text-center">
+                <span class="post-info">
+                    <i class="fas fa-heart text-danger"></i> 0
+                </span>
+                &nbsp;&nbsp;
+                <span class="post-info">
+                    <i class="fas fa-comment-alt text-info"></i> 
+                    {{ post.post_comments.count }}
+                </span>
+            </span>
+        </div>
+    </div>
+</div>

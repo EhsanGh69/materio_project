@@ -1,0 +1,39 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}{{ auth.username }}{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center rounded justify-content-center
+                            bg-light py-2 px-4 mb-3">
+                            <div class="px-4">
+                                <a href="{% url 'blog:author_posts' auth.username %}" 
+                                    class="text-decoration-none text-dark d-flex flex-column">
+                                    <img src="{{ auth.user_avatar.avatar.url }}"
+                                    style="border-radius: 50%;" 
+                                    alt="{{ auth.username }}" width="100">
+                                    <strong dir="ltr" class="h4 mt-2 mr-3">@{{ auth.username }}</strong>
+                                    <small dir="ltr" class="h6 mt-2 text-secondary mr-3">
+                                        {{ auth.get_full_name }}
+                                    </small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% for post in auth_posts %}
+                        {% include "blog/partials/post_card.html" %}
+                    {% empty %}
+                        <div class="col-12 alert alert-danger text-center">
+                            <i class="far fa-times-circle"></i>
+                            <span>در حال حاضر پستی وجود ندارد</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

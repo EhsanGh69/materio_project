@@ -15,4 +15,7 @@ urlpatterns = [
     path('add_cat/', views.AddCategory.as_view(), name='add_cat'),
     path('edit_cat/<int:pk>/', views.EditCategory.as_view(), name='edit_cat'),
     path('remove_cat/<int:pk>', views.remove_category, name='remove_cat'),
+    path('all_posts/', views.all_posts, name='all_posts'),
+    path('paginate_posts/', views.paginate_posts, name='paginate_posts'),
+    path('remove_post/<int:pk>', views.remove_post, name='remove_post'),
 ]

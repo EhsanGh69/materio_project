@@ -4,12 +4,14 @@ from django.http import HttpRequest, JsonResponse
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms.models import model_to_dict
+from django.db.models import Q
+from django.core.paginator import Paginator
 from sweetify.views import sweetify
 
 from utils.tools import superuser_required
 
 from account.models import User
-from blog.models import Category
+from blog.models import Category, Post
 from .forms import AddCategoryForm
 
 
@@ -119,7 +121,7 @@ class EditCategory(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             cat_obj = get_object_or_404(Category, pk=pk)
             cat_obj.name = name
             cat_obj.is_subcat = is_subcat
-            if main != '': cat_obj.main = int(main)
+            if main != '': cat_obj.main = get_object_or_404(Category, pk=int(main))
             cat_obj.save()
             return JsonResponse({'success': True})
         else:
@@ -133,4 +135,51 @@ def remove_category(request, pk):
     cat_obj.delete()
     sweetify.warning(request, "موضوع با موفقیت حذف شد")
     return redirect("panel:all_cats")
+
+
+@login_required
+@permission_required('blog.view_post')
+def all_posts(request: HttpRequest):
+    posts = Post.objects.all()
+    return render(request, 'panel/posts/all_posts.html', {
+        'confirm_count': posts.filter(status='confirm').count(),
+        'check_count': posts.filter(status='check').count(),
+        'reject_count': posts.filter(status='reject').count()
+    }) 
+        
+    
+@login_required
+@permission_required('blog.view_post')
+def paginate_posts(request: HttpRequest):
+    status = request.GET.get('status')
+    page_number = request.GET.get('page')
+    posts = Post.objects.filter(status=status)
+    page_obj = Paginator(posts, 5).get_page(page_number)
+
+    return render(request, 'panel/partials/posts_table.html', {
+        'page_obj': page_obj,
+        'status': status
+    })
+
+
+
+@login_required
+@permission_required('blog.delete_post')
+def remove_post(request: HttpRequest, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.delete()
+    sweetify.warning(request, "پست با موفقیت حذف شد")
+    return redirect("panel:all_posts")
+
+
+# @login_required
+# @permission_required('blog.view_post')
+# def view_post(request: HttpRequest, pk):
+#     post = get_object_or_404(Post, pk=pk)
+    
+#     sweetify.warning(request, "پست با موفقیت حذف شد")
+#     return redirect("panel:all_posts")
+
+
+
 

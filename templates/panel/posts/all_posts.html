@@ -1,0 +1,132 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}خانه{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row gy-4">
+        <div class="col-12">
+            <div class="nav-align-top mb-4">
+                <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link active"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#confirm_posts"
+                        aria-controls="navs-pills-justified-messages"
+                        aria-selected="false"
+                        data-status="confirm">
+                            <span class="mdi mdi-checkbox-marked-circle mdi-24px text-success ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">تایید شده</span>
+                            <span style="font-size: 1.2rem;" 
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-success me-1">
+                                {{ confirm_count }}
+                            </span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#check_posts"
+                        aria-controls="navs-pills-justified-home"
+                        aria-selected="true"
+                        data-status="check">
+                            <span class="mdi mdi-help-circle text-warning mdi-24px ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">بررسی نشده</span>
+                            <span style="font-size: 1.2rem;" 
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-warning me-1">
+                                {{ check_count }}
+                            </span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#reject_posts"
+                        aria-controls="navs-pills-justified-profile"
+                        aria-selected="false"
+                        data-status="reject">
+                            <span class="mdi mdi-close-circle text-danger mdi-24px ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">رد شده</span>
+                            <span style="font-size: 1.2rem;" 
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger me-1">
+                                {{ reject_count }}
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" data-status="confirm" 
+                    id="confirm_posts" role="tabpanel">
+                        {% if confirm_count %}
+                            <div class="card" id="confirm">
+                                <!-- load by AJAX -->
+                            </div>
+                        {% else %}
+                            <h3 class="alert alert-danger text-center">پست تایید شده ایی وجود ندارد</h3>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="check_posts" role="tabpanel" data-status="check">
+                        {% if check_count %}
+                            <div class="card" id="check">
+                                <!-- load by AJAX -->
+                            </div>
+                        {% else %}
+                            <h3 class="alert alert-danger text-center">پست بررسی نشده ایی وجود ندارد</h3>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="reject_posts" role="tabpanel" data-status="reject">
+                        {% if reject_count %}
+                            <div class="card" id="reject">
+                                <!-- load by AJAX -->
+                            </div>
+                        {% else %}
+                            <h3 class="alert alert-danger text-center">پست رد شده ایی وجود ندارد</h3>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% include "panel/partials/confirm_modal.html" with obj_name='پست' %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const getPostId = (id) => confirmBtn.attributes.href.value = `/panel/remove_post/${id}`
+
+    function load_posts(status, page=1){
+        $.ajax({
+            url: '{% url "panel:paginate_posts" %}',
+            data: {
+                'page': page,
+                'status': status,
+            },
+            success: function(data){
+                $('#' + status).html(data)
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        load_posts('confirm')
+
+        $('.nav-link').click(function(){
+            const button = $(this)
+            const status = button.data('status')
+            load_posts(status)
+        })
+    })
+  </script>
+{% endblock %}

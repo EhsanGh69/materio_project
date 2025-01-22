@@ -1,0 +1,26 @@
+<form action="/{{ act_url }}/{% if 'comment' in act_url %}{{ post_id }}{% else %}{{ comment_id }}{% endif %}" 
+    method="post" id="{% if 'comment' in act_url %}comment-form{% else %}answer-form-{{ comment_id }}{% endif %}"
+    class="w-75 d-none {% if 'answer' in act_url %}answer-form{% endif %}">
+    {% csrf_token %}
+    <div class="form-group mt-3 mr-3" >
+        {% if 'answer' in act_url %}
+            <input type="hidden" name="post_id" value="{{ post_id }}">
+        {% endif %}
+        <textarea id="message" name="message" rows="5" style="resize: none;" 
+        class="form-control border-0 {% if 'answer' in act_url %}answer-message{% endif %}" 
+        placeholder="نظر خود را بنویسید">
+        </textarea>
+        
+        <div class="border-top pt-3">
+            <button type="submit" id="submit-btn" disabled 
+            class="btn btn-primary {% if 'answer' in act_url %}submit-answer{% endif %}">
+                ارسال
+            </button>
+            <button type="button" id="cancel-btn"
+            data-comment-id="{% if 'answer' in act_url %}{{ comment.id }}{% endif %}" 
+            class="btn btn-outline-danger {% if 'answer' in act_url %}close-btn{% endif %}">
+                انصراف
+            </button>
+        </div>
+    </div>
+</form>
