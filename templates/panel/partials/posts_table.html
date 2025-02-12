@@ -1,23 +1,38 @@
 {% load custom_tags %}
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-md-block">
+    {% if query %}
+        <h4 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h4>
+    {% endif %}
     <table class="table">
         <thead class="table-light">
             <tr>
                 <th class="text-truncate text-center">عنوان</th>
-                <th class="text-truncate text-center">نویسنده</th>
-                <th class="text-truncate text-center">موضوع</th>
+                <th class="text-truncate pe-4">نویسنده</th>
                 {% if status == 'confirm' %}
-                    <th class="text-truncate">تعداد کامنت ها</th>
-                    <th class="text-truncate">تعداد لایک ها</th>
+                    <th class="text-truncate text-center">موضوع</th>
+                    <th class="text-truncate text-center">تاریخ تایید</th>
+                {% elif status == 'check' %}
+                    <th class="text-truncate text-center">تاریخ ارسال</th>
+                {% else %}
+                    <th class="text-truncate text-center">تاریخ رد پست</th>
                 {% endif %}
-                <th class="text-truncate">تاریخ ایجاد</th>
-                <th class="text-truncate">تاریخ آخرین ویرایش</th>
                 <th class="text-truncate"></th>
             </tr>
         </thead>
         <tbody>
-            {% include "panel/components/post_row.html" %}
+            {% include "panel/components/post_row.html" with size='large' %}
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive d-md-none">
+    <table class="table">
+        <tbody>
+            {% include "panel/components/post_row.html" with size='small' %}
         </tbody>
     </table>
 </div>
@@ -28,7 +43,7 @@
             {% if page_obj.has_previous %}
                 <li class="page-item prev">
                     <button class="page-link prev-btn" data-current-page="{{ page_obj.number }}">
-                    <i class="tf-icon mdi mdi-chevron-left"></i>
+                        <i class="tf-icon mdi mdi-chevron-left"></i>
                     </button>
                 </li>
             {% endif %}
@@ -89,5 +104,4 @@
             load_posts('{{status}}', page)
         })
     })
-    
 </script>

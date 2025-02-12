@@ -30,6 +30,7 @@ $(document).ready(function () {
     const commentId = $(this).data("comment-id");
     const answerForm = $("#answer-form-" + commentId);
     $(".answer-form").addClass("d-none");
+    $("#comment-form").addClass("d-none");
     answerForm.removeClass("d-none");
     if (answerForm.is(":visible")) {
       const textarea = answerForm.find("textarea");
@@ -92,6 +93,8 @@ $(document).ready(function () {
             text: "نظر شما ارسال نشد",
             icon: "error",
             confirmButtonText: "باشه",
+          }).then((result) => {
+            $(".answer-form").addClass("d-none");
           });
         }
       },
@@ -112,7 +115,7 @@ $(document).ready(function () {
             icon: "success",
             confirmButtonText: "باشه",
           }).then((result) => {
-            $(this).addClass("d-none");
+            $("#comment-form").addClass("d-none");
           });
         } else {
           Swal.fire({
@@ -120,6 +123,8 @@ $(document).ready(function () {
             text: "نظر شما ارسال نشد",
             icon: "error",
             confirmButtonText: "باشه",
+          }).then((result) => {
+            $("#comment-form").addClass("d-none");
           });
         }
       },

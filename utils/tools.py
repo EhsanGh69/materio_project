@@ -3,6 +3,7 @@ import string
 
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import user_passes_test
+from django.core.cache import cache
 
 
 #* superuser decorator
@@ -58,3 +59,13 @@ def img_size_ext_check(imgFile, validSize):
         return "فرمت فایل بارگذاری شده غیرمجاز است"
     else:
         return 'valid'
+
+
+def cache_count_status(status, count):
+    if status == 'confirm':
+        cache.set('confirm_count', count)
+    elif status == 'check':
+        cache.set('check_count', count)
+    else:
+        cache.set('reject_count', count)
+

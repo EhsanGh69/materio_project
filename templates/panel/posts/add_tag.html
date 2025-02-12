@@ -1,0 +1,40 @@
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalTitle"></h4>
+            </div>
+            <form method="post" action="" id="tag_form" autocomplete="off">
+                <div class="modal-body">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <input type="hidden" name="prev_tag" id="prev_tag" value="">
+                            <div class="form-floating form-floating-outline">
+                                <input 
+                                    type="text" 
+                                    name="tag_name" 
+                                    class="form-control" 
+                                    maxlength="100"
+                                    placeholder=""
+                                    id="tag_name_input"
+                                />
+                                <label for="tag_name_input">نام تگ</label>
+                            </div>
+                            <div id="tag_name_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        انصراف
+                    </button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

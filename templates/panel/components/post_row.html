@@ -1,79 +1,15 @@
-{% load jalali_tags %}
+{% load static %}
+
 
 {% for post in page_obj %}
-<tr>
-    {{posts_exists}}
-    {% if post.status == 'confirm' %}
-        <td class="text-truncate">
-            <a href="{% url 'blog:post_detail' post.slug %}" 
-                target="_blank"
-                class="d-flex flex-column text-decoration-none text-secondary" 
-                title="مشاهده پست در سایت">
-                <img src="{{ post.image.url }}" 
-                alt="{{ post.title }}" class="rounded mb-2" width="60" />
-                {{ post.title|truncatewords:5 }}
-            </a>
-        </td>
+    {% if size == 'large' %}
+        <tr>
+            {% include "panel/components/post_td.html" %}
+        </tr>
     {% else %}
-        <td class="text-truncate d-flex flex-column">
-            <img src="{{ post.image.url }}" 
-                alt="{{ post.title }}" class="rounded mb-2" width="60" />
-            
-            {{ post.title|truncatewords:5 }}
-        </td>
+        <tr class="d-flex flex-column">
+            {% include "panel/components/post_data.html" %}
+        </tr>
+        <hr>
     {% endif %}
-
-    <td class="text-truncate">
-        <div class="d-flex align-items-center">
-            <div class="avatar me-3 d-flex flex-column">
-                {% if not post.author.is_active %}
-                    <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
-                    <small class="text-danger">غیر فعال</small>
-                {% else %}
-                    <img src="{{ post.author.user_avatar.avatar.url }}" 
-                alt="{{ post.author.username }}" class="rounded-circle" />
-                {% endif %}
-            </div>
-            <div class="me-2">
-              <h6 class="mb-0 text-truncate">{{ post.author.get_full_name }}</h6>
-              <small class="text-truncate">{{ post.author.username }}</small>
-            </div>
-        </div>
-    </td>
-    <td class="text-truncate text-center">
-        {% if post.category %}{{ post.category }}{% else %}_{% endif %}
-    </td>
-    {% if post.status == 'confirm' %}
-        <td class="text-truncate text-center">{{ post.post_comments.count }}</td>
-        <td class="text-truncate text-center">{{ post.like_count }}</td>
-    {% endif %}
-    <td class="text-truncate">{{ post.created_at|to_jalali:'%Y/%m/%d' }}</td>
-    <td class="text-truncate text-center">{{ post.updated_at|to_jalali:'%Y/%m/%d' }}</td>
-    <td class="text-truncate">
-        <button type="button" class="btn btn-light btn-icon rounded-pill 
-            dropdown-toggle hide-arrow waves-effect waves-light" 
-            data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="mdi mdi-dots-vertical"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-start">
-            <li>
-                <a class="dropdown-item waves-effect" href="#">
-                    <span class="mdi mdi-text-box-outline ms-3"></span>
-                    <span class="ms-5">مشاهده</span>
-                </a>
-            </li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li>
-                <a class="dropdown-item waves-effect text-danger" href="#"
-                onclick="getPostId({{post.id}})"
-                data-bs-toggle="modal" data-bs-target="#confirmModal">
-                    <span class="mdi mdi-trash-can-outline ms-4"></span>
-                    <span class="ms-5">حذف</span>
-                </a>
-            </li>
-        </ul>
-    </td>
-</tr>
 {% endfor %}

@@ -38,13 +38,15 @@ class Post(models.Model):
     title = models .CharField(max_length=250, verbose_name='عنوان')
     slug = models.SlugField(max_length=100, null=True, blank=True, allow_unicode=True, verbose_name='عنوان در آدرس')
     content = models.TextField(verbose_name='متن')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, 
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, 
                                  related_name='cat_posts', verbose_name='دسته بندی')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='check', verbose_name='وضعیت')
-    image = models.ImageField(upload_to=post_image_path, verbose_name='تصویر')
+    is_draft = models.BooleanField(default=True, verbose_name='ذخیره به عنوان پیش نویس')
+    image = models.ImageField(null=True, blank=True, upload_to=post_image_path, verbose_name='تصویر')
     tags = models.JSONField(blank=True, default=list, verbose_name='تگ ها')
     study_time = models.PositiveSmallIntegerField(default=0, verbose_name='زمان مطالعه', help_text='براساس دقیقه')
     like_count = models.PositiveIntegerField(default=0, verbose_name='تعداد لایک')
+    confirm_date = models.DateTimeField(null=True, blank=True, verbose_name='زمان تایید')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='زمان ایجاد')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='زمان ویرایش')
 

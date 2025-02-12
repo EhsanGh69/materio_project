@@ -1,6 +1,6 @@
 {% extends "blog/blog_base.html" %}
 
-{% block title %}نتیجه جستجو{% endblock %}
+{% block title %}همه پست ها{% endblock %}
 
 {% block body %}
     <div class="container py-3">
@@ -12,11 +12,15 @@
                             bg-light py-2 px-4 mb-3">
                             <div class="text-center py-2 px-4 mb-3">
                                 <h3 class="m-0">
-                                    <i class="fas fa-search"></i>
-                                    <span>نتیجه جستجو برای: </span>
-                                    <strong>{{ query }}</strong>
+                                    <i class="fas fa-archive"></i>
+                                    <span>همه پست ها</span>
                                 </h3>
                             </div>
+                            <a class="text-secondary font-weight-medium text-decoration-none"
+                               href="{% url 'blog:index' %}">
+                               <span>بازگشت به صفحه اصلی</span>
+                               <i class="fas fa-chevron-left"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -26,7 +30,7 @@
                 {% if num_pages > 1 %}
                     <div class=" text-center">
                         <button class="btn btn-outline-secondary" id="show-more"
-                        data-query="{{ query }}" data-page="1" data-num-pages="{{ num_pages }}">
+                         data-page="1" data-num-pages="{{ num_pages }}">
                             مشاهده بیشتر...
                         </button>
                     </div>
@@ -46,9 +50,8 @@
             const num_pages = button.data('num-pages')
 
             $.ajax({
-                url: '{% url "blog:show_more_search" %}',
+                url: '{% url "blog:show_more_all_posts" %}',
                 data: {
-                    'q': query,
                     'page': page
                 },
                 success: function(data){

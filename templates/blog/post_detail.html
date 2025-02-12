@@ -34,7 +34,13 @@
                     <div class="col-12">
                         <div class="mb-3 bg-light px-3 pt-5 pb-3">
                             <div class="px-3 image-container d-flex flex-column d-md-block">
-                                <img src="{{ post.image.url }}" alt="{{ post.title }}" 
+                                <img src="
+                                    {% if post.image %}
+                                        {{ post.image.url }}
+                                    {% else %}
+                                        {% static 'blog/img/default_image.jpg' %}
+                                    {% endif %}" 
+                                    alt="{{ post.title }}" 
                                     class="float-image w-auto">
                                 <p class="text-justify">
                                     {{ post.content|linebreaksbr }}

@@ -123,3 +123,22 @@ table.table th.text-truncate {
 .divider span.badge {
   font-size: 1.7rem;
 }
+
+.image-container{
+  overflow: auto;
+}
+
+.float-image{
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  width: 300px;
+  height: 300px;
+}
+
+.cke_editable {
+  font-family: Tahoma, Arial, sans-serif !important;
+  font-size: 16px !important;
+  direction: rtl;
+  text-align: right;
+}

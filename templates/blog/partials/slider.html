@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="container py-3">
   <div class="row">
     <div class="col-12">
@@ -10,7 +12,13 @@
           {% for post in fav_posts %}
             <div class="card swiper-slide">
               <a href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
-                <img src="{{ post.image.url }}" height="150"
+                <img src="
+                      {% if post.image %}
+                          {{ post.image.url }}
+                      {% else %}
+                          {% static 'blog/img/default_image.jpg' %}
+                      {% endif %}" 
+                height="150"
                 class="card-img-top" alt="{{ post.title }}">
               </a>
               <div class="card-body">

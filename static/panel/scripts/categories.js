@@ -1,12 +1,10 @@
 const confirmBtn = document.querySelector("#confirmBtn");
-const getUserId = (id) =>
-  (confirmBtn.attributes.href.value = `/panel/remove_cat/${id}`);
+const getCatId = (id) => (confirmBtn.attributes.href.value = `/panel/remove_cat/${id}`);
 
 $(document).ready(function () {
   $(".remove-btn").click(function () {
     $("#notice").html("");
     const catType = $(this).attr("data-obj");
-    console.log(catType);
     if (catType === "main") {
       $("#notice").html(
         '<span class="mdi mdi-alert mdi-24px"></span>' +
@@ -85,7 +83,7 @@ $(document).ready(function () {
             setTimeout(() => {
               Swal.fire({
                 title: "موفقیت!",
-                text: "موضوع جدید با موفقیت اضافه شد",
+                text: "موضوع جدید با موفقیت ویرایش شد",
                 icon: "success",
                 confirmButtonText: "باشه",
               }).then((result) => {

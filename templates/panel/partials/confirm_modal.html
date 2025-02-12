@@ -10,11 +10,13 @@
         <h3>آیا از حذف این {{ obj_name }} اطمینان دارید؟</h3>
         {% if obj_name == 'موضوع' %}
           <h5 id="notice" class="text-bg-danger"></h5>
+        {% elif obj_name == 'تگ' %}
+          <span class="d-none" id="removed_tag"></span>
         {% endif %}
       </div>
       <div class="modal-footer">
         <button class="btn btn-success" data-bs-dismiss="modal">خیر</button>
-        <a href="#" class="btn btn-danger ml-2" id="confirmBtn">بله</a>
+        <a href="" class="btn btn-danger ml-2" id="confirmBtn">بله</a>
       </div>
     </div>
   </div>

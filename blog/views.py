@@ -10,15 +10,17 @@ from .models import Post, Category, Comment, UserLike
 
 def index(request: HttpRequest):
     top_cats = Category.objects.annotate(num_posts=Count('cat_posts')).order_by('-num_posts')[:9]
-    top_auths = User.objects.annotate(num_posts=Count('user_posts')).order_by('-num_posts')[:9]
-    hot_posts = Post.objects.annotate(num_comments=Count('post_comments')).order_by('-num_comments')[:6]
-    fav_posts = Post.objects.order_by('-like_count')[:6]
+    top_auths = User.objects.annotate(num_posts=Count('user_posts')).filter(is_active=True).order_by('-num_posts')[:9]
+    hot_posts = Post.objects.annotate(num_comments=Count('post_comments')).filter(status='confirm').order_by('-num_comments')[:6]
+    fav_posts = Post.objects.filter(status='confirm').order_by('-like_count')[:6]
+    recent_posts = Post.objects.filter(status='confirm').order_by('-created_at')[:6]
     
     return render(request, 'blog/index.html', {
         "hot_posts": hot_posts,
         "fav_posts": fav_posts,
         "top_cats": top_cats,
-        "top_auths": top_auths
+        "top_auths": top_auths,
+        "recent_posts": recent_posts
     })
 
 
@@ -32,6 +34,24 @@ def blog_footer(request: HttpRequest):
         "categories": Category.objects.filter(is_subcat=False).all(),
         "tags": tags[:10]
     })
+
+
+def all_posts(request: HttpRequest):
+    posts = Post.objects.filter(status='confirm').order_by('-created_at')
+
+    paginator = Paginator(posts, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if 'show_more' in request.path:
+        return render(request, 'blog/components/posts_loop.html', {
+            'page_obj': page_obj
+        })
+    else:
+        return render(request, 'blog/all_posts.html', {
+            'num_pages': paginator.num_pages,
+            'page_obj': page_obj
+        })
 
 
 def all_categories(request: HttpRequest):
@@ -52,20 +72,41 @@ def category_posts(request: HttpRequest, cat_name):
         cat_posts.extend(cat_obj.cat_posts.filter(status='confirm').all())
         cat_posts.extend([post for cat in subcats 
                           for post in cat.cat_posts.filter(status='confirm').all()])
+        
+    paginator = Paginator(cat_posts, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'blog/category_posts.html', {
-        "cat_name": cat_obj.name,
-        "cat_posts": cat_posts
-    })
-
+    if 'show_more' in request.path:
+        return render(request, 'blog/components/posts_loop.html', {
+            'page_obj': page_obj
+        })
+    else:
+        return render(request, 'blog/category_posts.html', {
+            'num_pages': paginator.num_pages,
+            "cat_name": cat_obj.name,
+            'page_obj': page_obj
+        })
+        
 
 def author_posts(request: HttpRequest, username):
     user = get_object_or_404(User, username=username)
-    
-    return render(request, 'blog/author_posts.html', {
-        "auth": user,
-        "auth_posts": Post.objects.filter(status='confirm', author=user)
-    })
+    auth_posts = Post.objects.filter(status='confirm', author=user)
+
+    paginator = Paginator(auth_posts, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if 'show_more' in request.path:
+        return render(request, 'blog/components/posts_loop.html', {
+            'page_obj': page_obj
+        })
+    else:
+        return render(request, 'blog/author_posts.html', {
+            'num_pages': paginator.num_pages,
+            "auth": user,
+            'page_obj': page_obj
+        })
 
 
 def post_detail(request: HttpRequest, slug):
@@ -111,7 +152,6 @@ def create_answer(request: HttpRequest, comment_id):
         return Http404()
 
 
-
 def post_like_count(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
         
@@ -144,17 +184,28 @@ def tag_posts(request: HttpRequest, tag):
             posts_by_tag.append(post)
 
     if posts_by_tag:
-        return render(request, 'blog/tag_posts.html', {
-            "tag": tag,
-            "tag_posts": posts_by_tag
-        })
+        paginator = Paginator(posts_by_tag, 4)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        if 'show_more' in request.path:
+            return render(request, 'blog/components/posts_loop.html', {
+                'page_obj': page_obj
+            })
+        else:
+            return render(request, 'blog/tag_posts.html', {
+                'num_pages': paginator.num_pages,
+                "tag": tag,
+                'page_obj': page_obj
+            })
     else:
         return Http404()
 
 
 def search_posts(request: HttpRequest):
     query = request.GET.get('q')
-    results = Post.objects.filter(
+    posts = Post.objects.filter(status='confirm', is_draft=False).order_by('-created_at')
+    results = posts.filter(
             Q(title__icontains=query) | Q(content__icontains=query) |
             Q(tags__contains=[query]) | Q(category__name__icontains=query)
         )
@@ -162,15 +213,16 @@ def search_posts(request: HttpRequest):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    if 'search' in request.path:
+    if 'show_more' in request.path:
+        return render(request, 'blog/components/posts_loop.html', {
+            'page_obj': page_obj
+        }) 
+    else:
         return render(request, 'blog/search_posts.html', {
             'num_pages': paginator.num_pages,
             'query': query,
             'page_obj': page_obj
         })
-    else:
-        return render(request, 'blog/components/posts_loop.html', {
-            'page_obj': page_obj
-        }) 
+        
 
         
