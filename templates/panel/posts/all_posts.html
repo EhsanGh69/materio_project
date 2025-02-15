@@ -140,6 +140,8 @@
                 data: {
                     'page': page,
                     'status': status,
+                    'q': '',
+                    'field': '-created_at'
                 },
                 success: function(data){
                     $('#' + status).html(data)
@@ -149,12 +151,30 @@
         }
 
         function search_posts(status, query, page=1){
+            const field = $('#sort_select').val()
             $.ajax({
-                url: '{% url "panel:search_posts" %}',
+                url: '{% url "panel:search_sort_posts" %}',
                 data: {
                     'page': page,
                     'status': status,
                     'q': query,
+                    'field': field === 'None' ? '-created_at' : field
+                },
+                success: function(data){
+                    $('#' + status).html(data)
+                    get_status_count()
+                }
+            })
+        }
+
+        function sort_posts(status, field, page=1){
+            $.ajax({
+                url: '{% url "panel:search_sort_posts" %}',
+                data: {
+                    'page': page,
+                    'status': status,
+                    'field': field,
+                    'q': $('#search_input').val(),
                 },
                 success: function(data){
                     $('#' + status).html(data)
@@ -193,6 +213,18 @@
                     get_status_count()
                 }, 500)
                 get_status_count()
+            })
+
+            $('#sort_select').change(function(e){
+                setTimeout(() => {
+                    const field = $(this).val();
+                    const activeTab = $(".nav-link.active").data('status')
+                    if(field !== 'None')
+                        sort_posts(activeTab, field)
+                    else
+                        sort_posts(activeTab, '-created_at')
+
+                }, 500)
             })
         })
     </script>

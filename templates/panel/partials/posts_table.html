@@ -85,23 +85,58 @@
 
 <script>
     $(document).ready(function(){
+        const query = "{{ query }}"
+        const field = "{{ field }}"
+        const status = "{{ status }}"
+
+        console.log("query: ", query)
+        console.log("field: ", field)
 
         $('.next-btn').click(function(){
             const currentPage = $(this).data('current-page')
+        
+            if(query){
+                search_posts(status, query, currentPage + 1)
+                return
+            }
+            else if(field){
+                sort_posts(status, field, currentPage + 1)
+                return
+            }
             
-            load_posts('{{status}}', currentPage + 1)
+            load_posts(status, currentPage + 1)
         })
 
         $('.prev-btn').click(function(){
             const currentPage = $(this).data('current-page')
-            if (currentPage > 1)
-                load_posts('{{status}}', currentPage - 1)
+            if (currentPage > 1){
+                if(query){
+                    search_posts(status, query, currentPage - 1)
+                    return
+                }
+                else if(field){
+                    sort_posts(status, field, currentPage - 1)
+                    return
+                } 
+                
+                load_posts(status, currentPage - 1)
+            }
+                
         })
 
         $('.page-counter').click(function(){
             const page = $(this).data('page')
             
-            load_posts('{{status}}', page)
+            if(query){
+                search_posts(status, query, page)
+                return
+            }
+            else if(field){
+                sort_posts(status, field, page)
+                return
+            }
+             
+            load_posts(status, page)
         })
     })
 </script>

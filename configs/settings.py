@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'account.apps.AccountConfig',
     'panel.apps.PanelConfig',
-    'blog.apps.BlogConfig'
+    'blog.apps.BlogConfig',
+    'notifs.apps.NotifsConfig',
 ]
 
 MIDDLEWARE = [

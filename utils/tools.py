@@ -4,6 +4,7 @@ import string
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
+from django.db.models import Q
 
 
 #* superuser decorator
@@ -68,4 +69,26 @@ def cache_count_status(status, count):
         cache.set('check_count', count)
     else:
         cache.set('reject_count', count)
+
+
+def posts_filter(posts, query):
+    return posts.filter(
+            Q(title__icontains=query) | Q(content__icontains=query) |
+            Q(tags__contains=[query]) | Q(category__name__icontains=query) |
+            Q(author__username__icontains=query) | Q(author__first_name__icontains=query) |
+            Q(author__last_name__icontains=query)
+        )
+
+
+def search_sort_posts(posts, query=None, field=None):
+    global results
+    if query and not field:
+        results = posts_filter(posts, query)
+    elif field and not query:
+        results = posts.order_by(field)
+    elif field and query:
+        results = posts_filter(posts, query).order_by(field)
+    
+    return results
+            
 

@@ -174,14 +174,23 @@
 
                     <div class="row mt-3">
                         <div class="col-10">
-                            <button type="button" class="btn btn-success mb-2" id="confirm-btn">
-                                <span class="mdi mdi-file-check-outline mdi-24px ms-2"></span>
-                                <span>تایید و انتشار</span>
-                            </button>
-                            <button type="button" class="btn btn-warning mb-2" id="reject-btn">
-                                <span class="mdi mdi-file-document-alert-outline mdi-24px ms-2"></span>
-                                <span>رد کردن</span>
-                            </button>
+                            {% if not post.author.is_active %}
+                                <button type="button" class="btn btn-outline-secondary mb-2" id="active-btn">
+                                    <span class="mdi mdi-account-lock-open mdi-24px ms-2"></span>
+                                    <span>فعال سازی حساب کاربری</span>
+                                </button>
+                            {% elif post.status != 'confirm' %}
+                                <button type="button" class="btn btn-success mb-2" id="confirm-btn">
+                                    <span class="mdi mdi-file-check-outline mdi-24px ms-2"></span>
+                                    <span>تایید و انتشار</span>
+                                </button>
+                            {% endif %}
+                            {% if post.status != 'reject' %}
+                                <button type="button" class="btn btn-warning mb-2" id="reject-btn">
+                                    <span class="mdi mdi-file-document-alert-outline mdi-24px ms-2"></span>
+                                    <span>رد کردن</span>
+                                </button>
+                            {% endif %}
                             <button type="button" class="btn btn-danger mb-2" id="remove-btn">
                                 <span class="mdi mdi-file-document-remove-outline mdi-24px ms-2"></span>
                                 <span>حذف</span>
@@ -229,6 +238,20 @@
                   });
             });
 
+            $("#active-btn").click(function () {
+                $.ajax({
+                    url: `/panel/change_status/{{post.author.id}}`,
+                    data: {
+                        'target_url': "from_post_view"
+                    },
+                    success: function (response) {
+                        if(response.success){
+                            location.reload()
+                        }
+                    },
+                  });
+            });
+
             $(".edit_tag_btn").click(function () {
                 $("#tag_form").prop("action", `{% url 'panel:edit_tag' post.id %}`);
                 $("#tag_form")[0].reset();
@@ -236,6 +259,65 @@
                 $("#modalTitle").html("ویرایش تگ");
                 $("#prev_tag").val($(this).data("tag"));
                 $("#tag_name_input").val($(this).data("tag"));
+            });
+
+            $("#reason-report").keyup(function(){
+                $('#message-error').addClass("d-none")
+            })
+    
+            $("#send-notif").submit(function (event) {
+                event.preventDefault();
+                if($('.send-btn').hasClass('btn-danger')) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'notifs:remove_post' post.id %}",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if(response.success){
+                                Swal.fire({
+                                    title: "موفقیت!",
+                                    text: "پست با موفقیت حذف شد",
+                                    icon: "success",
+                                    confirmButtonText: "باشه",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = response.redirect_url
+                                    }
+                                });
+                            }
+                            else{
+                                $("#message-error").removeClass('d-none');
+                                $("#message-error").text(response.error);
+                            }
+                        },
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'notifs:reject_post' post.id %}",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if(response.success){
+                                Swal.fire({
+                                    title: "موفقیت!",
+                                    text: "پست با موفقیت رد شد",
+                                    icon: "success",
+                                    confirmButtonText: "باشه",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = response.redirect_url
+                                    }
+                                });
+                            }
+                            else{
+                                $("#message-error").removeClass('d-none');
+                                $("#message-error").text(response.error);
+                            }
+                        },
+                    });
+                }
+                
             });
         })
     </script>

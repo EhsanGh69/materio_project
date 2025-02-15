@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpRequest, JsonResponse, HttpResponseBadRequest
+from django.http import HttpRequest, JsonResponse
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms.models import model_to_dict
@@ -11,10 +11,11 @@ from django.urls import reverse
 from django.utils import timezone
 from sweetify.views import sweetify
 
-from utils.tools import superuser_required, cache_count_status
+from utils.tools import superuser_required, cache_count_status, search_sort_posts
 
 from account.models import User
 from blog.models import Category, Post
+from notifs.models import Notification
 from .forms import AddCategoryForm
 
 
@@ -40,14 +41,18 @@ def panel_navbar(request):
 
 @login_required
 @superuser_required
-def change_status(request, pk):
+def change_status(request: HttpRequest, pk):
     user = get_object_or_404(User, id=pk)
+    target_url = request.GET.get('target_url')
     if user.is_active:
         user.is_active = False
     else:
         user.is_active = True
     user.save()
     sweetify.success(request, "وضعیت کاربر با موفقیت تغییر یافت")
+
+    if(target_url):
+        return JsonResponse({'success': True})
     return redirect("panel:users")
 
 
@@ -154,7 +159,13 @@ def all_posts(request: HttpRequest):
             'reject_count': cache.get('reject_count', posts.filter(status='reject').count()),
         }) 
 
-    return render(request, 'panel/posts/all_posts.html') 
+    return render(request, 'panel/posts/all_posts.html', {
+        'sort_fields': [
+            {"value": "title", "name": "عنوان"},
+            {"value": "author", "name": "نام نویسنده"},
+            {"value": "category", "name": "موضوع"}
+        ]
+    }) 
         
     
 @login_required
@@ -166,33 +177,21 @@ def paginate_posts(request: HttpRequest):
     page_obj = Paginator(posts, 5).get_page(page_number)
     cache_count_status(status, posts.count())
     query = ''
+    field = ''
 
-    if 'search' in request.path:
+    if 'search_sort' in request.path:
         query = request.GET.get('q')
-        results = posts.filter(
-            Q(title__icontains=query) | Q(content__icontains=query) |
-            Q(tags__contains=[query]) | Q(category__name__icontains=query)
-        )
-        page_obj = Paginator(results, 5).get_page(page_number)
+        field = request.GET.get('field')
+        results = search_sort_posts(posts, query, field)
+        page_obj = Paginator(results, 2).get_page(page_number)
         cache_count_status(status, results.count())
 
     return render(request, 'panel/partials/posts_table.html', {
         'page_obj': page_obj,
         'status': status,
         'query': query,
-        # 'sort_fields': [
-        #     {}
-        # ]
+        'field': field
     })
-
-
-@login_required
-@permission_required('blog.delete_post', raise_exception=True)
-def remove_post(request: HttpRequest, pk):
-    post = get_object_or_404(Post, pk=pk)
-    post.delete()
-    sweetify.warning(request, "پست با موفقیت حذف شد")
-    return redirect("panel:all_posts")
 
 
 @login_required
@@ -207,8 +206,7 @@ def view_post(request: HttpRequest, slug):
 
 @login_required
 @permission_required(
-    ['blog.view_post', 'blog.delete_post', 'blog.change_post'],
-        raise_exception=True)
+    ['blog.view_post', 'blog.delete_post', 'blog.change_post'], raise_exception=True)
 def post_settings(request: HttpRequest, slug):
     post = get_object_or_404(Post, slug=slug)
     main_cats = Category.objects.filter(is_subcat=False)
@@ -225,7 +223,7 @@ def post_settings(request: HttpRequest, slug):
             if study_time <= 0:
                 errors['study_time_err'] = "مدت زمان مطالعه باید عددی مثبت و بزرگتر از صفر باشد"
         except (ValueError, TypeError):
-            errors['study_time_err'] = "مدت زمان مطالعه باید عدد صحیح باشد"
+            errors['study_time_err'] = "مدت زمان مطالعه باید مقداری عددی باشد"
 
         if any(errors.values()):
             return JsonResponse({'success': False, 'errors': errors})
@@ -242,6 +240,12 @@ def post_settings(request: HttpRequest, slug):
         post.confirm_date = timezone.now()
         post.save()
 
+        extra_notifs = Notification.objects.filter(reciever=post.author, 
+                                                  subject__icontains=f'{post.title}')
+        if extra_notifs:
+            for obj in extra_notifs:
+                obj.delete()
+        sweetify.success(request, "پست با موفقیت تایید شد")
         return JsonResponse({'success': True, 'redirect_url': reverse("panel:view_post", args=[post.slug])})
     else:
         return render(request, 'panel/posts/post_settings.html', {

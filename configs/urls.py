@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
@@ -7,8 +7,9 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCom
 from account.views import Login, Register, logout_user, ResetPassword, account_activate
 
 urlpatterns = [
-    path('panel/', include('panel.urls')),
     path('', include('blog.urls')),
+    path('panel/', include('panel.urls')),
+    path('notifs/', include('notifs.urls')),
     path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
     path('activate/<uidb64>/<token>/', account_activate, name='activate'),

@@ -12,9 +12,10 @@
     </div>
     <div class="col-5 col-md-4 col-lg-3 col-xl-2 mt-2 d-flex align-items-center">
         <select id="sort_select" class="form-select form-select-sm bg-body cursor-pointer">
-            <option value="">مرتب سازی</option>
-            <option value="">جدیدترین</option>
-            <option value="">قدیمی ترین</option>
+            <option value="None">مرتب سازی</option>
+            {% for field in sort_fields %}
+              <option value="{{ field.value }}">{{ field.name }}</option>
+            {% endfor %}
         </select>
         <span class="mdi mdi-sort-ascending mdi-24px lh-0"></span>
     </div>

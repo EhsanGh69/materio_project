@@ -18,7 +18,13 @@
         </a>
     {% else %}
         <span>
-            <img src="{{ post.image.url }}" 
+            <img src="
+                {% if post.image %}
+                    {{ post.image.url }}
+                {% else %}
+                    {% static 'blog/img/default_image.jpg' %}
+                {% endif %}
+            " 
             alt="{{ post.title }}" class="rounded mb-2" width="60" />
 
             {{ post.title|truncatewords:5 }}

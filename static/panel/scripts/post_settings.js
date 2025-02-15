@@ -1,14 +1,3 @@
-CKEDITOR.replace('reason-report', {
-    toolbar: [
-        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline'] },
-        { name: 'styles', items: ['Font', 'FontSize', 'TextColor', 'BGColor'] },
-        { name: 'paragraph', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight'] }
-    ],
-    font_names: 'Tanha;Tahoma;Arial;Times New Roman;Verdana;Comic Sans MS;',
-    fontSize_sizes: '12/12px;14/14px;16/16px;18/18px;20/20px;24/24px;32/32px;',
-    contentsLangDirection: 'rtl'
-});
-
 function get_related_tags(id){
     $.ajax({
         url: `/panel/get_related_tags/${id}`,
@@ -47,7 +36,7 @@ $(document).ready(function(){
     })
 
     $(".cancel-btn").click(function(){
-        CKEDITOR.instances['reason-report'].setData('')
+        $('#reason-report').text('')
         $("#reason-box").addClass('d-none')
         $("#remove-btn").removeClass('d-none')
         $("#reject-btn").removeClass('d-none')
