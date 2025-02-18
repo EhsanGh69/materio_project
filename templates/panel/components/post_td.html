@@ -57,7 +57,11 @@
 {% elif post.status == 'check' %}
     <td class="text-truncate text-center">{{ post.updated_at|to_jalali:'%Y/%m/%d' }}</td>
 {% else %}
-    <td class="text-truncate text-center">{{ post.updated_at|to_jalali:'%Y/%m/%d' }}</td>
+    {% for notif in notifs %}
+        {% if post.title in notif.subject %}
+            <td class="text-truncate text-center">{{ notif.created_at|to_jalali:'%Y/%m/%d' }}</td>
+        {% endif %}
+    {% endfor %}
 {% endif %}
 
 <td class="text-truncate">

@@ -4,7 +4,6 @@ from django.http import HttpRequest, JsonResponse
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms.models import model_to_dict
-from django.db.models import Q
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.urls import reverse
@@ -151,7 +150,7 @@ def remove_category(request, pk):
 @permission_required('blog.view_post', raise_exception=True)
 def all_posts(request: HttpRequest):
     posts = Post.objects.filter(is_draft=False).order_by('-created_at')
-
+    
     if 'status_count' in request.path:
         return JsonResponse({
             'confirm_count': cache.get('confirm_count', posts.filter(status='confirm').count()),
@@ -162,8 +161,9 @@ def all_posts(request: HttpRequest):
     return render(request, 'panel/posts/all_posts.html', {
         'sort_fields': [
             {"value": "title", "name": "عنوان"},
-            {"value": "author", "name": "نام نویسنده"},
-            {"value": "category", "name": "موضوع"}
+            {"value": "author", "name": "نویسنده"},
+            {"value": "category", "name": "موضوع"},
+            {"value": "-confirm_date", "name": "تاریخ تایید"}
         ]
     }) 
         
@@ -183,14 +183,15 @@ def paginate_posts(request: HttpRequest):
         query = request.GET.get('q')
         field = request.GET.get('field')
         results = search_sort_posts(posts, query, field)
-        page_obj = Paginator(results, 2).get_page(page_number)
+        page_obj = Paginator(results, 5).get_page(page_number)
         cache_count_status(status, results.count())
 
     return render(request, 'panel/partials/posts_table.html', {
         'page_obj': page_obj,
         'status': status,
         'query': query,
-        'field': field
+        'field': field,
+        'notifs': Notification.objects.all()
     })
 
 
@@ -200,7 +201,8 @@ def view_post(request: HttpRequest, slug):
     post = get_object_or_404(Post, slug=slug)
 
     return render(request, 'panel/posts/view_post.html', {
-        'post': post
+        'post': post,
+        'notifs': Notification.objects.all()
     })
 
 

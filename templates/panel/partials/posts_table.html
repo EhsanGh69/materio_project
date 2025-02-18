@@ -1,11 +1,9 @@
-{% load custom_tags %}
-
 <div class="table-responsive d-none d-md-block">
     {% if query %}
-        <h4 class="p-3">
+        <h5 class="p-3">
             <span>نتیجه جستجو برای: </span>
             <i>«{{ query }}»</i>
-        </h4>
+        </h5>
     {% endif %}
     <table class="table">
         <thead class="table-light">
@@ -24,7 +22,11 @@
             </tr>
         </thead>
         <tbody>
-            {% include "panel/components/post_row.html" with size='large' %}
+            {% for post in page_obj %}
+                <tr>
+                    {% include "panel/components/post_td.html" %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
@@ -32,65 +34,23 @@
 <div class="table-responsive d-md-none">
     <table class="table">
         <tbody>
-            {% include "panel/components/post_row.html" with size='small' %}
+            {% for post in page_obj %}
+                <tr class="d-flex flex-column">
+                    {% include "panel/components/post_data.html" %}
+                </tr>
+                <hr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
 
-{% if page_obj.has_other_pages %}
-    <nav aria-label="Page navigation" class="mt-3 m-auto">
-        <ul class="pagination pagination-outline-primary flex-row-reverse">
-            {% if page_obj.has_previous %}
-                <li class="page-item prev">
-                    <button class="page-link prev-btn" data-current-page="{{ page_obj.number }}">
-                        <i class="tf-icon mdi mdi-chevron-left"></i>
-                    </button>
-                </li>
-            {% endif %}
-
-            {% for page_item in page_obj.paginator.page_range %}
-                {% if page_obj.number != page_item %}
-                    {% if page_obj.number|min:page_item == 1 or page_item|min:page_obj.number == 1 or forloop.first or forloop.last %}
-                        <li class="page-item">
-                            <button class="page-link page-counter 
-                            {% if page_obj.number == page_item %}active{% endif %}" 
-                            data-page="{{ page_item }}">
-                                {{ page_item }}
-                            </button>
-                        </li>
-                    {% elif page_obj.number|min:page_item == 2 or page_item|min:page_obj.number == 2 %}
-                        <li class="mx-2">
-                            <span class="">...</span>
-                        </li>
-                    {% endif %}
-                {% else %}
-                    <li class="page-item">
-                        <button class="page-link active">
-                            {{ page_item }}
-                        </button>
-                    </li>
-                {% endif %}
-            {% endfor %}
-                
-            {% if page_obj.has_next %}
-            <li class="page-item next">
-                <button class="page-link next-btn" data-current-page="{{ page_obj.number }}">
-                <i class="tf-icon mdi mdi-chevron-right"></i>
-                </button>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-{% endif %}
+{% include "panel/components/pagination.html" %}
 
 <script>
     $(document).ready(function(){
         const query = "{{ query }}"
         const field = "{{ field }}"
         const status = "{{ status }}"
-
-        console.log("query: ", query)
-        console.log("field: ", field)
 
         $('.next-btn').click(function(){
             const currentPage = $(this).data('current-page')

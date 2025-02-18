@@ -96,6 +96,14 @@
           </a>
       </li>
 
+      <li class="menu-item border-bottom pb-3
+          {% if 'comments' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url "notifs:all_comments" %}" class="menu-link">
+            <span class="mdi mdi-comment-multiple mdi-24px"></span>
+            <div class="me-2">نظرات کاربران</div>
+          </a>
+      </li>
+
       <li class="menu-item border-bottom pb-3">
           <a href="{% url "blog:index" %}" class="menu-link">
             {% if request.user.is_superuser %}

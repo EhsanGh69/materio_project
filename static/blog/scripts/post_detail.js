@@ -23,7 +23,7 @@ $(document).ready(function () {
   $(".open-answers").click(function () {
     const commentId = $(this).data("comment-id");
     $("#answers-" + commentId).toggleClass("d-none");
-    $(".open-answer .fas").toggleClass("fa-chevron-up fa-chevron-down");
+    $(this).find(".fas").toggleClass("fa-chevron-up fa-chevron-down");
   });
 
   $(".answer-btn").click(function () {

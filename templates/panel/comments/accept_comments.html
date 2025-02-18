@@ -1,0 +1,53 @@
+{% include "panel/components/pagination.html" %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3">
+    {% for item in page_obj %}
+        {% if item.answers %}
+            {% include "panel/comments/comment_answers_col.html" with accept=True %}
+        {% else %}
+            {% include "panel/comments/comment_col.html" with comment=item.main_comment %}
+        {% endif %}
+    {% empty %}
+        <div class="alert alert-warning text-danger text-center h3">
+            <span class="mdi mdi-comment-remove mdi-36px"></span>
+            <span>نظر تایید شده ایی وجود ندارد</span>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    $(document).ready(function(){
+        const query = "{{ query }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+
+            if(query){
+                load_comments(query, currentPage + 1)
+                return
+            }
+
+            load_comments('', currentPage + 1)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                if(query){
+                    load_comments(query, currentPage - 1)
+                    return
+                }
+
+                load_comments('', currentPage - 1)
+            }
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            if(query){
+                load_comments(query, page)
+                return
+            }
+            load_comments('', page)
+        })
+    })
+</script>

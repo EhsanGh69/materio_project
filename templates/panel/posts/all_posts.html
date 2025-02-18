@@ -1,11 +1,11 @@
 {% extends "panel/base.html" %}
 {% load static %}
 
-{% block title %}خانه{% endblock %}
+{% block title %}پست ها{% endblock %}
 
 {% block content %}
 <div class="container-xxl flex-grow-1 container-p-y">
-    {% include "panel/components/search_sort.html" with act_url='panel:search_posts' %}
+    {% include "panel/components/search_sort.html" with search=True sort=True %}
     <div class="row gy-4">
         <div class="col-12">
             <div class="nav-align-top mb-4">
@@ -72,23 +72,26 @@
                         <div class="card" id="confirm">
                             <!-- load by AJAX -->
                         </div>
-                        <h3 class="alert alert-danger text-center d-none" id="not-confirm"
-                        >پست تایید شده ایی وجود ندارد</h3>
+                        <h3 class="alert alert-danger text-center d-none" id="not-confirm">
+                            پست تایید شده ایی وجود ندارد
+                        </h3>
                         
                     </div>
                     <div class="tab-pane fade" id="check_posts" role="tabpanel" data-status="check">
                         <div class="card" id="check">
                             <!-- load by AJAX -->
                         </div>
-                        <h3 class="alert alert-danger text-center d-none" id="not-check"
-                        >پست بررسی نشده ایی وجود ندارد</h3>
+                        <h3 class="alert alert-danger text-center d-none" id="not-check">
+                            پست بررسی نشده ایی وجود ندارد
+                        </h3>
                     </div>
                     <div class="tab-pane fade" id="reject_posts" role="tabpanel" data-status="reject">
                         <div class="card" id="reject">
                             <!-- load by AJAX -->
                         </div>
-                        <h3 class="alert alert-danger text-center d-none" id="not-reject"
-                        >پست رد شده ایی وجود ندارد</h3>
+                        <h3 class="alert alert-danger text-center d-none" id="not-reject">
+                            پست رد شده ایی وجود ندارد
+                        </h3>
                     </div>
                 </div>
             </div>
@@ -211,7 +214,7 @@
                         load_posts(activeTab);
                     }
                     get_status_count()
-                }, 500)
+                }, 300)
                 get_status_count()
             })
 
@@ -224,7 +227,7 @@
                     else
                         sort_posts(activeTab, '-created_at')
 
-                }, 500)
+                }, 300)
             })
         })
     </script>

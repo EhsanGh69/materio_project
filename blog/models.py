@@ -58,8 +58,8 @@ class Post(models.Model):
         if not self.slug:
             post_slug = f'{random_str(10)}-{self.title}'
             self.slug = slugify(post_slug, allow_unicode=True)
-        if not self.author.is_active:
-            self.status = 'reject'
+        # if not self.author.is_active:
+        #     self.status = 'reject'
         return super().save(*args, **kwargs)
 
     def __str__(self):

@@ -32,7 +32,7 @@
                           {% if user.user_avatar %}
                             {{ user.user_avatar.avatar.url }}
                           {% else %}
-                            {% static 'panel/img/avatars/default_avatar.jpg' %}
+                            {% static 'panel/img/default_avatar.jpg' %}
                           {% endif %}
                           " 
                           alt="{{ user.username }}" class="rounded-circle" />
@@ -110,6 +110,6 @@
 {% block script %}
   <script>
     const confirmBtn = document.querySelector('#confirmBtn')
-    const getUserId = (id) => confirmBtn.attributes.href.value = `/remove_user/${id}`
+    const getUserId = (id) => confirmBtn.attributes.href.value = `/panel/remove_user/${id}`
   </script>
 {% endblock %}

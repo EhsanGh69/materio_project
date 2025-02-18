@@ -1,0 +1,29 @@
+{% load static %}
+
+<div class="col">
+    <div class="card shadow-none bg-transparent mb-3 border  
+    {% if comment.is_accept %}border-success{% else %}border-warning{% endif %}">
+        <div class="card-header border-bottom pb-0 pt-2">
+            <a href="{% url 'blog:post_detail' comment.post.slug %}" 
+                target="_blank"
+                class="d-flex text-decoration-none text-secondary" 
+                title="مشاهده پست در سایت">
+                <img src="
+                    {% if comment.post.image %}
+                        {{ comment.post.image.url }}
+                    {% else %}
+                        {% static 'blog/img/default_image.jpg' %}
+                    {% endif %}" 
+                alt="{{ comment.post.title }}" class="rounded mb-2" width="60" />
+                <span class="me-2">
+                    {{ comment.post.title|truncatewords:5 }}
+                </span>
+            </a>
+        </div>
+        <div class="card-body mt-0">
+            <div class="bg-light text-dark p-2 rounded-1">
+                {% include 'panel/comments/single_comment.html' with comment=comment %}
+            </div>
+        </div>
+    </div>
+</div>

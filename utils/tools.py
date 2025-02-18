@@ -90,5 +90,27 @@ def search_sort_posts(posts, query=None, field=None):
         results = posts_filter(posts, query).order_by(field)
     
     return results
+
+
+def get_comment_answers(accept_mains, accept=False):
+    not_accept_comment_answers = []
+    accept_comment_answers = []
+    for main in accept_mains:
+        not_accept_answers = []
+        accept_answers = []
+        if main.answers.exists():
+            for answer in main.answers.all():
+                if not answer.is_accept:
+                    not_accept_answers.append(answer)
+                else:
+                    accept_answers.append(answer)
+            if not_accept_answers:
+                not_accept_comment_answers.append({ "main_comment": main, "answers": not_accept_answers })
+        accept_comment_answers.append({ "main_comment": main, "answers": accept_answers })
+    
+    if accept:
+        return accept_comment_answers
+    else:
+        return not_accept_comment_answers
             
 

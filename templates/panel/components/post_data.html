@@ -80,11 +80,17 @@
         موضوع:
         {% if post.category %}{{ post.category }}{% else %}_{% endif %} |
         تاریخ تایید: 
+        {{ post.confirm_date|to_jalali:'%Y/%m/%d' }}
     {% elif post.status == 'check' %}
         تاریخ ارسال:
+        {{ post.updated_at|to_jalali:'%Y/%m/%d' }}
     {% else %}
         تاریخ رد پست:
+        {% for notif in notifs %}
+            {% if post.title in notif.subject %}
+                {{ notif.created_at|to_jalali:'%Y/%m/%d' }}
+            {% endif %}
+        {% endfor %}
     {% endif %}
-    {{ post.updated_at|to_jalali:'%Y/%m/%d' }}
 </div>
     

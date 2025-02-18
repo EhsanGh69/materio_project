@@ -116,10 +116,12 @@
                             <span class="mdi mdi-comment-remove-outline mdi-24px"></span>
                             <span>علت رد پست</span>
                         </span>
-                        <a href="{% url 'panel:post_settings' post.slug %}" 
-                            class="btn btn-success" title="ویرایش علت رد پست">
+                        <button class="btn btn-success" id="edit-notif-btn"
+                            title="ویرایش علت رد پست"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalCenter">
                             <span class="mdi mdi-square-edit-outline mdi-24px"></span>
-                        </a>
+                        </button>
                     </h3>
 
                     <div class="card-body demo-vertical-spacing demo-only-element">
@@ -128,7 +130,14 @@
                                 <div class="card shadow-none bg-transparent border border-secondary mb-3">
                                 <div class="card-body">
                                     <p class="card-title">
-                                        <span class="h5 text-secondary">متن علت رد پست</span>
+                                        {% for notif in notifs %}
+                                            {% if post.title in notif.subject %}
+                                                <span class="h5 text-secondary" id="notif-message" 
+                                                    data-notif-id="{{ notif.id }}">
+                                                    {{ notif.message }}
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
                                     </p>
                                 </div>
                                 </div>
@@ -138,7 +147,60 @@
                     </div>
                 </div>
             </div>
+            {% include "panel/comments/edit_notif.html" %}
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'panel/js/extended-ui-perfect-scrollbar.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+
+            $("#edit-notif-btn").click(function(){
+                const postSlug = "{{ post.slug }}"
+                $.ajax({
+                    url: `/notifs/edit_reject_notif/${$("#notif-message").data('notif-id')}`,
+                    success: function(response){
+                        if(response.success){
+                            $("#message").text(response.notif.message)
+                            $("#post_slug").val(postSlug)
+                        }
+                    }
+                })
+            })
+
+            $("#message").keyup(function(){
+                $('#messageError').addClass("d-none")
+            })
+
+            $("#edit-notif").submit(function(e){
+                e.preventDefault()
+                $.ajax({
+                    type: "POST",
+                    url: `/notifs/edit_reject_notif/${$("#notif-message").data('notif-id')}`,
+                    data: $(this).serialize(),
+                    success: function(response){
+                        if(response.success){
+                            $("#modalCenter").modal("hide")
+                            Swal.fire({
+                                title: "موفقیت!",
+                                text: "علت رد پست با موفقیت ویرایش شد",
+                                icon: "success",
+                                confirmButtonText: "باشه",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = response.redirect_url
+                                }
+                            });
+                        }else {
+                            $("#messageError").removeClass('d-none')
+                            $("#messageError").text(response.error)
+                        }
+                    }
+                })
+            })
+        })
+    </script>
 {% endblock %}
