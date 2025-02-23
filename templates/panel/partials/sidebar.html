@@ -37,8 +37,8 @@
 
         <li class="menu-item border-bottom pb-3
           {% if 'user' in request.resolver_match.url_name %}open{% endif %}">
-          <a href="javascript:void(0);" class="menu-link menu-toggle">
-            <i class="menu-icon tf-icons mdi mdi-account-group-outline"></i>
+          <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+            <i class="menu-icon tf-icons mdi mdi-account-group-outline ms-2"></i>
             <div data-i18n="Account Settings">کاربران</div>
           </a>
           <ul class="menu-sub">
@@ -59,9 +59,12 @@
 
       <!-- Pages -->
       <li class="menu-item border-bottom pb-3
-        {% if request.resolver_match.app_name == 'account' %}open{% endif %}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons mdi mdi-account-outline"></i>
+      {% with url_name=request.resolver_match.url_name %}
+        {% if 'account' in url_name or url_name == 'change_password' %}open{% endif %}
+      {% endwith %}
+        ">
+        <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+          <i class="menu-icon tf-icons mdi mdi-account-outline ms-2"></i>
           <div data-i18n="Account Settings">حساب کاربری</div>
         </a>
         <ul class="menu-sub">
@@ -81,18 +84,40 @@
       </li>
 
       <li class="menu-item border-bottom pb-3
+        {% if 'post' in request.resolver_match.url_name %}open{% endif %}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+          <span class="mdi mdi-note-multiple mdi-24px ms-2"></span>
+          <div data-i18n="Account Settings">پست ها</div>
+        </a>
+        <ul class="menu-sub">
+          {% if request.user.is_superuser %}
+            <li class="menu-item
+              {% if request.resolver_match.url_name == 'all_posts' %}active{% endif %}">
+              <a href="{% url "panel:all_posts" %}" class="menu-link">
+                <div data-i18n="Account">همه پست ها</div>
+              </a>
+            </li>
+          {% endif %}
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'my_posts' %}active{% endif %}">
+            <a href="{% url 'account:my_posts' %}" class="menu-link">
+              <div data-i18n="Account">پست های من</div>
+            </a>
+          </li>
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'create_post' %}active{% endif %}">
+            <a href="{% url "account:create_post" %}" class="menu-link">
+              <div data-i18n="Notifications">نوشتن پست جدید</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item border-bottom pb-3
           {% if 'cat' in request.resolver_match.url_name %}active{% endif %}">
           <a href="{% url "panel:all_cats" %}" class="menu-link">
             <span class="mdi mdi-format-list-bulleted-type mdi-24px"></span>
             <div class="me-2">موضوعات</div>
-          </a>
-      </li>
-
-      <li class="menu-item border-bottom pb-3
-          {% if 'post' in request.resolver_match.url_name %}active{% endif %}">
-          <a href="{% url "panel:all_posts" %}" class="menu-link">
-            <span class="mdi mdi-note-multiple mdi-24px"></span>
-            <div class="me-2">پست ها</div>
           </a>
       </li>
 
@@ -107,10 +132,10 @@
       <li class="menu-item border-bottom pb-3">
           <a href="{% url "blog:index" %}" class="menu-link">
             {% if request.user.is_superuser %}
-              <span class="mdi mdi-table-eye mdi-24px"></span>
+              <span class="mdi mdi-table-eye mdi-24px ms-2"></span>
               <div data-i18n="Analytics">مشاهده سایت</div>
             {% else %}
-              <span class="mdi mdi-home-import-outline mdi-24px"></span>
+              <span class="mdi mdi-home-import-outline mdi-24px ms-2"></span>
               <div data-i18n="Analytics">بازگشت به خانه</div>
             {% endif %}
           </a>

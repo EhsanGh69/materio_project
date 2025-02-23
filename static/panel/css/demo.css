@@ -73,7 +73,7 @@
   direction: ltr !important;
 }
 
-[dir='rtl'] .rtl-only {
+[dir="rtl"] .rtl-only {
   display: block !important;
 }
 
@@ -124,11 +124,11 @@ table.table th.text-truncate {
   font-size: 1.7rem;
 }
 
-.image-container{
+.image-container {
   overflow: auto;
 }
 
-.float-image{
+.float-image {
   float: left;
   margin-right: 15px;
   margin-bottom: 15px;
@@ -136,9 +136,41 @@ table.table th.text-truncate {
   height: 300px;
 }
 
-.cke_editable {
-  font-family: Tahoma, Arial, sans-serif !important;
-  font-size: 16px !important;
-  direction: rtl;
-  text-align: right;
+#create-post input#id_title {
+  font-size: 30px;
+  height: 80px;
+  background-color: #f5f5f5;
+}
+
+/* '../../vendor/fonts' */
+@font-face {
+	font-family: 'Tanha';
+	src: url('../vendor/fonts/Farsi-Digits/Tanha-FD.eot');
+	/* IE9 Compat Modes */
+	src: url('../vendor/fonts/Farsi-Digits/Tanha-FD.eot?#iefix') format('embedded-opentype'),
+		/* IE6-IE8 */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.woff2') format('woff2'),
+		/* Modern Browsers */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.woff') format('woff'),
+		/* Modern Browsers */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.ttf') format('truetype');
+	/* Safari, Android, iOS */
+	font-weight: normal;
+	font-style: normal;
+	text-rendering: optimizeLegibility;
+	font-display: auto;
+}
+
+.django-ckeditor-widget{
+  width: 100% !important;
+}
+
+.cke-custom-class {
+  font-family: "Tanha" !important;
+  font-size: 20px !important;
+  color: #333;
+  background-color: #f5f5f5;
+  padding: 10px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }

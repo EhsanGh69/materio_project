@@ -1,8 +1,9 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import logout
 from django.contrib.auth.views import PasswordResetView
@@ -11,12 +12,16 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
+from django.http import HttpRequest
+from django.core.paginator import Paginator
 from sweetify.views import SweetifySuccessMixin, sweetify
 
-from utils.tools import password_validation, img_size_ext_check
+from utils.tools import password_validation, img_size_ext_check, posts_filter
 from .models import User, UserAvatar
-from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings
+from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings, CreatePostForm
 from .tokens import account_activation_token
+from blog.models import Post
+from notifs.models import Notification
 
 
 
@@ -196,7 +201,7 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
             else:
                 av_obj = UserAvatar.objects.filter(user=user).first()
                 av_obj.avatar = user_avatar
-                av_obj.save()
+                av_obj.save()  
         
         is_exists_phone_number = User.objects.filter(phone_number=phone_number).exists()
         if phone_number != user.phone_number and is_exists_phone_number:
@@ -209,6 +214,7 @@ class EditAccount(LoginRequiredMixin, SweetifySuccessMixin, FormView):
         return super().form_valid(form)
 
 
+@login_required
 def remove_avatar(request):
     user_avatar = get_object_or_404(UserAvatar, user=request.user)
     if user_avatar.avatar.url != '/media/avatars/default_avatar.jpg':
@@ -216,3 +222,69 @@ def remove_avatar(request):
         user_avatar.avatar = '/avatars/default_avatar.jpg'
         user_avatar.save()
     return redirect('account:edit_account')
+
+
+class CreatePost(LoginRequiredMixin, SweetifySuccessMixin, FormView):
+    template_name = 'panel/account/create_post.html'
+    form_class = CreatePostForm
+    success_url = reverse_lazy('account:my_posts')
+    success_message = 'پست با موفقیت ذخیره شد'
+
+    def form_valid(self, form):
+        user = self.request.user
+        post_image = self.request.FILES.get('post_image')
+        title = form.cleaned_data.get('title')
+        content = form.cleaned_data.get('content')
+        
+        is_exists_title = Post.objects.filter(title=title).exists()
+        if is_exists_title:
+            form.add_error('title', 'این عنوان از قبل از قبل وجود دارد! عنوان دیگری بنویسید')
+            return super().form_invalid(form)
+        
+        # MAX_UPLOAD_SIZE = 204800 --> 200kb
+        if post_image:
+            check_img = img_size_ext_check(post_image, 204800)
+            if check_img != "valid":
+                form.errors['__all__'] = form.error_class([check_img])
+                return super().form_invalid(form)
+            else:
+                Post.objects.create(author=user, title=title, content=content, image=post_image)
+        else:
+            Post.objects.create(author=user, title=title, content=content)
+
+        return super().form_valid(form)
+    
+
+
+@login_required
+def my_posts(request: HttpRequest):
+
+    return render(request, 'panel/account/my_posts.html')
+
+
+@login_required
+def my_posts_table(request: HttpRequest):
+    page_number = request.GET.get('page')
+    user_posts = Post.objects.filter(author=request.user).order_by("-updated_at")
+    ordered_posts = []  
+
+    ordered_posts.extend(user_posts.filter(is_draft=True))
+    ordered_posts.extend(user_posts.filter(is_draft=False, status='check'))
+    ordered_posts.extend(user_posts.filter(is_draft=False, status='reject'))
+    ordered_posts.extend(user_posts.filter(is_draft=False, status='confirm'))
+
+    page_obj = Paginator(ordered_posts, 5).get_page(page_number)
+    query = request.GET.get('q')
+
+    if query:
+        results = posts_filter(user_posts, query)
+        page_obj = Paginator(results, 5).get_page(page_number)
+
+
+    return render(request, 'panel/account/my_posts_table.html', {
+        "page_obj": page_obj,
+        "notifs": Notification.objects.all(),
+        "query": query
+    })
+
+

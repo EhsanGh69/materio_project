@@ -65,8 +65,11 @@
         {% if not post.author.is_active %}
             <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
         {% else %}
-            <img src="{{ post.author.user_avatar.avatar.url }}" 
-        alt="{{ post.author.username }}" class="rounded-circle" />
+            <a href="{% url 'blog:author_posts' post.author.username %}" 
+            target="_blank" rel="noopener noreferrer">
+                <img src="{{ post.author.user_avatar.avatar.url }}" 
+                alt="{{ post.author.username }}" class="rounded-circle" />
+            </a>
         {% endif %}
     </div>
     <div class="me-2">

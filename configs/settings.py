@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'ckeditor',
     'sweetify',
     'django_render_partial',
     'jalali_date',
@@ -176,4 +177,25 @@ sweetify.DEFAULT_OPTS = {
     'timer': 2500,
     'allowOutsideClick': True,
     'confirmButtonText': 'باشه',
+}
+
+CKEDITOR_JQUERY_URL = '/static/ckeditor/ckeditor.js'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': [
+            {'name': 'undo', 'items': ['Undo', 'Redo']},
+            {'name': 'basicstyles', 'items': ['Bold', 'Italic', 'Underline', 'Strike']},
+            {'name': 'paragraph', 'items': ['NumberedList', 'BulletedList', '-', 'Blockquote']},
+            {'name': 'insert', 'items': ['Image', 'Table', 'HorizontalRule']},
+            {'name': 'styles', 'items': ['Format', 'FontSize']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
+        ],
+        'height': '60vh',
+        'contentsCss': [
+            '/static/panel/css/demo.css'
+        ],
+        'bodyClass': 'cke-custom-class',
+    }
 }

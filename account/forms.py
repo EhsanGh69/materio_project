@@ -1,7 +1,9 @@
 from django import forms
 from django.core import validators
+from ckeditor.widgets import CKEditorWidget
 
 from .models import User
+from blog.models import Post
 from utils.tools import none_numeric_value, password_validation
 
 
@@ -289,3 +291,26 @@ class AccountSettings(forms.Form):
             raise forms.ValidationError('لطفاً آدرس ایمیل خود را وارد نمایید')
         
         return email
+
+
+class CreatePostForm(forms.ModelForm):
+    use_required_attribute = False
+
+    title = forms.CharField(
+        error_messages={
+            'required': 'لطفا برای پست خود عنوانی بنویسید',
+        }
+    )
+
+    content = forms.CharField(
+        widget=CKEditorWidget(),
+        error_messages={
+            'required': 'شما هنوز برای محتوای پست خود چیزی ننوشته اید', 
+        }
+    )
+
+    class Meta:
+        model = Post
+        fields = ['title', 'content']
+
+
