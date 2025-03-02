@@ -23,7 +23,7 @@
 
     <div class="menu-inner-shadow"></div>
 
-    <ul class="menu-inner py-1" dir="rtl">
+    <ul class="menu-inner overflow-hidden py-1" dir="rtl" id="vertical-sidebar">
 
       <!-- Dashboards -->
       {% if request.user.is_superuser %}
@@ -36,7 +36,7 @@
         </li>
 
         <li class="menu-item border-bottom pb-3
-          {% if 'user' in request.resolver_match.url_name %}open{% endif %}">
+          {% if 'users' in request.resolver_match.url_name %}open{% endif %}">
           <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
             <i class="menu-icon tf-icons mdi mdi-account-group-outline ms-2"></i>
             <div data-i18n="Account Settings">کاربران</div>
@@ -114,6 +114,14 @@
       </li>
 
       <li class="menu-item border-bottom pb-3
+          {% if 'comments' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url "notifs:all_comments" %}" class="menu-link">
+            <span class="mdi mdi-comment-multiple mdi-24px"></span>
+            <div class="me-2">نظرات کاربران</div>
+          </a>
+      </li>
+
+      <li class="menu-item border-bottom pb-3
           {% if 'cat' in request.resolver_match.url_name %}active{% endif %}">
           <a href="{% url "panel:all_cats" %}" class="menu-link">
             <span class="mdi mdi-format-list-bulleted-type mdi-24px"></span>
@@ -121,13 +129,44 @@
           </a>
       </li>
 
-      <li class="menu-item border-bottom pb-3
-          {% if 'comments' in request.resolver_match.url_name %}active{% endif %}">
-          <a href="{% url "notifs:all_comments" %}" class="menu-link">
-            <span class="mdi mdi-comment-multiple mdi-24px"></span>
-            <div class="me-2">نظرات کاربران</div>
-          </a>
-      </li>
+      {% if request.user.is_superuser or perms.notifs.view_ticket and perms.notifs.change_ticket %}
+        <li class="menu-item border-bottom pb-3
+            {% with url_name=request.resolver_match.url_name %}
+              {% if url_name == 'user_tickets' or url_name == 'view_my_ticket' %}active{% endif %}
+            {% endwith %}
+            ">
+            <a href="{% url "notifs:user_tickets" %}" class="menu-link">
+              <span class="mdi mdi-ticket-account mdi-24px"></span>
+              <div class="me-2">تیکت ها</div>
+            </a>
+        </li>
+      {% else %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'my_ticket' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:my_tickets" %}" class="menu-link">
+              <span class="mdi mdi-ticket-account mdi-24px"></span>
+              <div class="me-2">تیکت های من</div>
+            </a>
+        </li>
+      {% endif %}
+
+      {% if request.user.is_superuser or perms.notifs.view_notification and perms.notifs.change_notification %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'notif' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:all_notifs" %}" class="menu-link">
+              <span class="mdi mdi-bell mdi-24px"></span>
+              <div class="me-2">اعلان ها</div>
+            </a>
+        </li>
+      {% else %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'notif' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:my_notifs" %}" class="menu-link">
+              <span class="mdi mdi-bell mdi-24px"></span>
+              <div class="me-2">اعلان های من</div>
+            </a>
+        </li>
+      {% endif %}
 
       <li class="menu-item border-bottom pb-3">
           <a href="{% url "blog:index" %}" class="menu-link">

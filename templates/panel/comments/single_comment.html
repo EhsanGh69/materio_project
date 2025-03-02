@@ -1,9 +1,14 @@
 <div class="d-flex justify-content-between">
     <div class="d-flex justify-content-start">
         <div class="avatar d-flex flex-column">
-            <img src="{{ comment.creator.user_avatar.avatar.url }}" 
-                alt="{{ comment.creator.username }}" 
-                class="rounded-circle" />
+            {% if not comment.creator.is_active %}
+                <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
+                <small class="text-danger">غیر فعال</small>
+            {% else %}
+                <img src="{{ comment.creator.user_avatar.avatar.url }}" 
+                    alt="{{ comment.creator.username }}" 
+                    class="rounded-circle" />
+            {% endif %}
         </div>
         <div class="me-2">
             <h6 class="mb-0 text-truncate">

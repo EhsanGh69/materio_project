@@ -18,7 +18,7 @@
                 </div>
             </div>
             <h5 class="card-header">{{ post.title }}</h5>
-            <div class="card-body pb-2" id="vertical-example">
+            <div class="card-body pb-2" id="vertical-card">
                 <div class="px-3 image-container d-flex flex-column d-md-block">
                     <img src="
                         {% if post.image %}
@@ -29,7 +29,7 @@
                         alt="{{ post.title }}" 
                         class="float-image w-auto">
                     <p class="text-justify">
-                        {{ post.content|linebreaksbr }}
+                        {{ post.content|safe }}
                     </p>
                 </div>
             </div>

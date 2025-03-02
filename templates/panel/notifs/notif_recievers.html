@@ -1,0 +1,31 @@
+{% for reciever in recievers %}
+    <div class="col-10 col-md-6 col-lg-5 col-xl-4 col-xxl-3 cursor-pointer user-reciever">
+        <p class="border border-secondary rounded my-2 p-2 text-secondary w-100 
+            d-flex justify-content-between reciever-box">
+            <span class="d-flex justify-content-start">
+                <span class="avatar d-flex flex-column">
+                    <img src="{{ reciever.user_avatar.avatar.url }}" 
+                        alt="{{ reciever.username }}" 
+                        class="rounded-circle" />
+                </span>
+                <span class="me-2">
+                    <span class="h6 mb-0">
+                        {{ reciever.get_full_name }}
+                    </span>
+                    <br>
+                    <small class="text-dark reciever-username" data-username="{{ reciever.username }}">
+                        {{ reciever.username }}
+                    </small>
+                </span>
+            </span>
+            <span class="mdi mdi-check-circle mdi-36px d-none check-icon"></span>
+        </p>
+    </div>
+{% empty %}
+    <div class="col-10 col-md-6 col-lg-5 col-xl-4">
+        <p class="border border-danger rounded my-2 p-2 text-danger w-100 d-flex align-items-center">
+            <span class="mdi mdi-account-remove mdi-24px"></span>
+            <span class="tag-name me-1">کاربری یافت نشد</span>
+        </p>
+    </div>
+{% endfor %}

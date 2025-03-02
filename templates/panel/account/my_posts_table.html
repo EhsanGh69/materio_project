@@ -1,5 +1,6 @@
 {% load static %}
 {% load jalali_tags %}
+{% load custom_tags %}
 
 {% if page_obj %}
     <table class="table">
@@ -106,25 +107,66 @@
                 <td>
                     {% if post.status != 'confirm' %}
                         <div class="dropdown">
-                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                            <i class="mdi mdi-dots-vertical"></i>
+                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" 
+                                data-bs-toggle="dropdown">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
                             </button>
                             <div class="dropdown-menu">
-                                    {% if post.status == 'check' %}
-                                        {% if post.is_draft %}
-                                            <a class="dropdown-item waves-effect" href="javascript:void(0);">
-                                                ویرایش
-                                            </a>
+                                {% if post.status == 'check' %}
+                                    {% if post.is_draft %}
+                                        <a class="dropdown-item"
+                                        href="{% url 'account:edit_draft_post' post.slug %}">
+                                            <span class="ms-5 text-primary">
+                                                <span class="mdi mdi-fountain-pen-tip mdi-24px"></span>
+                                                ادامه نوشتن 
+                                            </span>
+                                        </a>
+                                        <button class="dropdown-item" onclick="getPostId({{post.id}})"
+                                            data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                            <span style="margin-left: 5.5rem;" class="text-danger">
+                                                <span class="mdi mdi-note-remove mdi-24px"></span>
+                                                حذف 
+                                            </span>
+                                        </button>
+                                    {% else %}
+                                        {% if tickets_map|get_dict_value:post.id %}
+                                            {% for ticket in user_tickets %}
+                                                {% if post.title in ticket.title or post.title in ticket.body %}
+                                                    <a href="{% url 'notifs:view_my_ticket' ticket.id %}" 
+                                                        class="dropdown-item">
+                                                        <span style="margin-left: 5.5rem;" class="text-info">
+                                                            <span class="mdi mdi-ticket-account mdi-24px"></span>
+                                                            مشاهده تیکت پیگیری 
+                                                        </span>
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
                                         {% else %}
-                                            <a class="dropdown-item waves-effect" href="javascript:void(0);">
-                                                ارسال تیکت پیگیری
+                                            <a href="{% url 'notifs:persuit_ticket' post.id %}" 
+                                                class="dropdown-item">
+                                                <span style="margin-left: 5.5rem;" class="text-info">
+                                                    <span class="mdi mdi-receipt-text-send-outline mdi-24px"></span>
+                                                    ارسال تیکت پیگیری 
+                                                </span>
                                             </a>
                                         {% endif %}
-                                    {% else %}
-                                        <a class="dropdown-item waves-effect" href="javascript:void(0);">
-                                            ارسال تیکت تجدید نظر
-                                        </a>
                                     {% endif %}
+                                {% else %}
+                                    <button class="dropdown-item"
+                                    data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                        <span style="margin-left: 5.5rem;" class="text-danger">
+                                            <span class="mdi mdi-message-badge mdi-24px"></span>
+                                            مشاهده علت رد پست 
+                                        </span>
+                                    </button>
+                                    <a href="{% url 'account:edit_reject_post' post.slug %}" 
+                                        class="dropdown-item">
+                                        <span style="margin-left: 9rem;" class="text-secondary">
+                                            <span class="mdi mdi-text-box-edit-outline mdi-24px"></span>
+                                            ویرایش پست 
+                                        </span>
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}

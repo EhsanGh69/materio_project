@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,7 @@ from .models import User, UserAvatar
 from .forms import UserRegister, UserLogin, ChangePassword, AccountSettings, CreatePostForm
 from .tokens import account_activation_token
 from blog.models import Post
-from notifs.models import Notification
+from notifs.models import Notification, Ticket
 
 
 
@@ -232,7 +232,8 @@ class CreatePost(LoginRequiredMixin, SweetifySuccessMixin, FormView):
 
     def form_valid(self, form):
         user = self.request.user
-        post_image = self.request.FILES.get('post_image')
+        check = self.request.POST.get('check')
+        post_image = self.request.FILES.get('image')
         title = form.cleaned_data.get('title')
         content = form.cleaned_data.get('content')
         
@@ -241,19 +242,71 @@ class CreatePost(LoginRequiredMixin, SweetifySuccessMixin, FormView):
             form.add_error('title', 'این عنوان از قبل از قبل وجود دارد! عنوان دیگری بنویسید')
             return super().form_invalid(form)
         
-        # MAX_UPLOAD_SIZE = 204800 --> 200kb
         if post_image:
             check_img = img_size_ext_check(post_image, 204800)
             if check_img != "valid":
                 form.errors['__all__'] = form.error_class([check_img])
                 return super().form_invalid(form)
+            elif check == 'true':
+                Post.objects.create(author=user, title=title, 
+                                    content=content, image=post_image, is_draft=False)
             else:
                 Post.objects.create(author=user, title=title, content=content, image=post_image)
+        elif check == 'true':
+            Post.objects.create(author=user, title=title, content=content, is_draft=False)
         else:
             Post.objects.create(author=user, title=title, content=content)
 
         return super().form_valid(form)
-    
+
+
+
+class EditDraftPost(LoginRequiredMixin, SweetifySuccessMixin, UpdateView):
+    template_name = 'panel/account/create_post.html'
+    model = Post
+    form_class = CreatePostForm
+    success_url = reverse_lazy('account:my_posts')
+    success_message = 'پست با موفقیت ذخیره شد'
+
+    def form_valid(self, form):
+        check = self.request.POST.get('check')
+        draftReject = self.request.POST.get('draftReject')
+        post_image = self.request.FILES.get('image')
+        title = form.cleaned_data.get('title')
+        
+        is_exists_title = Post.objects.exclude(pk=self.object.pk).filter(title=title).exists()
+        if is_exists_title:
+            form.add_error('title', 'این عنوان از قبل از قبل وجود دارد! عنوان دیگری بنویسید')
+            return super().form_invalid(form)
+        
+        if post_image:
+            check_img = img_size_ext_check(post_image, 204800)
+            if check_img != "valid":
+                form.errors['__all__'] = form.error_class([check_img])
+                return super().form_invalid(form)
+            
+        if check == 'true':
+            self.object.is_draft = False
+            self.object.status = 'check'
+            self.object.save()
+
+        return super().form_valid(form)
+
+
+@login_required
+def remove_post_image(request, pk):
+    post_obj = get_object_or_404(Post, pk=pk)
+    post_obj.image.delete()
+    post_obj.save()
+    return redirect(reverse('account:edit_draft_post', kwargs={'slug': post_obj.slug}))
+
+
+@login_required
+def remove_draft_post(request: HttpRequest, pk):
+    post_obj = Post.objects.filter(author=request.user, pk=pk, is_draft=True)
+    if post_obj.exists():
+        post_obj.first().delete()
+    return redirect('account:my_posts')
 
 
 @login_required
@@ -280,10 +333,15 @@ def my_posts_table(request: HttpRequest):
         results = posts_filter(user_posts, query)
         page_obj = Paginator(results, 5).get_page(page_number)
 
+    tickets = Ticket.objects.all()
+
+    tickets_map = {post.id: any(post.title in ticket.body for ticket in tickets) for post in user_posts}
 
     return render(request, 'panel/account/my_posts_table.html', {
         "page_obj": page_obj,
         "notifs": Notification.objects.all(),
+        "tickets_map": tickets_map,
+        "user_tickets": tickets.filter(sender=request.user),
         "query": query
     })
 

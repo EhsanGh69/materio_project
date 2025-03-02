@@ -71,6 +71,13 @@ def cache_count_status(status, count):
         cache.set('reject_count', count)
 
 
+def users_filter(users, query):
+    return users.filter(
+            Q(username__icontains=query) | Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        )
+
+
 def posts_filter(posts, query):
     return posts.filter(
             Q(title__icontains=query) | Q(content__icontains=query) |

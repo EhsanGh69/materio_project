@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="{% static 'panel/css/demo.css' %}" />
   </head>
 
-  <body dir="rtl">
+  <body dir="rtl" class="bg-light">
     
     {% block body %}{% endblock %}
 
@@ -47,6 +47,7 @@
     <script src="{% static 'panel/vendor/libs/apex-charts/apexcharts.js' %}"></script>
     <script src="{% static 'panel/js/main.js' %}"></script>
     <script src="{% static 'panel/js/dashboards-analytics.js' %}"></script>
+    <script src="{% static 'panel/js/extended-ui-perfect-scrollbar.js' %}"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.6.5/sweetalert2.all.min.js"></script>
     {% load sweetify %}

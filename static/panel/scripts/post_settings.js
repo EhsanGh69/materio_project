@@ -15,6 +15,12 @@ function get_related_tags(id){
 }
 
 $(document).ready(function(){
+
+    $('#modalCenter').on('hidden.bs.modal', function () {
+        $("#tag_name_input").removeClass('border border-danger');
+        $("#tag_name_err").text('');
+    });
+
     $("#reject-btn").click(function(){
         $(this).addClass('d-none')
         $("#remove-btn").removeClass('d-none')

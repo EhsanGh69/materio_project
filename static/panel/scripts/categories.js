@@ -2,6 +2,15 @@ const confirmBtn = document.querySelector("#confirmBtn");
 const getCatId = (id) => (confirmBtn.attributes.href.value = `/panel/remove_cat/${id}`);
 
 $(document).ready(function () {
+
+  $('#modalCenter').on('hidden.bs.modal', function () {
+    $("#id_name").removeClass('border border-danger');
+    $("#nameError").text('');
+    $("#id_main").removeClass('border border-danger');
+    $("#mainError").text('');
+  });
+
+
   $(".remove-btn").click(function () {
     $("#notice").html("");
     const catType = $(this).attr("data-obj");
@@ -14,7 +23,7 @@ $(document).ready(function () {
   });
 
   $("#create-btn").click(function () {
-    $("#myForm").prop("action", `{% url 'panel:add_cat' %}`);
+    $("#myForm").prop("action", "/panel/add_cat/");
     $("#myForm")[0].reset();
     $("#submit-btn").html("افزودن");
     $("#modalTitle").html("افزودن موضوع جدید");

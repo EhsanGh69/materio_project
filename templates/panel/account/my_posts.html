@@ -1,6 +1,5 @@
 {% extends "panel/base.html" %}
 
-
 {% block title %}پست های من{% endblock %}
 
 {% block content %}
@@ -14,10 +13,14 @@
         </div>
     </div>
 </div>
+{% include "panel/partials/confirm_modal.html" with obj_name='پست' %}
 {% endblock %}
 
 {% block script %}
 <script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const getPostId = (id) => confirmBtn.attributes.href.value = `/account/remove_draft_post/${id}`
+
     function load_posts(query='', page=1){
         $.ajax({
             url: '{% url "account:my_posts_table" %}',

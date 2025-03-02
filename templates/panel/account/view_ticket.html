@@ -1,0 +1,149 @@
+{% extends "panel/base.html" %}
+{% load jalali_tags %}
+
+{% block title %}مشاهده تیکت{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row gy-4" id="my-tickets">
+        <div class="col-12">
+            <div class="card bg-secondary text-white mb-3">
+                <div class="card-header pb-1 d-flex justify-content-between">
+                    <h5 class="text-white">
+                        <span>#{{ ticket.id }}</span>
+                        <span>{{ ticket.title }}</span>
+                    </h5>
+                    {% if ticket.answered %}
+                        <p style="color: #57e60f;" class="h4">
+                            <span class="mdi mdi-check-circle mdi-24px"></span>
+                            <span>پاسخ داده شده</span>
+                        </p>
+                    {% else %}
+                        <p class="h5" style="color: #0c73c7;">
+                            <span class="mdi mdi-file-search mdi-24px"></span>
+                            <span>در حال بررسی</span>
+                        </p>
+                    {% endif %}
+                </div>
+                <hr style="border-color: #fff;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-md-8 col-xl-6">
+                            
+                            <div class="card shadow-none bg-light border border-secondary mb-3">
+                                <div class="card-body text-dark" style="font-size: 1.2rem;">
+                                    {% if post_title and not request.user.is_superuser %}
+                                        <p>با سلام</p>
+                                        <p>
+                                            <span>لطفا پست </span>
+                                            <b class="text-info">«{{ post_title }}»</b>
+                                            <span>را مورد بررسی قرار دهید</span>
+                                        </p>
+                                    {% else %}
+                                        {{ ticket.body|safe }}
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer border-secondary border-top mx-2">
+                                    {{ ticket.created_at|to_jalali:'%Y/%m/%d' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if ticket.answered %}
+                        {% for answer in answers %}
+                            {% if answer.main.id == ticket.id %}
+                                <div class="row">
+                                    <div class="col-12 col-md-8 col-xl-6 me-auto">
+                                        <div class="card shadow-none bg-light border border-secondary mb-3">
+                                            <div class="card-body">
+                                                <h4 class="card-title">
+                                                    <span class="mdi mdi-circle-small mdi-36px text-success"></span>
+                                                    <span class="text-primary">ادمین | </span>
+                                                    <span class="text-primary">{{ answer.sender.get_full_name }}</span>
+                                                </h4>
+                                                <p class="card-text text-dark h5">{{ answer.body }}</p>
+                                            </div>
+                                            <div class="card-footer border-secondary border-top mx-2">
+                                                {{ answer.created_at|to_jalali:'%Y/%m/%d' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% elif request.user.is_superuser or perms.notifs.view_ticket and perms.notifs.change_ticket %}
+                        <div class="row">
+                            <div class="col-12 col-md-8 col-xl-6 me-auto">
+                                <div class="card shadow-none bg-light border border-secondary mb-3">
+                                    <form method="post" id="answer-ticket-form">
+                                        {% csrf_token %}
+                                        <div class="card-body">
+                                            <h4 class="card-title">
+                                                <span class="mdi mdi-circle-small mdi-36px text-success"></span>
+                                                <span class="text-primary">ادمین | </span>
+                                                <span class="text-primary">{{ request.user.get_full_name }}</span>
+                                            </h4>
+                                            <div class="form-floating form-floating-outline">
+                                                <textarea name="body" id="body" class="form-control h-px-150"></textarea>
+                                                <label for="tag_name_input" class="text-primary h5">
+                                                    <strong>پاسخ تیکت</strong>
+                                                </label>
+                                            </div>
+                                            <div id="body_err" class="text-danger"></div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">
+                                                ارسال
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            $("#body").focus()
+            $("#answer-ticket-form").submit(function(e){
+                e.preventDefault()
+                $.ajax({
+                    type: "POST",
+                    url: '{% url "notifs:answer_ticket" ticket.id %}',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if(response.success){
+                            Swal.fire({
+                                title: "موفقیت!",
+                                text: "تیکت با موفقیت ارسال شد",
+                                icon: "success",
+                                confirmButtonText: "باشه",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = response.redirect_url
+                                }
+                            });
+                        }
+                        else{
+                            $("#body").addClass('border border-danger');
+                            $("#body_err").text(response.error);
+                        }
+                    },
+                })
+            })
+
+            $("#body").keyup(function(){
+                $(this).removeClass('border border-danger');
+                $("#body_err").text('');
+            })
+    
+        })
+    </script>
+{% endblock %}
