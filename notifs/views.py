@@ -37,6 +37,7 @@ def post_reject(request: HttpRequest, pk):
     else:
         return HttpResponseNotAllowed()
 
+
 @login_required
 @permission_required('notifs.change_notification', raise_exception=True)
 def edit_reject_notif(request: HttpRequest, pk):

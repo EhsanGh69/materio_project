@@ -2,9 +2,56 @@ import random
 import string
 
 from django.core.exceptions import ValidationError
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
 from django.db.models import Q
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.models import Permission
+
+
+
+
+def get_codenames(role: str, app_name: bool = False) -> list:
+    if role == 'posts_manager':
+        if app_name:
+            return ['blog.view_post', 'blog.change_post', 'blog.delete_post', 'notifs.add_notification', 
+                    'notifs.change_notification']
+        return ['view_post', 'change_post', 'delete_post', 'add_notification', 'change_notification']
+    elif role == 'comments_manager':
+        if app_name:
+            return ['blog.change_comment', 'blog.delete_comment']
+        return ['change_comment', 'delete_comment']
+    elif role == 'notifs_manager':
+        if app_name:
+            ['notifs.view_notification', 'notifs.add_notification', 'notifs.delete_notification', 
+             'notifs.change_ticket', 'notifs.delete_ticket']
+        return ['view_notification', 'add_notification', 'delete_notification', 'change_ticket', 'delete_ticket']
+
+
+def set_user_roles(roles, user):
+    if 'admin' in roles:
+        user.is_staff = True
+        user.save()
+        return True
+    
+    for role in roles:
+        code_names = get_codenames(role)
+        for code_name in code_names:
+            perm_obj = get_object_or_404(Permission, codename=code_name)
+            user.user_permissions.add(perm_obj)
+
+
+def get_user_roles(perms):
+    roles = []
+    if 'blog.view_post' in perms:
+        roles.append('posts_manager')
+    if 'blog.change_comment' in perms:
+        roles.append('comments_manager')
+    if 'notifs.view_notification' in perms:
+        roles.append('notifs_manager')
+    return roles
+        
 
 
 #* superuser decorator
@@ -15,6 +62,40 @@ def superuser_required(func_view):
         redirect_field_name=None
     )(func_view)
     return decorated_view_func
+
+
+#* superuser mixin
+class SuperUserRequiredMixin(UserPassesTestMixin):
+    login_url = 'account:account_info'
+
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def handle_no_permission(self):
+        return redirect(self.login_url)
+
+
+
+#* staff decorator
+def staff_required(func_view):
+    decorated_view_func = user_passes_test(
+        lambda user: user.is_staff,
+        login_url='account:account_info',
+        redirect_field_name=None
+    )(func_view)
+    return decorated_view_func
+
+
+#* staff mixin
+class StaffRequiredMixin(UserPassesTestMixin):
+    login_url = 'account:account_info'
+
+    def test_func(self):
+        return self.request.user.is_staff
+    
+    def handle_no_permission(self):
+        return redirect(self.login_url)
+
 
 #* generate random string
 def random_str(length):

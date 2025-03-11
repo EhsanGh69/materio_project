@@ -32,6 +32,12 @@
 </div>
 
 <div class="table-responsive d-md-none">
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
     <table class="table">
         <tbody>
             {% for post in page_obj %}

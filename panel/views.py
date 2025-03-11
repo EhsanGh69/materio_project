@@ -1,21 +1,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpRequest, JsonResponse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from django.core.cache import cache
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from sweetify.views import sweetify
+from django.contrib.auth.hashers import make_password
+from sweetify.views import sweetify, SweetifySuccessMixin
+from django.db.models import Q
 
-from utils.tools import superuser_required, cache_count_status, search_sort_posts
+from utils.tools import (
+    superuser_required, cache_count_status, search_sort_posts, get_codenames,
+    set_user_roles, get_user_roles, SuperUserRequiredMixin
+)
 
 from account.models import User
 from blog.models import Category, Post
 from notifs.models import Notification
-from .forms import AddCategoryForm
+from account.forms import UserRegister
+from .forms import AddCategoryForm, UpdateUserForm
 
 
 @login_required
@@ -25,35 +31,112 @@ def home(request: HttpRequest):
 
 
 @login_required
-@superuser_required
-def users_list(request):
-    return render(request, "panel/users/users_list.html", {
-        "users": User.objects.all()
-    })
-
-
-@login_required
-def panel_navbar(request):
+def panel_navbar(request: HttpRequest):
     user_avatar = request.user.user_avatar.avatar.url
     return render(request, "panel/partials/navbar.html", { "user_avatar": user_avatar })
 
 
 @login_required
 @superuser_required
+def users_list(request: HttpRequest):
+    return render(request, "panel/users/users_list.html")
+
+
+@login_required
+@superuser_required
+def paginate_users(request: HttpRequest):
+    page_number = request.GET.get('page')
+    users = User.objects.all().order_by('date_joined')
+    page_obj = Paginator(users, 5).get_page(page_number)
+    query = request.GET.get('q')
+    
+    if query:
+        results = users.filter(Q(username__icontains=query) | Q(email__icontains=query) |
+                               Q(first_name__icontains=query) |Q(last_name__icontains=query))
+        page_obj = Paginator(results, 5).get_page(page_number)
+
+    return render(request, 'panel/users/users_table.html', {
+        'page_obj': page_obj,
+        'query': query
+    })
+
+
+@login_required
+@superuser_required
+def user_details(request: HttpRequest, username):
+    user = get_object_or_404(User, username=username)
+    roles = get_user_roles(user.get_all_permissions())
+
+    return render(request, 'panel/users/user_details.html', {
+        "user": user,
+        "roles": roles
+    })
+
+
+class CreateUser(LoginRequiredMixin, SuperUserRequiredMixin, SweetifySuccessMixin, FormView):
+    template_name = 'panel/users/create_user.html'
+    form_class = UserRegister
+    success_url = reverse_lazy('panel:users')
+    success_message = 'کاربر جدید با موفقیت ایجاد شد'
+
+    def form_valid(self, form):
+        roles = self.request.POST.getlist('roles')
+        c_d = form.cleaned_data
+        user = User.objects.create(username=c_d['username'], password=make_password(c_d['password']),
+                            phone_number=c_d['phone_number'], email=c_d['email'], 
+                            first_name=c_d['first_name'], last_name=c_d['last_name'])
+        if roles:
+            set_user_roles(roles, user)
+        return super().form_valid(form)
+    
+
+class UpdateUser(LoginRequiredMixin, SuperUserRequiredMixin, SweetifySuccessMixin, UpdateView):
+    template_name = 'panel/users/create_user.html'
+    model = User
+    form_class = UpdateUserForm
+    success_message = "اطلاعات کاربر با موفقیت ویرایش شد"
+
+    def get_success_url(self):
+        return reverse_lazy("panel:user_details", kwargs={"username": self.object.username})
+
+    def get_object(self, queryset=None):
+        username = self.kwargs.get('username')
+        return get_object_or_404(User, username=username)
+    
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        is_exists_email = User.objects.filter(email=email).exclude(pk=self.object.pk).exists()
+        if is_exists_email:
+            form.add_error('email', 'آدرس ایمیل وارد شده از قبل وجود دارد')
+            return super().form_invalid(form)
+
+        roles = self.request.POST.getlist('roles')
+        check_roles = set(roles) == set(get_user_roles(self.object.get_all_permissions()))
+        if not check_roles:
+            set_user_roles(roles, self.object)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.is_staff:
+            context['user_roles'] = ['admin']
+        else:
+            context['user_roles'] = get_user_roles(self.object.get_all_permissions())
+        return context
+
+
+@login_required
+@superuser_required
 def change_status(request: HttpRequest, pk):
     user = get_object_or_404(User, id=pk)
-    target_url = request.GET.get('target_url')
     if user.is_active:
         user.is_active = False
     else:
         user.is_active = True
     user.save()
     sweetify.success(request, "وضعیت کاربر با موفقیت تغییر یافت")
-
-    if(target_url):
-        return JsonResponse({'success': True})
-    return redirect("panel:users")
-
+    return JsonResponse({'success': True})
+    
 
 @login_required
 @superuser_required
@@ -64,18 +147,6 @@ def remove_user(request, pk):
     return redirect("panel:users")
 
 
-@login_required
-@superuser_required
-def change_access(request, pk):
-    user = get_object_or_404(User, id=pk)
-    if user.is_staff:
-        user.is_staff = False
-    else:
-        user.is_staff = True
-    user.save()
-    sweetify.info(request, "سطح دسترسی کاربر با موفقیت تغییر یافت")
-    return redirect("panel:users")
-
 
 @login_required
 @permission_required("blog.view_category", raise_exception=True)
@@ -85,7 +156,7 @@ def all_categories(request):
         'main_cats': Category.objects.filter(is_subcat=False).all()
     })
 
-
+ 
 class AddCategory(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = "blog.add_category"
     raise_exception = True
@@ -147,7 +218,7 @@ def remove_category(request, pk):
 
 
 @login_required
-@permission_required('blog.view_post', raise_exception=True)
+@permission_required(get_codenames("posts_manager", True), raise_exception=True)
 def all_posts(request: HttpRequest):
     posts = Post.objects.filter(is_draft=False).order_by('-created_at')
     
@@ -169,7 +240,7 @@ def all_posts(request: HttpRequest):
         
     
 @login_required
-@permission_required('blog.view_post', raise_exception=True)
+@permission_required(get_codenames("posts_manager", True), raise_exception=True)
 def paginate_posts(request: HttpRequest):
     status = request.GET.get('status')
     page_number = request.GET.get('page')
@@ -196,7 +267,7 @@ def paginate_posts(request: HttpRequest):
 
 
 @login_required
-@permission_required(['blog.view_post', 'blog.delete_post'], raise_exception=True)
+@permission_required(get_codenames("posts_manager", True), raise_exception=True)
 def view_post(request: HttpRequest, slug):
     post = get_object_or_404(Post, slug=slug)
 
@@ -207,8 +278,7 @@ def view_post(request: HttpRequest, slug):
 
 
 @login_required
-@permission_required(
-    ['blog.view_post', 'blog.delete_post', 'blog.change_post'], raise_exception=True)
+@permission_required(get_codenames("posts_manager", True), raise_exception=True)
 def post_settings(request: HttpRequest, slug):
     post = get_object_or_404(Post, slug=slug)
     main_cats = Category.objects.filter(is_subcat=False)

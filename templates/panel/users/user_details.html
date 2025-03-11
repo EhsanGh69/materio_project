@@ -1,0 +1,133 @@
+{% extends "panel/base.html" %}
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}جزئیات کاربر{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12 col-md-10 col-lg-8 mx-auto">
+            <div class="card mb-4 text-center">
+
+                <div class="d-flex align-items-center justify-content-center gap-4 p-3">
+                    <img src="
+                      {% if user.user_avatar %}
+                        {{ user.user_avatar.avatar.url }}
+                      {% else %}
+                        {% static 'panel/img/default_avatar.jpg' %}
+                      {% endif %}
+                      "
+                      alt="{{ user.username }}" width="100" 
+                      class="d-block w-px-120 h-px-120 rounded" id="uploadedAvatar" />
+                </div>
+                <p class="h4 px-4">{{user.username}}</p>
+                <p class="h4 px-4">{{user.get_full_name}}</p>
+
+                <div class="d-flex align-items-center justify-content-center rounded mb-4 p-2
+                    border border-info mx-auto" data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-original-title="دسترسی ها">
+                    {% with user_perms=user.get_all_permissions %}
+                      {% if user.is_staff %}
+                        {% if user.is_active %}
+                            <i class="mdi mdi-account-tag mdi-36px text-success ms-3"></i>
+                        {% else %}
+                            <i class="mdi mdi-account-lock mdi-36px text-danger ms-3"></i>
+                        {% endif %}
+                        <strong class="mt-2" style="font-size: 1.1rem;">ادمین</strong>
+                      {% elif user_perms %}
+                        {% if user.is_active %}
+                            <i class="mdi mdi-account-key mdi-36px text-info ms-3"></i>
+                        {% else %}
+                            <i class="mdi mdi-account-lock mdi-36px text-danger ms-3"></i>
+                        {% endif %}
+                        <span>
+                          {% if 'blog.view_post' in user_perms %}
+                            <strong style="font-size: 1.1rem;">مدیریت پست ها</strong><br>
+                          {% endif %}
+                          {% if 'blog.change_comment' in user_perms %}
+                            <strong style="font-size: 1.1rem;">مدیریت نظرات کاربران</strong><br>
+                          {% endif %}
+                          {% if 'notifs.view_notification' in user_perms %}
+                            <strong style="font-size: 1.1rem;">مدیریت اعلان ها و تیکت ها</strong>
+                          {% endif %}
+                        </span>
+                      {% else %}
+                        {% if user.is_active %}
+                            <i class="mdi mdi-account mdi-36px text-primary ms-3"></i>
+                        {% else %}
+                            <i class="mdi mdi-account-lock mdi-36px text-danger ms-3"></i>
+                        {% endif %}
+                        <strong style="font-size: 1.1rem;">کاربر عادی</strong>
+                      {% endif %}
+                    {% endwith %}
+                </div>
+
+                <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    data-bs-original-title="آدرس ایمیل">
+                    <span class="badge bg-info">
+                        <span class="mdi mdi-email mdi-24px"></span>
+                        {{user.email}}
+                    </span>
+                </p>
+                <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    data-bs-original-title="شماره تماس">
+                    <span class="badge bg-info">
+                        <span class="mdi mdi-phone mdi-24px"></span>
+                        {{user.phone_number}}
+                    </span>
+                </p>
+                <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    data-bs-original-title="آدرس">
+                    <span class="badge bg-info">
+                        <span class="mdi mdi-map-marker mdi-24px"></span>
+                        {% if user.address %}{{user.address}}{% else %}بدون آدرس{% endif %}
+                    </span>
+                </p>
+                <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    data-bs-original-title="تاریخ عضویت">
+                    <span class="badge bg-info">
+                        <span class="mdi mdi-calendar-account mdi-24px"></span>
+                        {{user.date_joined|to_jalali:'%Y/%m/%d'}}
+                    </span>
+                </p>
+                <div class="my-4 text-center">
+                    <a href="{% url 'panel:update_user' user.username %}"
+                        class="btn btn-primary me-2 mt-2
+                        {% if not user.is_active %}disabled{% endif %}">
+                        <span class="mdi mdi-account-edit mdi-36px"></span>
+                        <span class="h5 mt-2 text-white">ویرایش اطلاعات کاربر</span>
+                    </a>
+                    <button type="button" class="btn btn-warning me-2 mt-2 text-dark" 
+                        id="active-btn">
+                        {% if user.is_active %}
+                            <span class="mdi mdi-account-lock mdi-36px"></span>
+                            <span class="h5 mt-2">غیر فعال سازی حساب کاربری</span>
+                        {% else %}
+                            <span class="mdi mdi-account-lock-open mdi-36px"></span>
+                            <span class="h5 mt-2">فعال سازی حساب کاربری</span>
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $("#active-btn").click(function () {
+            $.ajax({
+                url: "{% url 'panel:change_status' user.id %}",
+                success: function (response) {
+                    if(response.success){
+                        location.reload()
+                    }
+                },
+              });
+        });
+    })
+</script>
+{% endblock %}

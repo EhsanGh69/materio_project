@@ -236,10 +236,7 @@
 
             $("#active-btn").click(function () {
                 $.ajax({
-                    url: `/panel/change_status/{{post.author.id}}`,
-                    data: {
-                        'target_url': "from_post_view"
-                    },
+                    url: "{% url 'panel:change_status' post.author.id %}",
                     success: function (response) {
                         if(response.success){
                             location.reload()

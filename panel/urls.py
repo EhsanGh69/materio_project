@@ -9,8 +9,11 @@ urlpatterns = [
     path('panel_navbar/', views.panel_navbar, name='panel_navbar'),
 
     path('users/', views.users_list, name='users'),
+    path('paginate_users/', views.paginate_users, name='paginate_users'),
+    path('user_details/<str:username>', views.user_details, name='user_details'),
+    path('create_user/', views.CreateUser.as_view(), name='create_user'),
+    path('update_user/<str:username>', views.UpdateUser.as_view(), name='update_user'),
     path('change_status/<int:pk>', views.change_status, name='change_status'),
-    path('change_access/<int:pk>', views.change_access, name='change_access'),
     path('remove_user/<int:pk>', views.remove_user, name='remove_user'),
 
     path('all_cats/', views.all_categories, name='all_cats'),

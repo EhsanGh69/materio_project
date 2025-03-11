@@ -32,7 +32,7 @@ class UserRegister(forms.Form):
     )
 
     password = forms.CharField(
-        widget=forms.PasswordInput(),
+        widget=forms.PasswordInput(render_value=True),
         required=False,
         label='رمز عبور',
         validators=[
@@ -44,7 +44,7 @@ class UserRegister(forms.Form):
     )
 
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(),
+        widget=forms.PasswordInput(render_value=True),
         required=False,
         label='تأیید رمز عبور'
     )
@@ -112,6 +112,8 @@ class UserRegister(forms.Form):
         username = self.cleaned_data.get('username')
         validation_result = password_validation(password, username)
 
+        if not password:
+            raise forms.ValidationError('لطفاً رمز عبور را وارد نمایید')
         if validation_result == 'combine_err':
             raise forms.ValidationError('رمز عبور باید ترکیبی از حروف و اعداد باشد')
         elif validation_result == 'similar_err':
@@ -123,7 +125,7 @@ class UserRegister(forms.Form):
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')
         if not confirm_password and password:
-            raise forms.ValidationError('لطفاً رمز عبور خود را تأیید نمایید')
+            raise forms.ValidationError('لطفاً رمز عبور را تأیید نمایید')
         if password and password != confirm_password:
             raise forms.ValidationError('تأیید رمز عبور با رمز عبور یکسان نیست')
         
@@ -132,7 +134,7 @@ class UserRegister(forms.Form):
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
         if not phone_number:
-            raise forms.ValidationError('لطفاً شماره تماس خود را وارد نمایید')
+            raise forms.ValidationError('لطفاً شماره تماس را وارد نمایید')
         is_exists_phone_number = User.objects.filter(phone_number=phone_number).exists()
         if is_exists_phone_number:
             raise forms.ValidationError('شماره تماس وارد شده از قبل وجود دارد')
@@ -142,7 +144,7 @@ class UserRegister(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not email:
-            raise forms.ValidationError('لطفاً آدرس ایمیل خود را وارد نمایید')
+            raise forms.ValidationError('لطفاً آدرس ایمیل را وارد نمایید')
 
         is_exists_email = User.objects.filter(email=email).exists()
         if is_exists_email:
