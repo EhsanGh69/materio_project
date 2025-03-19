@@ -1,0 +1,232 @@
+{% load static %}
+{% load jalali_tags %}
+{% load custom_tags %}
+
+{% if page_obj %}
+    <table class="table">
+        <thead class="table-light">
+        <tr>
+            <th class="text-truncate">عنوان</th>
+            <th class="text-truncate">موضوع</th>
+            <th class="text-truncate">وضعیت</th>
+            <th class="text-truncate text-center">
+                <span class="mdi mdi-calendar-clock mdi-36px"></span>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        {% for post in page_obj %}
+            <tr>
+                {% if post.status == 'confirm' %}
+                    <td class="text-truncate">
+                        <a href="{% url 'blog:post_detail' post.slug %}" 
+                            target="_blank"
+                            class="d-flex flex-column text-decoration-none text-secondary" 
+                            title="مشاهده پست در سایت">
+                            <img src="
+                                {% if post.image %}
+                                    {{ post.image.url }}
+                                {% else %}
+                                    {% static 'blog/img/default_image.jpg' %}
+                                {% endif %}" 
+                            alt="{{ post.title }}" class="rounded mb-2" width="60" />
+                            {{ post.title|truncatewords:5 }}
+                        </a>
+                    </td>
+                {% else %}
+                    <td class="text-truncate d-flex flex-column">
+                        <img src="
+                                {% if post.image %}
+                                    {{ post.image.url }}
+                                {% else %}
+                                    {% static 'blog/img/default_image.jpg' %}
+                                {% endif %}"
+                            alt="{{ post.title }}" class="rounded mb-2" width="60" />
+                        
+                        {{ post.title|truncatewords:5 }}
+                    </td>
+                {% endif %}
+
+                <td>
+                    <h5>
+                        {% if post.category %}{{ post.category }}{% else %}_{% endif %}
+                    </h5>
+                </td>
+                <td>
+                    {% if post.status == 'confirm' %}
+                        <span class="badge rounded-pill bg-label-success me-1">
+                            <span class="mdi mdi-check-circle mdi-20px"></span>
+                            <strong>منتشر شده</strong>
+                        </span>
+                    {% elif post.status == 'check' %}
+                        {% if post.is_draft %}
+                            <span class="badge rounded-pill bg-label-secondary me-1">
+                                <span class="mdi mdi-circle-edit-outline mdi-24px"></span>
+                                <strong>پیش نویس</strong>
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill bg-label-info me-1">
+                                <span class="mdi mdi-account-search mdi-24px"></span>
+                                <strong>در حال بررسی ...</strong>
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge rounded-pill bg-label-danger me-1">
+                            <span class="mdi mdi-close-octagon mdi-24px"></span>
+                            <strong>رد شده</strong>
+                        </span>
+                    {% endif %}
+                </td>
+                
+                <td class="text-center">
+                    {% if post.status == 'confirm' %}
+                        <span class="text-bg-success p-2 rounded-1">
+                            {{ post.confirm_date|to_jalali:'%Y/%m/%d' }}
+                        </span>
+                    {% elif post.status == 'check' %}
+                        <span class="{% if post.is_draft %}
+                            text-bg-secondary
+                            {% else %}
+                            text-bg-info
+                            {% endif %}
+                        p-2 rounded-1">
+                            {{ post.updated_at|to_jalali:'%Y/%m/%d' }}
+                        </span>
+                    {% else %}
+                        <span class="text-bg-danger p-2 rounded-1">
+                            {% for notif in notifs %}
+                                {% if post.title in notif.subject %}
+                                    {{ notif.created_at|to_jalali:'%Y/%m/%d' }}
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if post.status != 'confirm' %}
+                        <div class="dropdown">
+                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" 
+                                data-bs-toggle="dropdown">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                {% if post.status == 'check' %}
+                                    {% if post.is_draft %}
+                                        <a class="dropdown-item"
+                                        href="{% url 'account:edit_draft_post' post.slug %}">
+                                            <span class="ms-5 text-primary">
+                                                <span class="mdi mdi-fountain-pen-tip mdi-24px"></span>
+                                                ادامه نوشتن 
+                                            </span>
+                                        </a>
+                                        <button class="dropdown-item" onclick="getPostId({{post.id}})"
+                                            data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                            <span style="margin-left: 5.5rem;" class="text-danger">
+                                                <span class="mdi mdi-note-remove mdi-24px"></span>
+                                                حذف 
+                                            </span>
+                                        </button>
+                                    {% else %}
+                                        {% if tickets_map|get_dict_value:post.id %}
+                                            {% for ticket in user_tickets %}
+                                                {% if post.title in ticket.title or post.title in ticket.body %}
+                                                    <a href="{% url 'notifs:view_my_ticket' ticket.id %}" 
+                                                        class="dropdown-item">
+                                                        <span style="margin-left: 5.5rem;" class="text-info">
+                                                            <span class="mdi mdi-ticket-account mdi-24px"></span>
+                                                            مشاهده تیکت پیگیری 
+                                                        </span>
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <a href="{% url 'notifs:persuit_ticket' post.id %}" 
+                                                class="dropdown-item">
+                                                <span style="margin-left: 5.5rem;" class="text-info">
+                                                    <span class="mdi mdi-receipt-text-send-outline mdi-24px"></span>
+                                                    ارسال تیکت پیگیری 
+                                                </span>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% else %}
+                                    {% for notif in notifs %}
+                                        {% if post.title in notif.subject %}
+                                            <a href="{% url 'notifs:view_notif' notif.id %}"
+                                                target="_blank"
+                                                class="dropdown-item">
+                                                <span style="margin-left: 5.5rem;" class="text-danger">
+                                                    <span class="mdi mdi-message-badge mdi-24px"></span>
+                                                    مشاهده علت رد پست 
+                                                </span>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    <a href="{% url 'account:edit_reject_post' post.slug %}" 
+                                        class="dropdown-item">
+                                        <span style="margin-left: 9rem;" class="text-secondary">
+                                            <span class="mdi mdi-text-box-edit-outline mdi-24px"></span>
+                                            ویرایش پست 
+                                        </span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h3 class="alert alert-danger text-center" id="not-confirm">
+        {% if query %}
+            <span>پستی وجود ندارد</span>
+        {% else %}
+            <span>شما در حال حاضر هیچ پستی ندارید</span>
+        {% endif %}
+    </h3>
+{% endif %}
+
+{% include "panel/components/pagination.html" %}
+
+<script>
+    $(document).ready(function(){
+        const query = "{{ query }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+
+            if(query){
+                load_posts(query, currentPage + 1)
+                return
+            }
+
+            load_posts('', currentPage + 1)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                if(query){
+                    load_posts(query, currentPage - 1)
+                    return
+                }
+
+                load_posts('', currentPage - 1)
+            }
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            if(query){
+                load_posts(query, page)
+                return
+            }
+            load_posts('', page)
+        })
+    })
+</script>

@@ -1,0 +1,66 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}نتیجه جستجو{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center rounded justify-content-between 
+                            bg-light py-2 px-4 mb-3">
+                            <div class="text-center py-2 px-4 mb-3">
+                                <h3 class="m-0">
+                                    <i class="fas fa-search"></i>
+                                    <span>نتیجه جستجو برای: </span>
+                                    <strong>{{ query }}</strong>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="post-list">
+                    {% include "blog/components/posts_loop.html" %}
+                </div>
+                {% if num_pages > 1 %}
+                    <div class=" text-center">
+                        <button class="btn btn-outline-secondary" id="show-more"
+                        data-query="{{ query }}" data-page="1" data-num-pages="{{ num_pages }}">
+                            مشاهده بیشتر...
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('#show-more').click(function(){
+            const button = $(this);
+            let page = button.data('page') + 1
+            const query = button.data('query')
+            const num_pages = button.data('num-pages')
+
+            $.ajax({
+                url: '{% url "blog:show_more_search" %}',
+                data: {
+                    'q': query,
+                    'page': page
+                },
+                success: function(data){
+                    $('#post-list').append(data)
+                    button.data('page', page)
+
+                    if(page === num_pages) {
+                        button.addClass('d-none')
+                    }
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "panel/base.html" %}
+
+{% block title %}تیکت های من{% endblock %}
+
+{% block content %}
+    {% if titckets_count > 0 %}
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row mb-3">
+                <div class="col-12 d-lg-none mb-2">
+                    <button class="btn btn-outline-secondary me-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCenter"
+                        id="send_ticket_btn">
+                        <span class="mdi mdi-plus-circle mdi-24px ms-2"></span>
+                        <strong>ارسال تیکت جدید</strong>
+                    </button>
+                </div>
+                <div class="col-12 col-lg-6 d-flex">
+                    <button class="btn btn-primary ms-2" id="all-btn">
+                        <span class="mdi mdi-check-all mdi-24px ms-2"></span>
+                        <strong>همه</strong>
+                        <span class="badge rounded-pill bg-dark me-2">{{ titckets_count }}</span>
+                    </button>
+    
+                    <button class="btn btn-outline-success" id="answered-btn">
+                        <span class="mdi mdi-check-circle mdi-24px ms-2"></span>
+                        <strong>پاسخ داده شده</strong>
+                        <span class="badge rounded-pill bg-dark me-2">{{ answered_count }}</span>
+                    </button>
+    
+                    <button class="btn btn-outline-info me-2" id="checking-btn">
+                        <span class="mdi mdi-file-search mdi-24px ms-2"></span>
+                        <strong>در حال بررسی</strong>
+                        <span class="badge rounded-pill bg-dark me-2">{{ checking_count }}</span>
+                    </button>
+                </div>
+                <div class="d-none d-lg-block col-lg-6">
+                    <button class="btn btn-outline-secondary me-2 float-lg-start"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCenter"
+                        id="send_ticket_btn">
+                        <span class="mdi mdi-plus-circle mdi-24px ms-2"></span>
+                        <strong>ارسال تیکت جدید</strong>
+                    </button>
+                </div>
+            </div>
+            <div class="row gy-4" id="my-tickets">
+                {% comment %} Load by AJAX {% endcomment %}
+            </div>
+        </div>
+        {% include "panel/account/send_ticket.html" %}
+    {% else %}
+        <h3 class="alert alert-danger text-center" id="not-confirm">
+            <span class="mdi mdi-ticket-account mdi-36px"></span>
+            <span>شما در حال حاضر هیچ تیکتی ندارید</span>
+        </h3>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+    function load_tickets(filter='all', page=1){
+        $.ajax({
+            url: '{% url "notifs:my_tickets_paginate" %}',
+            data: {
+                'page': page,
+                'filter': filter
+            },
+            success: function(data){
+                $('#my-tickets').html(data)
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        load_tickets('all', 1)
+
+        $('#modalCenter').on('hidden.bs.modal', function () {
+            $("#title").removeClass('border border-danger');
+            $("#title_err").text('');
+            $("#body").removeClass('border border-danger');
+            $("#body_err").text('');
+        });
+
+        $("#send_ticket_form").submit(function(e){
+            e.preventDefault()
+            $.ajax({
+                type: "POST",
+                url: '{% url "notifs:send_ticket" %}',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if(response.success){
+                        $("#modalCenter").modal("hide");
+                        Swal.fire({
+                            title: "موفقیت!",
+                            text: "تیکت با موفقیت ارسال شد",
+                            icon: "success",
+                            confirmButtonText: "باشه",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = response.redirect_url
+                            }
+                        });
+                    }
+                    else{
+                        if(response.errors.title_err){
+                            $("#title").addClass('border border-danger');
+                            $("#title_err").text(response.errors.title_err);
+                        }
+                        if(response.errors.body_err){
+                            $("#body").addClass('border border-danger');
+                            $("#body_err").text(response.errors.body_err);
+                        }
+                    }
+                },
+            })
+        })
+
+        $("#title").keyup(function(){
+            $(this).removeClass('border border-danger');
+            $("#title_err").text('');
+        })
+
+        $("#body").keyup(function(){
+            $(this).removeClass('border border-danger');
+            $("#body_err").text('');
+        })
+
+        $('#all-btn').click(function(e){
+            $(this).removeClass('btn-outline-primary')
+            $(this).addClass('btn-primary')
+            $('#answered-btn').removeClass('btn-success')
+            $('#answered-btn').addClass('btn-outline-success')
+            $('#checking-btn').removeClass('btn-info')
+            $('#checking-btn').addClass('btn-outline-info')
+            setTimeout(() => {
+                e.preventDefault()
+                load_tickets('all', 1)
+            }, 200)
+        })
+
+        $('#answered-btn').click(function(e){
+            $(this).removeClass('btn-outline-success')
+            $(this).addClass('btn-success')
+            $('#all-btn').removeClass('btn-primary')
+            $('#all-btn').addClass('btn-outline-primary')
+            $('#checking-btn').removeClass('btn-info')
+            $('#checking-btn').addClass('btn-outline-info')
+            setTimeout(() => {
+                e.preventDefault()
+                load_tickets('answered', 1)
+            }, 200)
+        })
+
+        $('#checking-btn').click(function(e){
+            $(this).removeClass('btn-outline-info')
+            $(this).addClass('btn-info')
+            $('#all-btn').removeClass('btn-primary')
+            $('#all-btn').addClass('btn-outline-primary')
+            $('#answered-btn').removeClass('btn-success')
+            $('#answered-btn').addClass('btn-outline-success')
+            setTimeout(() => {
+                e.preventDefault()
+                load_tickets('checking', 1)
+            }, 200)
+        })
+    })
+</script>
+{% endblock %}

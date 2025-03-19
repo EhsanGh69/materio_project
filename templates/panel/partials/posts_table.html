@@ -1,0 +1,108 @@
+<div class="table-responsive d-none d-md-block">
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
+    <table class="table">
+        <thead class="table-light">
+            <tr>
+                <th class="text-truncate text-center">عنوان</th>
+                <th class="text-truncate pe-4">نویسنده</th>
+                {% if status == 'confirm' %}
+                    <th class="text-truncate text-center">موضوع</th>
+                    <th class="text-truncate text-center">تاریخ تایید</th>
+                {% elif status == 'check' %}
+                    <th class="text-truncate text-center">تاریخ ارسال</th>
+                {% else %}
+                    <th class="text-truncate text-center">تاریخ رد پست</th>
+                {% endif %}
+                <th class="text-truncate"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in page_obj %}
+                <tr>
+                    {% include "panel/components/post_td.html" %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive d-md-none">
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
+    <table class="table">
+        <tbody>
+            {% for post in page_obj %}
+                <tr class="d-flex flex-column">
+                    {% include "panel/components/post_data.html" %}
+                </tr>
+                <hr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include "panel/components/pagination.html" %}
+
+<script>
+    $(document).ready(function(){
+        const query = "{{ query }}"
+        const field = "{{ field }}"
+        const status = "{{ status }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+        
+            if(query){
+                search_posts(status, query, currentPage + 1)
+                return
+            }
+            else if(field){
+                sort_posts(status, field, currentPage + 1)
+                return
+            }
+            
+            load_posts(status, currentPage + 1)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                if(query){
+                    search_posts(status, query, currentPage - 1)
+                    return
+                }
+                else if(field){
+                    sort_posts(status, field, currentPage - 1)
+                    return
+                } 
+                
+                load_posts(status, currentPage - 1)
+            }
+                
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            
+            if(query){
+                search_posts(status, query, page)
+                return
+            }
+            else if(field){
+                sort_posts(status, field, page)
+                return
+            }
+             
+            load_posts(status, page)
+        })
+    })
+</script>

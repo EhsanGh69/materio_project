@@ -1,0 +1,43 @@
+{% load static %}
+{% load render_partial %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>وبلاگ | {% block title %}{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="{% static 'blog/img/favicon.ico' %}" rel="icon">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <link href="{% static 'blog/css/bootstrap-rtl.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'blog/css/custom.css' %}" />
+    <link rel="stylesheet" href="{% static 'panel/vendor/fonts/farsi_font.css' %}" />
+    {% block head %}{% endblock  %}
+</head>
+<body>
+    <main class="container-fluid p-0 mb-3">
+        {% include 'blog/partials/navbar.html' %}
+        
+        {% block body %}{% endblock %}
+    </main>
+    
+    {% render_partial "blog:blog_footer" %}
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="{% static 'blog/js/swiper.js' %}"></script>
+    <script src="{% static 'blog/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.6.5/sweetalert2.all.min.js"></script>
+    {% block script %}{% endblock %}
+</body>
+</html>

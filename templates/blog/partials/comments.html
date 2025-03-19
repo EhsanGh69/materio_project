@@ -1,0 +1,122 @@
+{% load static %}
+
+<div class="col-10 m-auto" id="comments">
+    <div class="bg-light mb-3" style="padding: 30px;">
+        <h3 class="mb-4 text-center">
+            <span class="badge badge-primary p-3">
+                <i class="fas fa-comment-alt"></i>
+                نظرات کاربران
+            </span>
+        </h3>
+        <div class="media mb-4 border rounded p-3 d-flex flex-column">
+            {% if request.user.is_authenticated %}
+                {% with user=request.user %}
+                    <div class="d-flex align-items-center" id="open-comment">
+                        <img src="
+                            {% if user.user_avatar %}
+                                {{ user.user_avatar.avatar.url }}
+                            {% else %}
+                                {% static 'panel/img/default_avatar.jpg' %}
+                            {% endif %}
+                        " 
+                        alt="{{ user.username }}" class="img-fluid mr-3 mt-1" 
+                        style="width: 45px; border-radius: 50%;">
+                        <span class="mr-3 d-none">{{ user.username }}</span>
+                        <h5 class="mt-2 mr-3 text-secondary w-100">نظر خود را درباره این پست بنویسد</h5>
+                    </div>
+                    
+                    {% include 'blog/components/comment_form.html' with act_url='create_comment' post_id=post.id %}
+                {% endwith %}
+            {% else %}
+                <div class="d-flex align-items-center login-alert">
+                    <img src="{% static 'panel/img/default_avatar.jpg' %}" 
+                    alt="default avatar" class="img-fluid mr-3 mt-1" 
+                    style="width: 45px; border-radius: 50%;">
+                    <h5 class="mt-2 mr-3 text-secondary w-100">نظر خود را درباره این پست بنویسد</h5>
+                </div>
+            {% endif %}
+        </div>
+        {% for comment in post_comments %}
+            <div class="media mb-4 border rounded p-3 d-flex flex-column">
+                <a href="{% url 'blog:author_posts' comment.creator.username %}" 
+                    class="text-decoration-none text-dark d-flex">
+                    <img src="
+                        {% if comment.creator.user_avatar %}
+                            {{ comment.creator.user_avatar.avatar.url }}
+                        {% else %}
+                            {% static 'panel/img/default_avatar.jpg' %}
+                        {% endif %}
+                    "
+                    style="width: 45px; height: 45px; border-radius: 50%;"
+                    class="img-fluid mr-3 mt-1" 
+                    alt="{{ comment.creator.username }}">
+                    <span class="d-flex flex-column">
+                        <strong dir="ltr" class="mt-2 mr-3">
+                            {{ comment.creator.username }}
+                        </strong>
+                        <small class="text-muted mr-3">
+                            {{ comment.created_at|timesince }} پیش
+                        </small>
+                    </span>
+                </a>
+
+                <div class="media-body mt-3">
+                    <p>{{ comment.body }}</p>
+                    <p class="flex justify-content-between">
+                        {% if comment.answers.count > 0 %}
+                            <button class="btn btn-outline-secondary ml-3 open-answers" 
+                            data-comment-id="{{ comment.id }}">
+                                {{ comment.answers.count }}
+                                پاسخ ها
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-secondary answer-btn
+                        {{ request.user.is_authenticated|yesno:',login-alert' }}"
+                        data-comment-id="{% if request.user.is_authenticated %}{{ comment.id }}{% endif %}"
+                            id="open-anwser" title="پاسخ به این نظر">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                    </p>
+                </div>
+
+                {% include 'blog/components/comment_form.html' with act_url='create_answer' post_id=post.id comment_id=comment.id %}
+                <div class="w-75 d-none" id="answers-{{ comment.id }}">
+                    {% if comment.answers.count > 0 %}
+                        {% with answers=comment.answers.all %}
+                            {% for answer in answers %}
+                                <div class="media mt-2 mr-4 border rounded py-2
+                                    px-3 d-flex flex-column">
+                                    <a href="{% url 'blog:author_posts' answer.creator.username %}" 
+                                        class="text-decoration-none text-dark d-flex">
+                                        <img src="
+                                            {% if answer.creator.user_avatar %}
+                                                {{ answer.creator.user_avatar.avatar.url }}
+                                            {% else %}
+                                                {% static 'panel/img/default_avatar.jpg' %}
+                                            {% endif %}
+                                         "
+                                        style="width: 45px; height: 45px; border-radius: 50%;"
+                                        class="img-fluid mr-2 mt-1" 
+                                        alt="{{ answer.creator.username }}">
+                                        <span class="d-flex flex-column">
+                                            <strong dir="ltr" class="mt-2 mr-3">
+                                                {{ answer.creator.username }}
+                                            </strong>
+                                            <small class="text-muted mr-3">
+                                                {{ answer.created_at|timesince }} پیش
+                                            </small>
+                                        </span>
+                                    </a>
+                                    <div class="media-body">
+                                        <p>{{ answer.body }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

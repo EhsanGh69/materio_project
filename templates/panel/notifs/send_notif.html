@@ -1,0 +1,87 @@
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            
+            <h3 class="mb-4 mt-4 me-5 text-center">
+                <span class="text-bg-primary rounded p-2">
+                    <span class="mdi mdi-send mdi-36px"></span>
+                    ارسال اعلان جدید
+                </span>
+            </h3>
+            <div class="row px-3">
+                <div class="col-12 col-lg-10 mx-lg-auto mb-2 mt-2">
+                    <div class="input-group input-group-merge d-flex flex-row-reverse">
+                        <span class="input-group-text" id="basic-addon-search31">
+                            <i class="mdi mdi-account-search mdi-24px"></i>
+                        </span>
+                        <input type="text" id="search-user" class="form-control" placeholder="جستجوی کاربر ...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row px-3">
+                <div class="col-12 col-lg-10 mx-lg-auto mb-4 mt-2">
+                    <div class="card shadow-none bg-transparent border border-primary mb-3" 
+                    id="reciever-card">
+                        <div class="card-body">
+                            <p class="card-title">
+                                <span class="mdi mdi-account-check mdi-36px"></span>
+                                <span class="h5 text-secondary">انتخاب کاربر</span>
+                            </p>
+                            <div class="row" id="search-result">
+                                {% comment %} Load By AJAX {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reciever_err" class="text-danger"></div>
+                </div>
+            </div>
+
+            <form method="post" id="send_notif_form" autocomplete="off">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-10 mx-lg-auto mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input 
+                                    type="text" 
+                                    name="subject" 
+                                    class="form-control" 
+                                    maxlength="100"
+                                    placeholder=""
+                                    id="subject"
+                                />
+                                <label for="subject">موضوع اعلان</label>
+                            </div>
+                            <div id="subject_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-10 mx-lg-auto mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea name="message" id="message"
+                                class="form-control h-px-100">
+                                </textarea>
+                                <label for="message" class="h5">متن اعلان</label>
+                            </div>
+                            <div id="message_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="username" value="" id="reciever-input">
+                    <div class="row">
+                        <div class="col-12 col-lg-10 mx-lg-auto mb-4">
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">
+                                    انصراف
+                                </button>
+                                <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">
+                                    ارسال
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

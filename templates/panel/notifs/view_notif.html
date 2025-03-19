@@ -1,0 +1,67 @@
+{% extends "panel/base.html" %}
+{% load jalali_tags %}
+
+{% block title %}مشاهده اعلان{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row gy-4" id="my-tickets">
+        <div class="col-12">
+            <div class="card bg-secondary text-white mb-3">
+                <div class="card-header pb-1 d-flex justify-content-between">
+                    <h5 class="text-white">
+                        <span>#{{ notif.id }}</span>
+                        <span>{{ notif.subject }}</span>
+                    </h5>
+                    {% if request.user.is_superuser or perms.notifs.view_notification %}
+                        {% if notif.seen %}
+                            <p style="color: #57e60f;" class="h4">
+                                <span class="mdi mdi-eye-check mdi-24px"></span>
+                                <span>مشاهده شده</span>
+                            </p>
+                        {% else %}
+                            <p class="h5" style="color: #f66111;">
+                                <span class="mdi mdi-eye-remove mdi-24px"></span>
+                                <span>مشاهده نشده</span>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <hr style="border-color: #fff;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-md-8 col-xl-6">
+                            <div class="card shadow-none bg-light border border-secondary mb-3">
+                                <div class="card-body text-dark" style="font-size: 1.2rem;">
+                                    {{ notif.message|safe }}
+                                    {% if post_slug and request.user.is_superuser or perms.notifs.view_notification %}
+                                        <p class="text-primary mt-3">
+                                            <a href="{% url 'panel:view_post' post_slug %}" target="_blank">
+                                                <span class="mdi mdi-file-eye mdi-24px"></span>
+                                                <span>مشاهده پست</span>
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer border-secondary border-top mx-2">
+                                    {% if notif.seen %}
+                                        <span class="badge bg-success">
+                                            <span class="mdi mdi-eye-check mdi-24px"></span>
+                                            <span class="h5 text-white">{{ notif.updated_at|to_jalali:'%Y/%m/%d' }}</span>
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info">
+                                            <span class="mdi mdi-send mdi-24px"></span>
+                                            <span class="h5 text-white">{{ notif.created_at|to_jalali:'%Y/%m/%d' }}</span>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

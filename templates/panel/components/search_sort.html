@@ -1,0 +1,39 @@
+<div class="row mb-3">
+    {% if search %}
+      <div class="col-8 col-md-6 col-lg-4 col-xl-3 mt-2">
+        <form class="d-flex align-items-center" id="search_form">
+          <input
+          type="text"
+          class="form-control shadow-none bg-body"
+          placeholder="جست و جو..."
+          aria-label="Search..."
+          id="search_input" />
+          <i class="mdi mdi-magnify mdi-24px lh-0"></i>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if sort %}
+      <div class="col-5 col-md-4 col-lg-3 col-xl-2 mt-2 d-flex align-items-center">
+          <select id="sort_select" class="form-select form-select-sm bg-body cursor-pointer">
+              <option value="None">مرتب سازی</option>
+              {% for field in sort_fields %}
+                <option value="{{ field.value }}">{{ field.name }}</option>
+              {% endfor %}
+          </select>
+          <span class="mdi mdi-sort-ascending mdi-24px lh-0"></span>
+      </div>
+    {% endif %}
+
+    {% if filter %}
+      <div class="col-5 col-md-4 col-lg-3 col-xl-2 mt-2 d-flex align-items-center">
+          <select id="filter_select" class="form-select form-select-sm bg-body cursor-pointer">
+              <option value="None">فیلتر</option>
+              {% for field in filter_fields %}
+                <option value="{{ field.value }}">{{ field.name }}</option>
+              {% endfor %}
+          </select>
+          <span class="mdi mdi-filter mdi-24px lh-0"></span>
+      </div>
+    {% endif %}
+</div>

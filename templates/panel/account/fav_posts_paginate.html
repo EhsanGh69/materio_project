@@ -1,0 +1,47 @@
+{% if page_obj %}
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
+    {% for post in page_obj %}
+        <div class="col-md-6 col-lg-4 col-xxl-3 mb-3">
+            {% include "panel/components/single_post.html" %}
+        </div>
+    {% endfor %}
+    {% include "panel/components/pagination.html" %}
+{% else %}
+    <h3 class="alert alert-warning text-center">
+        {% if query %}
+            <span class="mdi mdi-text-box-search mdi-36px"></span>
+            <span>هیچ پستی مطابق جستجوی شما وجود ندارد</span>
+        {% else %}
+            <span class="mdi mdi-heart-off-outline mdi-36px"></span>
+            <span>پست مورد علاقه ایی وجود ندارد</span>
+        {% endif %}
+    </h3>
+{% endif %}
+
+<script>
+    $(document).ready(function(){
+        const query = "{{ query }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            load_fav_posts(currentPage + 1, query)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                load_fav_posts(currentPage - 1, query)
+            }
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            load_fav_posts(page, query)
+        })
+    })
+</script>

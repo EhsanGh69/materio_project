@@ -1,0 +1,185 @@
+{% extends "panel/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% with url_name=request.resolver_match.url_name %}
+        {% if url_name == 'edit_draft_post' %}
+            ادامه نوشتن پست
+        {% elif url_name == 'edit_reject_post' %}
+            ویرایش پست
+        {% else %}
+            نوشتن پست جدید
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row gy-4">
+        <div class="col-12">
+            <div class="card shadow-none bg-transparent border border-secondary mb-3">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">
+                        <span class="mdi mdi-typewriter mdi-36px ms-2"></span>
+                        <span>
+                            {% with url_name=request.resolver_match.url_name %}
+                                {% if url_name == 'edit_draft_post' %}
+                                    ادامه نوشتن پست
+                                {% elif url_name == 'edit_reject_post' %}
+                                    ویرایش پست
+                                {% else %}
+                                    نوشتن پست جدید
+                                {% endif %}
+                            {% endwith %}
+                        </span>
+                    </h3>
+                    <form method="post" enctype="multipart/form-data" id="create-post">
+                        {% csrf_token %}
+                        <input type="hidden" name="check" value="false" id="check">
+                        <div class="row">
+                            <div class="col-12 col-xxl-10 mx-auto mb-3
+                                {% if form.title.errors %}border border-2 border-danger{% endif %}">
+                                {{ form.title|add_class:"form-control"|attr:"placeholder:عنوان" }}
+                                <div id="floatingInputHelp" class="form-text">
+                                    {% if form.title.errors %}
+                                        {% for error in form.title.errors %}
+                                            <h4 class="text-danger">
+                                                <span class="mdi mdi-file-document-alert-outline mdi-36px"></span>
+                                                {{ error }}
+                                            </h4>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-xxl-10 mx-auto mb-3
+                            {% if form.content.errors %}border border-2 border-danger{% endif %}">
+                                {{ form.content }}
+                                <div id="floatingInputHelp" class="form-text">
+                                    {% if form.content.errors %}
+                                        {% for error in form.content.errors %}
+                                            <h4 class="text-danger">
+                                                <span class="mdi mdi-file-document-alert-outline mdi-36px"></span>
+                                                {{ error }}
+                                            </h4>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-xxl-10 mx-auto">
+                                <div class="d-flex align-items-start align-items-sm-center gap-4 p-3
+                                border border-secondary border-2 rounded
+                                {% if form.non_field_errors %}border-danger{% endif %}">
+                                {% with url_name=request.resolver_match.url_name %}
+                                    {% if url_name == 'edit_draft_post' and object.image %}
+                                        <img
+                                            src="{{ object.image.url }}"
+                                            alt="{{ object.title }}"
+                                            class="d-block w-px-120 h-px-120 rounded"
+                                            id="uploadedAvatar" />
+                                    {% else %}
+                                        <img
+                                            src="{% static 'blog/img/default_image.jpg' %}"
+                                            alt="default-image"
+                                            class="d-block w-px-120 h-px-120 rounded"
+                                            id="uploadedAvatar" />
+                                    {% endif %}
+                                {% endwith %}
+                                    <div class="button-wrapper">
+                                        <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">
+                                            <span class="d-none d-sm-block">بارگذاری تصویر</span>
+                                            <i class="mdi mdi-tray-arrow-up d-block d-sm-none"></i>
+                                            <input
+                                            type="file"
+                                            id="upload"
+                                            name="image"
+                                            class="account-file-input"
+                                            hidden
+                                            accept="image/png, image/jpeg" />
+                                        </label>
+                                        {% if request.resolver_match.url_name == 'edit_draft_post' %}
+                                            <a href="{% url 'account:remove_post_image' object.id %}" 
+                                                class="btn btn-danger account-image-reset mb-3">
+                                                <i class="mdi mdi-reload d-block d-sm-none"></i>
+                                                <span class="d-none d-sm-block">حذف تصویر</span>
+                                            </a>
+                                        {% else %}
+                                            <button type="button" class="btn btn-outline-danger account-image-reset mb-3">
+                                                <i class="mdi mdi-reload d-block d-sm-none"></i>
+                                                <span class="d-none d-sm-block">بازنشانی</span>
+                                            </button>
+                                        {% endif %}
+                                        <div class="text-secondary small">
+                                            <P>
+                                            <span>فرمت های مجاز: </span>
+                                            <i>PNG, JPG, JPEG, GIF</i>
+                                            </P>
+                                            <P>
+                                            <span>حداکثر اندازه :</span>
+                                            <span>200kb</span>
+                                            </P>
+                                        </div>
+                                    </div>
+                                    {% if form.non_field_errors %}
+                                        {% for err in form.non_field_errors %}
+                                            <h4 class="text-danger mt-2">
+                                                <span class="mdi mdi-file-image-remove mdi-36px"></span>
+                                                {{ err }}
+                                            </h4>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-xxl-10 mt-4">
+                                <button type="submit" class="btn btn-lg btn-secondary me-2">
+                                    <span class="mdi mdi-content-save-edit mdi-24px ms-2"></span>
+                                    <strong>
+                                        {% if request.resolver_match.url_name == 'edit_reject_post' %}
+                                            ذخیره تغییرات
+                                        {% else %}
+                                            ذخیره به عنوان پیش نویش 
+                                        {% endif %}
+                                    </strong>
+                                </button>
+                                {% if not request.user.is_staff %}
+                                    <button type="button" class="btn btn-lg btn-info me-2 mt-2"
+                                    data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                        <span class="mdi mdi-account-search mdi-24px ms-2"></span>
+                                        <strong>ذخیره به عنوان در حال بررسی</strong>
+                                    </button>
+                                {% elif request.user.is_staff and request.resolver_match.url_name == 'edit_draft_post' %}
+                                    <a href="{% url 'panel:post_settings' object.slug %}" 
+                                        class="btn btn-lg btn-info me-2 mt-2">
+                                        <span class="mdi mdi-file-cog mdi-24px ms-2"></span>
+                                        <strong>ذخیره و رفتن به تنظیمات</strong>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "panel/partials/confirm_modal.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'panel/js/pages-account-settings-account.js' %}"></script>
+    {{ form.media }}
+    <script>
+        window.onload = function() {
+            document.getElementById('id_title').focus();
+        };
+
+        $(document).ready(function(){
+            $("#confirmBtn").click(function(event){
+                event.preventDefault();
+                $("#check").val("true")
+                $("#create-post").submit()
+            })
+        })
+    </script>
+{% endblock %}

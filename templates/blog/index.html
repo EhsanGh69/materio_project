@@ -1,0 +1,13 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}خانه{% endblock %}
+
+{% block body %}
+    {% include 'blog/partials/slider.html' %}
+
+    {% include 'blog/partials/top_cats_auths.html' %}
+    
+    {% include 'blog/partials/recent_posts.html' %}
+
+    {% include 'blog/partials/hot_posts.html' %}
+{% endblock %}

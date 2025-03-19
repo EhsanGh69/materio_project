@@ -1,0 +1,143 @@
+{% extends "panel/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}حساب کاربری{% endblock %}
+
+{% block content %}
+  <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+          <div class="col-md-12">
+              <div class="card mb-4">
+                  <h4 class="card-header">ویرایش اطلاعات کاربری</h4>
+                  <form id="formAccountSettings" method="post" enctype="multipart/form-data">
+                    <div class="card-body">
+                      <div class="d-flex align-items-start align-items-sm-center gap-4">
+                        <img
+                          src="
+                            {% if request.user.user_avatar %}
+                              {{ request.user.user_avatar.avatar.url }}
+                            {% else %}
+                              {% static 'panel/img/default_avatar.jpg' %}
+                            {% endif %}
+                          "
+                          alt="user-avatar"
+                          class="d-block w-px-120 h-px-120 rounded"
+                          id="uploadedAvatar" />
+                        <div class="button-wrapper">
+                          <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">
+                            <span class="d-none d-sm-block">بارگذاری تصویر جدید</span>
+                            <i class="mdi mdi-tray-arrow-up d-block d-sm-none"></i>
+                            <input
+                              type="file"
+                              id="upload"
+                              name="user_avatar"
+                              class="account-file-input"
+                              hidden
+                              accept="image/png, image/jpeg" />
+                          </label>
+                          <button type="button" class="btn btn-outline-danger account-image-reset mb-3">
+                            <i class="mdi mdi-reload d-block d-sm-none"></i>
+                            <span class="d-none d-sm-block">بازنشانی</span>
+                          </button>
+                          <div class="text-muted small">
+                            <P>
+                              <span>فرمت های مجاز: </span>
+                              <i>PNG, JPG, JPEG, GIF</i>
+                            </P>
+                            <P>
+                              <span>حداکثر اندازه :</span>
+                              <span>200kb</span>
+                            </P>
+                          </div>
+                        </div>
+                      </div>
+                      {% if request.user.user_avatar %}
+                        <a href="{% url 'account:remove_avatar' %}" class="btn btn-danger mt-1">حذف تصویر</a>
+                      {% endif %}
+                      {% if form.non_field_errors %}
+                          {% for err in form.non_field_errors %}
+                            <p class="text-danger mt-2">{{ err }}</p>
+                          {% endfor %}
+                      {% endif %}
+                    </div>
+                  
+                    <div class="card-body pt-2 mt-1">
+                        {% csrf_token %}
+
+                        <div class="row mt-2 gy-4">
+
+                          <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                              {{ form.first_name|add_class:"form-control"|attr:"placeholder:نام خود را وارد کنید" }}
+                              <label>{{ form.first_name.label }}</label>
+                              {% if form.first_name.errors %}
+                                {% for error in form.first_name.errors %}
+                                    <p class="text-danger">{{ error }}</p>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                              {{ form.last_name|add_class:"form-control"|attr:"placeholder:نام خانوادگی همراه خود را وارد کنید" }}
+                              <label for="email">{{ form.last_name.label }}</label>
+                              {% if form.last_name.errors %}
+                                {% for error in form.last_name.errors %}
+                                    <p class="text-danger">{{ error }}</p>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                              {{ form.email|add_class:"form-control"|attr:"placeholder:آدرس ایمیل خود را وارد کنید" }}
+                              <label>{{ form.email.label }}</label>
+                              {% if form.email.errors %}
+                                {% for error in form.email.errors %}
+                                    <p class="text-danger">{{ error }}</p>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                              {{ form.phone_number|add_class:"form-control"|attr:"placeholder:شماره همراه خود را وارد کنید" }}
+                              <label>{{ form.phone_number.label }}</label>
+                              {% if form.phone_number.errors %}
+                                {% for error in form.phone_number.errors %}
+                                    <p class="text-danger">{{ error }}</p>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                              {{ form.address|add_class:"form-control" }}
+                              <label>{{ form.address.label }}</label>
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <div class="mt-4">
+                          <button type="submit" class="btn btn-primary me-2">ذخیره تغییرات</button>
+                          <a href="{% url 'account:account_info' %}" 
+                          class="btn btn-outline-secondary">انصراف</a>
+                        </div>
+
+                    </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'panel/js/pages-account-settings-account.js' %}"></script>
+{% endblock %}

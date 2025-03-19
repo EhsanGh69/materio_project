@@ -1,0 +1,66 @@
+{% extends "panel/base.html" %}
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}حساب کاربری{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12 col-md-10 col-lg-8 mx-auto">
+          <div class="card mb-4 text-center">
+
+            <div class="d-flex align-items-center justify-content-center gap-4 p-3">
+                <img src="
+                  {% if user.user_avatar %}
+                    {{ user.user_avatar.avatar.url }}
+                  {% else %}
+                    {% static 'panel/img/default_avatar.jpg' %}
+                  {% endif %}
+                  " 
+                  alt="{{ user.username }}" width="100" 
+                  class="d-block w-px-120 h-px-120 rounded" id="uploadedAvatar" />
+            </div>
+            <p class="h4 px-4">{{user.username}}</p>
+            <p class="h4 px-4">{{user.get_full_name}}</p>
+
+            <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                data-bs-original-title="آدرس ایمیل">
+                <span class="badge bg-info">
+                    <span class="mdi mdi-email mdi-24px"></span>
+                    {{user.email}}
+                </span>
+            </p>
+            <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                data-bs-original-title="شماره تماس">
+                <span class="badge bg-info">
+                    <span class="mdi mdi-phone mdi-24px"></span>
+                    {{user.phone_number}}
+                </span>
+            </p>
+            <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                data-bs-original-title="آدرس">
+                <span class="badge bg-info">
+                    <span class="mdi mdi-map-marker mdi-24px"></span>
+                    {% if user.address %}{{user.address}}{% else %}بدون آدرس{% endif %}
+                </span>
+            </p>
+            <p class="h4 px-4" data-bs-toggle="tooltip" data-bs-placement="top" 
+                data-bs-original-title="تاریخ عضویت">
+                <span class="badge bg-info">
+                    <span class="mdi mdi-calendar-account mdi-24px"></span>
+                    {{user.date_joined|to_jalali:'%Y/%m/%d'}}
+                </span>
+            </p>
+
+            <div class="my-4 text-center">
+                <a href="{% url 'account:edit_account' %}" class="btn btn-primary me-2">
+                    <span class="mdi mdi-account-edit mdi-36px"></span>
+                    <span class="h5 mt-2 text-white">ویرایش اطلاعات کاربری</span>
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

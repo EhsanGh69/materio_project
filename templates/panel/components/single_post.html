@@ -1,0 +1,67 @@
+{% load static %}
+
+<div class="card h-100">
+    <div class="card-body">
+        <div class="d-flex flex-column justify-content-between">
+            <h5 class="card-title mb-3">{{ post.title|truncatewords:5 }}</h5>
+            <span>
+                <span class="post-info">
+                    <i class="mdi
+                    {% if post.like_count > 0 %}mdi-heart{% else %}mdi-heart-outline{% endif %}
+                    mdi-24px text-danger"></i>
+                    {{ post.like_count }}
+                </span>
+                &nbsp;&nbsp;
+                <span class="post-info">
+                    <i class="mdi
+                    {% if post.post_comments.count > 0 %}mdi-comment{% else %}mdi-comment-outline{% endif %}
+                    mdi-24px text-info"></i> 
+                    {{ post.post_comments.count }}
+                </span>
+                &nbsp;&nbsp;
+                <span class="post-info">
+                    <i class="mdi
+                    {% if post.visits.count > 0 %}mdi-eye{% else %}mdi-eye-outline{% endif %}
+                    mdi-24px text-info"></i> 
+                    {{ post.visits.count }}
+                </span>
+            </span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-start">
+            <div class="avatar me-3 d-flex flex-column">
+                <a href="{% url 'blog:author_posts' post.author.username %}" 
+                    target="_blank" rel="noopener noreferrer">
+                    <img src="
+                        {% if post.author.user_avatar %}
+                            {{ post.author.user_avatar.avatar.url }}
+                        {% else %}
+                            {% static 'panel/img/default_avatar.jpg' %}
+                        {% endif %}
+                    " 
+                    alt="{{ post.author.username }}" class="rounded-circle" />
+                </a>
+            </div>
+            <div class="me-2">
+                <h6 class="mb-0 text-truncate">{{ post.author.get_full_name }}</h6>
+                <small class="text-truncate">{{ post.author.username }}</small>
+            </div>
+        </div>
+        <img class="d-flex mx-auto my-4 rounded w-100"
+        src="
+            {% if post.image %}
+                {{ post.image.url }}
+            {% else %}
+                {% static 'blog/img/default_image.jpg' %}
+            {% endif %}
+        "
+        alt="post image"
+        height="200"
+        />
+        <a href="{% url 'blog:post_detail' post.slug %}" 
+        target="_blank" class="card-link">
+            <span style="font-size: 1.1rem;">مشاهده پست</span>
+            <span class="mdi mdi-chevron-left mdi-20px"></span>
+        </a>
+    </div>
+</div>

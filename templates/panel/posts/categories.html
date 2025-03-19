@@ -1,0 +1,99 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}موضوعات{%endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="home-page">
+    <div class="row mb-5">
+        <div class="col-12 px-3">
+            <button
+                type="button"
+                class="btn btn-outline-success"
+                data-bs-toggle="modal"
+                data-bs-target="#modalCenter"
+                id="create-btn">
+                <span class="mdi mdi-plus mdi-24px"></span>
+                <strong>موضوع جدید</strong>
+            </button>
+        </div>
+        {% for main_cat in main_cats %}
+            <div class="col-12 col-md-6 col-xxl-4 mb-3">
+                <div class="demo-inline-spacing">
+                    <ul class="list-group p-0">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <h4>{{ main_cat.name }}</h4>
+                            <span>
+                                <button
+                                    type="button"
+                                    title="ویرایش موضوع"
+                                    class="btn btn-outline-info edit-btn p-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalCenter"
+                                    data-obj="{{ main_cat.id }}">
+                                    <span class="mdi mdi-note-edit mdi-24px"></span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger remove-btn p-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmModal"
+                                    data-obj="main"
+                                    onclick="getUserId({{main_cat.id}})"
+                                    title="حذف موضوع">
+                                    <span class="mdi mdi-trash-can mdi-24px"></span>
+                                </button>
+                            </span>
+                        </li>
+                        {% if main_cat.subcats.count %}
+                            {% with subcats=main_cat.subcats.all %}
+                                {% for cat in subcats %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <h6>{{ cat.name }}</h6>
+                                        <span>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-info edit-btn p-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalCenter"
+                                                data-obj="{{ cat.id }}"
+                                                title="ویرایش موضوع">
+                                                <span class="mdi mdi-note-edit mdi-24px"></span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger remove-btn p-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmModal"
+                                                data-obj="sub"
+                                                onclick="getCatId({{cat.id}})"
+                                                title="حذف موضوع">
+                                                <span class="mdi mdi-trash-can mdi-24px"></span>
+                                            </button>
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            {% endwith %}
+                        {% else %}
+                            <li class="list-group-item text-danger">
+                                <i class="fas fa-times"></i>
+                                بدون موضوع فرعی
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div> 
+        {% empty %}
+            <div class="col-12 mt-5 alert alert-danger h3 text-center">
+                در حال حاضر هیچ موضوعی وجود ندارد
+            </div>
+        {% endfor %}
+    </div>
+    {% include "panel/posts/add_category.html" %}
+    {% include "panel/partials/confirm_modal.html" with obj_name='موضوع' %}
+</div>
+{% endblock  %}
+
+{% block script %}
+    <script src="{% static 'panel/scripts/categories.js' %}"></script>
+{% endblock  %}

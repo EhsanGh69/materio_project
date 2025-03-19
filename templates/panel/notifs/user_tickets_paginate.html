@@ -1,0 +1,91 @@
+{% load jalali_tags %}
+
+{% for ticket in page_obj %}
+    <div class="col-12">
+        <div class="card bg-secondary mb-1">
+            <div class="card-body p-0 d-flex align-items-center">
+                <a href="{% url 'notifs:view_my_ticket' ticket.id %}"
+                    class="text-white h5 text-decoration-none 
+                    d-flex justify-content-between align-items-center
+                    flex-column flex-md-row
+                    mb-0 d-block w-100 px-4 py-2">
+                    
+                    <span class="d-flex justify-content-start">
+                        {% if not ticket.sender.is_active %}
+                            <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
+                            <small class="text-danger">غیر فعال</small>
+                        {% else %}
+                            <span class="avatar d-flex flex-column">
+                                <img src="{{ ticket.sender.user_avatar.avatar.url }}" 
+                                    alt="{{ ticket.sender.username }}" 
+                                    class="rounded-circle" />
+                            </span>
+                        {% endif %}
+                        <span class="me-2">
+                            <span class="h6 mb-0 text-white">
+                                {{ ticket.sender.get_full_name }}
+                            </span>
+                            <br>
+                            <small>
+                                {{ ticket.sender.username }}
+                            </small>
+                        </span>
+                    </span>
+                    
+                    <span class="my-3 my-md-0">{{ ticket.title }}</span>
+
+                    {% if ticket.answered %}
+                        <span class="badge bg-success">
+                            <span class="mdi mdi-check-circle mdi-24px"></span>
+                            {% for answer in answer_tickets %}
+                                {% if answer.main.id == ticket.id %}
+                                    <span class="h5 text-white">{{ answer.created_at|to_jalali:'%Y/%m/%d' }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-info">
+                            <span class="mdi mdi-calendar-clock-outline mdi-24px"></span>
+                            <span class="h5 text-white">{{ ticket.created_at|to_jalali:'%Y/%m/%d' }}</span>
+                        </span>
+                    {% endif %}
+                </a>
+                <button class="btn btn-danger p-1 ms-2" title="حذف تیکت"
+                    onclick="getTicketId({{ ticket.id }})"
+                    data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    <span class="mdi mdi-trash-can mdi-24px"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+{% empty %}
+<h3 class="alert alert-danger text-center" id="not-confirm">
+    <span class="mdi mdi-ticket-account mdi-36px"></span>
+    <span>تیکتی وجود ندارد</span>
+</h3>
+{% endfor %}
+
+{% include "panel/components/pagination.html" %}
+
+<script>
+    $(document).ready(function(){
+        const filter = "{{ filter }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            load_tickets(filter, currentPage + 1)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                load_tickets(filter, currentPage - 1)
+            }
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            load_tickets(filter, page)
+        })
+    })
+</script>

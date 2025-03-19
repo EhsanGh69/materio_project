@@ -1,0 +1,37 @@
+{% extends "panel/base_html.html" %}
+{% load static %}
+
+{% block title %}خطای 404{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'panel/vendor/css/pages/page-misc.css' %}" />
+{% endblock  %}
+
+{% block body %}
+<div class="misc-wrapper">
+    
+    <div class="d-flex justify-content-center mt-5">
+      <img
+        src="{% static 'panel/img/illustrations/misc-mask-light.png' %}"
+        alt="misc-error"
+        class="scaleX-n1-rtl misc-bg d-none d-lg-inline-block"
+        data-app-light-img="illustrations/misc-mask-light.png"
+        data-app-dark-img="illustrations/misc-mask-dark.png" />
+      <div class="d-flex flex-column align-items-center">
+        <img
+          src="{% static 'panel/img/illustrations/404-error.png' %}"
+          alt="misc-error"
+          class="misc-model img-fluid zindex-1"
+          width="780" />
+        <div>
+          <h1 class="mb-5">⚠️ صفحه مورد نظر شما پیدا نشد</h1>
+        </div>
+        <div>
+          <a href="{% url 'panel:home' %}" class="btn btn-lg btn-primary text-center my-4">
+            <span class="h4 mt-2 text-white">بازگشت به صفحه اصلی</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

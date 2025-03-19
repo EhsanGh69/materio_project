@@ -1,0 +1,49 @@
+<div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-start">
+        <div class="avatar d-flex flex-column">
+            {% if not comment.creator.is_active %}
+                <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
+                <small class="text-danger">غیر فعال</small>
+            {% else %}
+                <img src="{{ comment.creator.user_avatar.avatar.url }}" 
+                    alt="{{ comment.creator.username }}" 
+                    class="rounded-circle" />
+            {% endif %}
+        </div>
+        <div class="me-2">
+            <h6 class="mb-0 text-truncate">
+                {{ comment.creator.get_full_name }}
+            </h6>
+            <small class="text-truncate">
+                {{ comment.creator.username }}
+            </small>
+        </div>
+    </div>
+    
+    
+    <button type="button" class="btn btn-warning btn-icon rounded-pill 
+        dropdown-toggle hide-arrow waves-effect waves-light p-0" 
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="mdi mdi-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-start">
+        <li>
+            {% if not comment.is_accept %}
+                <a href="{% url 'notifs:accept_comment' comment.id %}" 
+                    class="dropdown-item waves-effect text-success accept-btn" 
+                    data-id="{{ comment.id }}">
+                    <span class="mdi mdi-check-circle-outline ms-3"></span>
+                    <span class="ms-5">تایید</span>
+                </a>
+            {% endif %}
+            <span class="dropdown-item waves-effect text-danger remove-btn" 
+                onclick="getCommentId({{comment.id}})"
+                data-bs-toggle="modal" data-bs-target="#confirmModal">
+                <span class="mdi mdi-delete-circle-outline ms-3"></span>
+                <span class="ms-5">حذف</span>
+            </span>
+        </li>
+    </ul>
+</div>
+
+<p class="mb-2 mt-3">{{ comment.body }}</p>

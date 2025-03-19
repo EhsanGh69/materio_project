@@ -1,0 +1,135 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if request.user.is_superuser or perms.notifs.view_notif %}
+        اعلان ها        
+    {% else %}
+        اعلان های من
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if notifs_count > 0 %}
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row mb-3">
+                {% if request.user.is_superuser or perms.notifs.view_notification %}
+                    <div class="col-12 d-lg-none mb-2">
+                        <button class="btn btn-outline-primary me-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalCenter"
+                            id="send_ticket_btn">
+                            <span class="mdi mdi-send mdi-24px ms-2"></span>
+                            <strong>ارسال اعلان جدید</strong>
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="col-12 col-lg-6 d-flex">
+                    <button class="btn btn-secondary" id="unseen-btn">
+                        <span class="mdi mdi-eye-remove mdi-24px ms-2"></span>
+                        <strong>مشاهده نشده</strong>
+                        <span class="badge rounded-pill bg-danger me-2">{{ unseen_count }}</span>
+                    </button>
+
+                    <button class="btn btn-outline-success me-2" id="seen-btn">
+                        <span class="mdi mdi-eye-check mdi-24px ms-2"></span>
+                        <strong>مشاهده شده</strong>
+                        <span class="badge rounded-pill bg-dark me-2">{{ seen_count }}</span>
+                    </button>
+                </div>
+                {% if request.user.is_superuser or perms.notifs.view_notification %}
+                    <div class="d-none d-lg-block col-lg-6">
+                        <button class="btn btn-outline-primary me-2 float-lg-start"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalCenter"
+                            id="send_ticket_btn">
+                            <span class="mdi mdi-send mdi-24px ms-2"></span>
+                            <strong>ارسال اعلان جدید</strong>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="row gy-4" id="all-notifs">
+                {% comment %} Load by AJAX {% endcomment %}
+            </div>
+        </div>
+        {% include "panel/partials/confirm_modal.html" with obj_name='اعلان' %}
+        {% include "panel/notifs/send_notif.html" %}
+    {% else %}
+        <h3 class="alert alert-danger text-center" id="not-confirm">
+            <span class="mdi mdi-bell-off mdi-36px"></span>
+            <span>هیچ اعلانی وجود ندارد</span>
+        </h3>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'panel/scripts/all_notifs.js' %}"></script>
+<script>
+    function load_notifs(filter='unseen', page=1){
+        $.ajax({
+            url: '{% url "notifs:paginate_notifs" %}',
+            data: {
+                'page': page,
+                'filter': filter
+            },
+            success: function(data){
+                $('#all-notifs').html(data)
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        load_notifs('unseen', 1)
+    })
+</script>
+
+    {% if request.user.is_superuser or perms.notifs.view_notification %}
+        <script>
+            const confirmBtn = document.querySelector('#confirmBtn')
+            const getNotifId = (id) => confirmBtn.attributes.href.value = `/notifs/remove_notif/${id}`
+
+            function search_user(query){
+                $.ajax({
+                    url: '{% url "notifs:send_notif" %}',
+                    data: {
+                        'q': query
+                    },
+                    success: function(data){
+                        $('#search-result').html(data)
+                    }
+                })
+            }
+
+            $(document).ready(function(){
+                $("#send_notif_form").submit(function(e){
+                    e.preventDefault()
+                    $.ajax({
+                        type: "POST",
+                        url: '{% url "notifs:send_notif" %}',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if(response.success){
+                                $("#modalCenter").modal("hide");
+                                window.location.href = response.redirect_url
+                            }
+                            else{
+                                if(response.errors.reciever_err){
+                                    $("#reciever_err").text(response.errors.reciever_err);
+                                }
+                                if(response.errors.subject_err){
+                                    $("#subject").addClass('border border-danger');
+                                    $("#subject_err").text(response.errors.subject_err);
+                                }
+                                if(response.errors.message_err){
+                                    $("#message").addClass('border border-danger');
+                                    $("#message_err").text(response.errors.message_err);
+                                }
+                            }
+                        },
+                    })
+                })
+            })
+        </script>
+    {% endif %}
+{% endblock %}

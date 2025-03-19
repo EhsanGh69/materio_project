@@ -1,0 +1,8 @@
+{% for post in page_obj %}
+    {% include "blog/partials/post_card.html" %}
+{% empty %}
+    <div class="col-12 alert alert-danger text-center">
+        <i class="far fa-times-circle"></i>
+        <span>پستی جهت نمایش وجود ندارد.</span>
+    </div>
+{% endfor %}

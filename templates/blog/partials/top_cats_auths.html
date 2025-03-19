@@ -1,0 +1,90 @@
+{% load static %}
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="row px-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between rounded bg-light py-2 px-4 mb-3">
+                        <h5 class="m-0">
+                            <i class="fas fa-list"></i>
+                            <span>موضوعات های برتر</span>
+                        </h5>
+                        <a class="text-secondary font-weight-medium text-decoration-none"
+                            href="{% url 'blog:all_categories' %}">
+                            <span>مشاهده موضوعات بیشتر</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    {% for cat in top_cats %}
+                        {% for name, count in cat.items %}
+                            <a href="{% url 'blog:category_posts' name %}" 
+                                class="btn btn-outline-primary mb-2 font-weight-bold">
+                                <span class="h5">
+                                    <i class="fas fa-tag"></i>
+                                    {{ name }}
+                                </span>
+                                <span class="badge bg-secondary text-light ms-1">
+                                    <span style="font-size: 1rem;">{{ count }}</span>
+                                </span>
+                            </a>
+                        {% endfor %}
+                    {% empty %}
+                        <h4 class="d-inline">
+                            <span class="badge badge-danger">موضوعی وجود ندارد</span>
+                        </h4>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 py-4 py-md-0">
+            <div class="row px-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between rounded bg-light py-2 px-4 mb-3">
+                        <h5 class="m-0">
+                            <i class="fas fa-pen-nib"></i>
+                            <span>نویسندگان برتر</span>
+                        </h5>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    {% for auth in top_auths %}
+                        {% for user, count in auth.items %}
+                            <a href="{% url 'blog:author_posts' user.username %}" 
+                                class="mb-2 font-weight-bold text-decoration-none">
+                                <h5 class="d-inline">
+                                    <span class="badge badge-warning">
+                                        <img src="
+                                            {% if user.user_avatar %}
+                                                {{ user.user_avatar.avatar.url }}
+                                            {% else %}
+                                                {% static 'panel/img/default_avatar.jpg' %}
+                                            {% endif %}
+                                        "
+                                            style="border-radius: 50%;" 
+                                            alt="{{ post.author.username }}" width="40">
+                                        <span dir="ltr">{{ user.username }}</span>
+                                        <span class="badge bg-secondary text-light ms-2">
+                                            <span style="font-size: 1rem;">{{ count }}</span>
+                                        </span>
+                                    </span>
+                                </h5>
+                            </a>
+                        {% endfor %}
+                    {% empty %}
+                        <h4 class="d-inline">
+                            <span class="badge badge-danger">نویسنده‌ایی وجود ندارد</span>
+                        </h4>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+

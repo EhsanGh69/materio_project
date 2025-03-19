@@ -1,0 +1,199 @@
+{% load static %}
+{% load custom_tags %}
+
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" dir="rtl"
+    style="margin-left: 2rem;">
+    <div class="app-brand demo">
+      <a href="{% url "panel:home" %}" class="app-brand-link">
+        <span class="app-brand-logo demo ms-2">
+          <img src="{% static 'blog/img/blogger-icon.png' %}" alt="panel logo" width="50">
+        </span>
+        <span class="app-brand-text demo menu-text fw-semibold ms-2">
+          {% if request.user.is_staff %}
+            پنل مدیریت وبلاگ  
+          {% else %}
+            وبلاگ {{ request.user.username }}
+          {% endif %}
+        </span>
+      </a>
+
+      <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+        <i class="mdi menu-toggle-icon d-xl-block align-middle mdi-20px"></i>
+      </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner overflow-hidden py-1" dir="rtl" id="vertical-sidebar">
+
+      <!-- Dashboards -->
+      {% if request.user.is_staff %}
+        <li class="menu-item border-bottom pb-3
+          {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+          <a href="{% url "panel:home" %}" class="menu-link">
+            <span class="mdi mdi-home-account mdi-24px"></span>
+            <div class="me-2">خانه</div>
+          </a>
+        </li>
+      {% endif %}
+
+      <li class="menu-item border-bottom pb-3
+      {% with url_name=request.resolver_match.url_name %}
+        {% if 'account' in url_name or url_name == 'change_password' %}open{% endif %}
+      {% endwith %}
+        ">
+        <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+          <i class="menu-icon tf-icons mdi mdi-account-outline ms-2"></i>
+          <div data-i18n="Account Settings">حساب کاربری</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'account_info' %}active{% endif %}">
+            <a href="{% url 'account:account_info' %}" class="menu-link">
+              <div data-i18n="Account">اطلاعات حساب کاربری</div>
+            </a>
+          </li>
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
+            <a href="{% url 'account:change_password' %}" class="menu-link">
+              <div data-i18n="Notifications">تغییر رمز عبور</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      {% if request.user.is_superuser %}
+        <li class="menu-item border-bottom pb-3
+          {% if 'user' in request.resolver_match.url_name %}open{% endif %}">
+          <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+            <i class="menu-icon tf-icons mdi mdi-account-group-outline ms-2"></i>
+            <div data-i18n="Account Settings">کاربران</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item
+            {% if request.resolver_match.url_name == 'users' %}active{% endif %}">
+              <a href="{% url 'panel:users' %}" class="menu-link">
+                <div data-i18n="Account">لیست کاربران</div>
+              </a>
+            </li>
+            <li class="menu-item
+            {% if request.resolver_match.url_name == 'create_user' %}active{% endif %}">
+              <a href="{% url 'panel:create_user' %}" class="menu-link">
+                <div data-i18n="Notifications">افزودن کاربر جدید</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+      {% endif %}
+      
+      <li class="menu-item border-bottom pb-3
+        {% if 'post' in request.resolver_match.url_name %}open{% endif %}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle pe-3">
+          <span class="mdi mdi-note-multiple mdi-24px ms-2"></span>
+          <div data-i18n="Account Settings">پست ها</div>
+        </a>
+        <ul class="menu-sub">
+          {% if request.user|has_role_perm:"posts_manager" %}
+            <li class="menu-item
+              {% if request.resolver_match.url_name == 'all_posts' %}active{% endif %}">
+              <a href="{% url "panel:all_posts" %}" class="menu-link">
+                <div data-i18n="Account">همه پست ها</div>
+              </a>
+            </li>
+          {% endif %}
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'my_posts' %}active{% endif %}">
+            <a href="{% url 'account:my_posts' %}" class="menu-link">
+              <div data-i18n="Account">پست های من</div>
+            </a>
+          </li>
+          {% if request.user.user_like %}
+            <li class="menu-item
+            {% if request.resolver_match.url_name == 'my_fav_posts' %}active{% endif %}">
+              <a href="{% url 'account:my_fav_posts' %}" class="menu-link">
+                <div data-i18n="Account">پست های مورد علاقه</div>
+              </a>
+            </li>
+          {% endif %}
+          <li class="menu-item
+          {% if request.resolver_match.url_name == 'create_post' %}active{% endif %}">
+            <a href="{% url "account:create_post" %}" class="menu-link">
+              <div data-i18n="Notifications">نوشتن پست جدید</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+      
+      {% if request.user|has_role_perm:"comments_manager" %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'comments' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:all_comments" %}" class="menu-link">
+              <span class="mdi mdi-comment-multiple mdi-24px"></span>
+              <div class="me-2">نظرات کاربران</div>
+            </a>
+        </li>
+      {% endif %}
+      
+      {% if request.user.is_staff %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'cat' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "panel:all_cats" %}" class="menu-link">
+              <span class="mdi mdi-format-list-bulleted-type mdi-24px"></span>
+              <div class="me-2">موضوعات</div>
+            </a>
+        </li>
+      {% endif %}
+
+      {% if request.user|has_role_perm:"notifs_manager" %}
+        <li class="menu-item border-bottom pb-3
+            {% with url_name=request.resolver_match.url_name %}
+              {% if url_name == 'user_tickets' or url_name == 'view_my_ticket' %}active{% endif %}
+            {% endwith %}
+            ">
+            <a href="{% url "notifs:user_tickets" %}" class="menu-link">
+              <span class="mdi mdi-ticket-account mdi-24px"></span>
+              <div class="me-2">تیکت ها</div>
+            </a>
+        </li>
+      {% elif not request.user.is_staff %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'my_ticket' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:my_tickets" %}" class="menu-link">
+              <span class="mdi mdi-ticket-account mdi-24px"></span>
+              <div class="me-2">تیکت های من</div>
+            </a>
+        </li>
+      {% endif %}
+
+      {% if request.user|has_role_perm:"notifs_manager" %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'notif' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:all_notifs" %}" class="menu-link">
+              <span class="mdi mdi-bell mdi-24px"></span>
+              <div class="me-2">اعلان ها</div>
+            </a>
+        </li>
+      {% elif not request.user.is_staff %}
+        <li class="menu-item border-bottom pb-3
+            {% if 'notif' in request.resolver_match.url_name %}active{% endif %}">
+            <a href="{% url "notifs:my_notifs" %}" class="menu-link">
+              <span class="mdi mdi-bell mdi-24px"></span>
+              <div class="me-2">اعلان های من</div>
+            </a>
+        </li>
+      {% endif %}
+
+      <li class="menu-item border-bottom pb-3">
+          <a href="{% url "blog:index" %}" class="menu-link">
+            {% if request.user|has_role_perm:"notifs_manager" or request.user|has_role_perm:"comments_manager" or request.user|has_role_perm:"posts_manager" %}
+              <span class="mdi mdi-table-eye mdi-24px ms-2"></span>
+              <div data-i18n="Analytics">مشاهده سایت</div>
+            {% else %}
+              <span class="mdi mdi-home-import-outline mdi-24px ms-2"></span>
+              <div data-i18n="Analytics">بازگشت به خانه</div>
+            {% endif %}
+          </a>
+      </li>
+
+    </ul>
+</aside>

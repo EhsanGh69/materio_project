@@ -1,0 +1,29 @@
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center rounded justify-content-between bg-light py-2 px-4 mb-3">
+                        <h3 class="m-0">
+                            <i class="fas fa-check-double"></i>
+                            <span>پست های اخیر</span>
+                        </h3>
+                        <a class="text-secondary font-weight-medium text-decoration-none"
+                            href="{% url 'blog:all_posts' %}">
+                            <span>مشاهده پست های بیشتر</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </div>
+                </div>
+                {% for post in recent_posts %}
+                    {% include "blog/partials/post_card.html" %}
+                {% empty %}
+                    <div class="col-12 alert alert-danger text-center">
+                        <i class="far fa-times-circle"></i>
+                        <span>در حال حاضر پستی وجود ندارد</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<div
+  class="modal fade"
+  id="confirmModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      {% with url_name=request.resolver_match.url_name %}
+        <div class="modal-body">
+            {% if url_name == 'create_post' or url_name == 'edit_draft_post' or url_name == 'edit_reject_post' %}
+              <h3>آیا از ذخیره این پست به عنوان در حال بررسی اطمینان دارید؟</h3>
+              <h5 class="text-bg-danger p-1 rounded-1">
+                <span class="mdi mdi-alert-box-outline mdi-24px me-3"></span>
+                <span>با انجام این کار پست شما دیگر قابل ویرایش نخواهد بود</span>
+              </h5>
+            {% else %}
+              <h3>آیا از حذف این {{ obj_name }} اطمینان دارید؟</h3>
+              {% if obj_name == 'موضوع' %}
+                <h5 id="notice" class="text-bg-danger p-1 rounded-1"></h5>
+              {% elif obj_name == 'تگ' %}
+                <span class="d-none" id="removed_tag"></span>
+              {% elif obj_name == 'نظر' %}
+                <h5 id="notice" class="text-bg-danger p-1 rounded-1"></h5>
+              {% endif %}
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" data-bs-dismiss="modal">خیر</button>
+          {% if url_name == 'create_post' or url_name == 'edit_draft_post' or url_name == 'edit_reject_post' %}
+            <button type="button" class="btn btn-danger ml-2" id="confirmBtn">بله</button>
+          {% else %}
+            <a href="" class="btn btn-danger ml-2" id="confirmBtn">بله</a>
+          {% endif %}
+        </div>
+      {% endwith %}
+    </div>
+  </div>
+</div>

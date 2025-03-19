@@ -1,0 +1,68 @@
+{% extends "auth/auth_base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}ورود{% endblock %}
+
+{% block card_content %}
+    <h4 class="mb-2">ورود کاربر</h4>
+    <form id="formAuthentication" class="mb-3" method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <p>
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span class="text-danger">{{ error }}</span>
+                    </p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.username|add_class:"form-control"|attr:"placeholder:نام کاربری خود را وارد کنید"|attr:"autofocus" }}
+            <label for="email">نام کاربری</label>
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <div class="form-password-toggle">
+                <div class="input-group input-group-merge">
+                    <span class="cursor-pointer border border-2 p-3 pb-0 border-start-0 rounded-end"><i class="mdi mdi-eye-off-outline"></i></span>
+                    <div class="form-floating form-floating-outline">
+                        {{ form.password|add_class:"form-control rounded-0 rounded-start"|attr:"aria-describedby:password"|attr:"placeholder:رمز عبور خود وارد کنید"|attr:"autofocus" }}
+                        <label>{{ form.password.label }}</label>
+                    </div>
+                </div>
+            </div>
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <button class="btn btn-primary d-grid w-100" type="submit">ورود</button>
+        </div>
+    </form>
+
+    <p class="text-center">
+        <span>رمز عبور خود را فراموش کرده اید؟</span>
+        <a href="{% url 'reset_password' %}">
+          <span>کلیک کنید</span>
+        </a>
+    </p>
+
+    <p class="text-center">
+        <span>حساب کاربری ندارید؟</span>
+        <a href="{% url 'register' %}">
+          <span>ثبت نام کنید</span>
+        </a>
+    </p>
+
+{% endblock %}

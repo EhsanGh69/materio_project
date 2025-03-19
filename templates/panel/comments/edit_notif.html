@@ -1,0 +1,34 @@
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">ویرایش علت رد پست</h4>
+            </div>
+            <form method="post" id="edit-notif" autocomplete="off">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_slug" id="post_slug">
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea class="form-control h-px-100"  
+                                    name="message" id="message"
+                                    spellcheck="false" data-ms-editor="true"></textarea>
+                            </div>
+                            <div id="messageError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        انصراف
+                    </button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light">
+                        ذخیره تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

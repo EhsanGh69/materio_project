@@ -1,0 +1,53 @@
+{% extends "panel/base.html" %}
+
+{% block title %}پست های من{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    {% include "panel/components/search_sort.html" with search=True sort=False %}
+    <div class="row gy-4">
+        <div class="col-12">
+            <div class="table-responsive text-nowrap" id="my-posts">
+                {% comment %} Load by AJAX {% endcomment %}
+            </div>
+        </div>
+    </div>
+</div>
+{% include "panel/partials/confirm_modal.html" with obj_name='پست' %}
+{% endblock %}
+
+{% block script %}
+<script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const getPostId = (id) => confirmBtn.attributes.href.value = `/account/remove_draft_post/${id}`
+
+    function load_posts(query='', page=1){
+        $.ajax({
+            url: '{% url "account:my_posts_table" %}',
+            data: {
+                'page': page,
+                'q': query
+            },
+            success: function(data){
+                $('#my-posts').html(data)
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        load_posts()
+
+        $('#search_input').keyup(function(e){
+            setTimeout(() => {
+                e.preventDefault()
+                const query = $(this).val();
+                if (query.trim() !== "") {
+                    load_posts(query)
+                }else{
+                    load_posts('', 1)
+                }
+            }, 300)
+        })
+    })
+</script>
+{% endblock %}

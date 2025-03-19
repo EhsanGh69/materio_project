@@ -1,0 +1,19 @@
+{% extends "panel/base_html.html" %}
+{% load render_partial %}
+
+{% block body %}
+<div class="layout-wrapper layout-content-navbar" dir="rtl">
+  <div class="layout-container">
+      {% include "panel/partials/sidebar.html" %}
+      <div class="layout-page">
+        {% render_partial "panel:panel_navbar" %}
+        <div class="content-wrapper">
+          {% block content %}{% endblock %}
+          {% include "panel/partials/footer.html" %}
+          <div class="content-backdrop fade"></div>
+        </div>
+      </div>
+  </div>
+  <div class="layout-overlay layout-menu-toggle"></div>
+</div>
+{% endblock %} 

@@ -1,0 +1,44 @@
+{% load static %}
+
+<div class="row gy-4">
+    <div class="col-12">
+        <div class="card overflow-hidden mb-4" style="height: 500px">
+            <div class="d-flex align-items-center mt-3">
+                <div class="avatar me-3 d-flex flex-column">
+                    {% if not post.author.is_active %}
+                        <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
+                    {% else %}
+                        <img src="
+                            {% if post.author.user_avatar %}
+                                {{ post.author.user_avatar.avatar.url }}
+                            {% else %}
+                                {% static 'panel/img/default_avatar.jpg' %}
+                            {% endif %}
+                        " 
+                    alt="{{ post.author.username }}" class="rounded-circle" />
+                    {% endif %}
+                </div>
+                <div class="me-2">
+                  <h6 class="mb-0 text-truncate">{{ post.author.get_full_name }}</h6>
+                  <small class="text-truncate">{{ post.author.username }}</small>
+                </div>
+            </div>
+            <h5 class="card-header">{{ post.title }}</h5>
+            <div class="card-body pb-2" id="vertical-card">
+                <div class="px-3 image-container d-flex flex-column d-md-block">
+                    <img src="
+                        {% if post.image %}
+                            {{ post.image.url }}
+                        {% else %}
+                            {% static 'blog/img/default_image.jpg' %}
+                        {% endif %}" 
+                        alt="{{ post.title }}" 
+                        class="float-image w-auto">
+                    <p class="text-justify">
+                        {{ post.content|safe }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

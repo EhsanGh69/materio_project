@@ -1,0 +1,104 @@
+{% extends "auth/auth_base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}ثبت نام{% endblock %}
+
+{% block card_content %}
+    <h4 class="mb-2">ثبت نام کاربر جدید</h4>
+    <form id="formAuthentication" class="mb-3" method="post">
+        {% csrf_token %}
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.username|add_class:"form-control"|attr:"placeholder:نام کاربری خود را وارد کنید"|attr:"autofocus" }}
+          <label>{{ form.username.label }}</label>
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
+                <p class="text-danger">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="mb-3 form-password-toggle">
+            <div class="input-group input-group-merge">
+                <span class="cursor-pointer border border-2 p-3 pb-0 border-start-0 rounded-end"><i class="mdi mdi-eye-off-outline"></i></span>
+                <div class="form-floating form-floating-outline">
+                    {{ form.password|add_class:"form-control rounded-0 rounded-start"|attr:"aria-describedby:password"|attr:"placeholder:رمز عبور خود وارد کنید"|attr:"autofocus" }}
+                    <label>{{ form.password.label }}</label>
+                </div>
+            </div>
+            <small class="form-text text-muted">
+                <span>رمز عبور نباید شبیه نام کاربری باشد</span><br>
+                <span>رمز عبور می‌بایست حداقل از ۸ کاراکتر شامل حروف و اعداد تشکیل شده باشد</span>
+            </small>
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="mb-3 form-password-toggle">
+          <div class="input-group input-group-merge">
+            <span class="cursor-pointer border border-2 p-3 pb-0 border-start-0 rounded-end"><i class="mdi mdi-eye-off-outline"></i></span>
+            <div class="form-floating form-floating-outline">
+                {{ form.confirm_password|add_class:"form-control rounded-0 rounded-start"|attr:"aria-describedby:password"|attr:"placeholder:رمز عبور خود را تأیید کنید"|attr:"autofocus" }}
+                <label>{{ form.confirm_password.label }}</label>
+            </div>
+          </div>
+            {% if form.confirm_password.errors %}
+                {% for error in form.confirm_password.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.email|add_class:"form-control"|attr:"placeholder:آدرس ایمیل خود را وارد کنید" }}
+            <label>{{ form.email.label }}</label>
+            {% if form.email.errors %}
+              {% for error in form.email.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.phone_number|add_class:"form-control"|attr:"placeholder:شماره همراه خود را وارد کنید" }}
+            <label>{{ form.phone_number.label }}</label>
+            {% if form.phone_number.errors %}
+              {% for error in form.phone_number.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.first_name|add_class:"form-control"|attr:"placeholder:نام خود را وارد کنید" }}
+            <label>{{ form.first_name.label }} (اختیاری)</label>
+            {% if form.first_name.errors %}
+              {% for error in form.first_name.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-floating form-floating-outline mb-3">
+            {{ form.last_name|add_class:"form-control"|attr:"placeholder:نام خانوادگی همراه خود را وارد کنید" }}
+            <label for="email">{{ form.last_name.label }} (اختیاری)</label>
+            {% if form.last_name.errors %}
+              {% for error in form.last_name.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+        </div>
+
+        <button class="btn btn-primary d-grid w-100" type="submit">ثبت نام</button>
+    </form>
+
+    <p class="text-center">
+        <span>حساب کاربری دارید؟</span>
+        <a href="{% url 'login' %}">
+          <span>وارد شوید</span>
+        </a>
+    </p>
+{% endblock %}

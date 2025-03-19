@@ -1,0 +1,114 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}نظرات کاربران{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    {% if not_accept_mains or not_accept_answers %}
+        <div class="row gy-4">
+            <div class="col-12">
+                <div class="card overflow-hidden mb-4" style="height: 500px">
+                    <h5 class="card-header text-warning pb-0">
+                        <span class="mdi mdi-comment-question-outline mdi-24px"></span>
+                        <span>نظرات تایید نشده</span>
+                    </h5>
+                    <hr>
+                    <div class="card-body pb-2" id="vertical-card">
+                        {% if not_accept_mains %}
+                            <h6 class="text-info">
+                                <span class="mdi mdi-comment-text-outline mdi-24px"></span>
+                                <span>نظرات اصلی</span>
+                            </h6>
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3">
+                                {% for comment in not_accept_mains %}
+                                    {% include "panel/comments/comment_col.html" with comment=comment %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <hr>
+
+                        {% if not_accept_answers %}
+                            <h6 class="text-info">
+                                <span class="mdi mdi-message-reply-text mdi-24px"></span>
+                                <span>پاسخ به نظرات</span>
+                            </h6>
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3">
+                                {% for item in not_accept_answers %}
+                                    {% include "panel/comments/comment_answers_col.html" with accept=False %}
+                                {% endfor %} 
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-12">
+            {% include "panel/components/search_sort.html" with search=True sort=False %}
+            <div class="row gy-4">
+                <div class="col-12">
+                    <div class="card">
+                        <h5 class="card-header text-success pb-0">
+                            <span class="mdi mdi-comment-text-multiple-outline mdi-24px"></span>
+                            <span>نظرات تایید شده</span>
+                        </h5>
+                        <hr>
+                        <div class="card-body pb-2" id="accept-comments">
+                            {% comment %} Load by AJAX {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "panel/partials/confirm_modal.html" with obj_name='نظر' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'panel/js/extended-ui-perfect-scrollbar.js' %}"></script>
+
+<script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const notice = document.querySelector('#notice')
+    const getCommentId = (id) => {
+        confirmBtn.attributes.href.value = `/notifs/remove_comment/${id}`
+        notice.innerHTML = `<span class="mdi mdi-alert-octagon mdi-24px"></span>
+        <span>اگر این نظر یک نظر اصلی باشد تمام پاسخ های آن نیز حذف خواهند شد</span>`
+    }
+
+    function load_comments(query='', page=1){
+        $.ajax({
+            url: '{% url "notifs:paginate_comments" %}',
+            data: {
+                'page': page,
+                'q': query
+            },
+            success: function(data){
+                $('#accept-comments').html(data)
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        load_comments('', 1)
+
+        $('#search_input').keyup(function(e){
+            setTimeout(() => {
+                e.preventDefault()
+                const query = $(this).val();
+                if (query.trim() !== "") {
+                    load_comments(query)
+                }else{
+                    load_comments('', 1)
+                }
+            }, 300)
+        })
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between py-0">
+  <div class="container">
+    <a href="{% url 'blog:index' %}" class="navbar-brand">
+      <h1 class="m-0 display-5 text-uppercase">
+        <img src="{% static 'blog/img/blogger-icon.png' %}" alt="blog icon" width="70">
+        <span class="text-primary">وبلاگ</span>
+      </h1>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        {% if request.user.is_authenticated %}
+          <li class="nav-item dropdown custome-nav-item">
+            <a class="nav-link dropdown-toggle px-0" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+              <img src="
+                {% if request.user.user_avatar %}
+                  {{ request.user.user_avatar.avatar.url }}
+                {% else %}
+                  {% static 'panel/img/default_avatar.jpg' %}
+                {% endif %}
+              "
+              style="border-radius: 50%; width: 50px; height: 50px;"
+              alt="{{ request.user.username }}">
+            </a>
+            <div class="dropdown-menu p-0">
+              <a class="dropdown-item d-flex justify-content-between align-items-center p-2 pb-0" 
+              href="{% url 'panel:home' %}">
+                <span class="d-flex flex-column">
+                  <span class="text-primary">{{ request.user.username }}</span>
+                  <span class="mt-2">
+                    {% if request.user.is_superuser %}
+                      <i class="fas fa-user-shield"></i>
+                      <span>پنل مدیریت</span>
+                    {% else %}
+                      <i class="fas fa-user-cog"></i>
+                      <span>پروفایل کاربری</span>
+                    {% endif %}
+                  </span>
+                </span>
+                <img src="
+                  {% if request.user.user_avatar %}
+                    {{ request.user.user_avatar.avatar.url }}
+                  {% else %}
+                    {% static 'panel/img/default_avatar.jpg' %}
+                  {% endif %}
+                "
+                style="border-radius: 50%; width: 50px; height: 50px;"
+                alt="{{ request.user.username }}">
+              </a>
+              <div class="dropdown-divider m-0"></div>
+              <a class="dropdown-item" href="{% url 'account:create_post' %}">نوشتن پست جدید</a>
+              <a class="dropdown-item" href="{% url 'account:my_fav_posts' %}">پست های مورد علاقه</a>
+              <div class="dropdown-divider m-0"></div>
+              <a class="dropdown-item p-2 pb-0" href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>خروج</span>
+              </a>
+            </div>
+          </li>
+        {% else %}
+          <li class="nav-item mt-3">
+            <a class="nav-link" href="{% url 'login' %}">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>ورود</span>
+            </a>
+          </li>
+
+          <li class="nav-item custome-nav-item nav-register">
+            <a class="nav-link" href="{% url 'register' %}">
+              <i class="fas fa-user-plus"></i>
+              <span>ثبت نام</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      <form class="form-inline my-2 my-lg-0" action="{% url 'blog:search' %}">
+        <div
+          class="input-group ml-auto"
+        >
+          <input type="text" class="form-control" 
+            name="q" value="{{ request.GET.q }}" 
+            placeholder="جستجو در وبلاگ..." />
+          <div class="input-group-append">
+            <button class="input-group-text">
+              <i class="fa fa-search text-light"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</nav>

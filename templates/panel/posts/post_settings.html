@@ -1,0 +1,322 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}{{ post.title|truncatechars:15 }}{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+
+    <nav>
+        <ul class="list-unstyled d-flex">
+          <li>
+            <a href="{% url 'panel:home' %}">خانه</a>
+            <span class="mdi mdi-chevron-left"></span>
+          </li>
+          <li>
+            <a href="{% url 'panel:all_posts' %}">پست ها</a>
+            <span class="mdi mdi-chevron-left"></span>
+          </li>
+          <li>بررسی پست</li>
+        </ul>
+    </nav>
+
+    {% include "panel/components/post_details.html" %}
+
+    
+    <div class="row">
+        <div class="col-12">
+            {% if post.author.is_active %}
+                <div class="card mb-4">
+                    <h3 class="card-header">
+                        <span class="mdi mdi-cog mdi-24px"></span>
+                        <span>تنظیمات</span>
+                    </h3>
+                    <div class="card-body demo-vertical-spacing demo-only-element">
+                        <form action="{% url 'panel:post_settings' post.slug %}" method="post" id="settings-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 col-lg-6 mb-3">
+                                    <label for="main_cat" class="form-label">
+                                        <span class="h5 text-secondary">موضوع اصلی</span>
+                                        <span class="h5 text-danger">*</span>
+                                    </label>
+                                    <select name="main_cat" id="main_cat" 
+                                    class="form-select form-select-lg text-secondary">
+                                    <option value="">انتخاب کنید</option>
+                                    {% for cat in main_cats %}
+                                        <option value="{{ cat.id }}" 
+                                            {% if post.category %}
+                                                {% if post.category.is_subcat and post.category.main.id == cat.id %}
+                                                    selected
+                                                {% elif post.category.id == cat.id %}
+                                                    selected
+                                                {% endif %}
+                                            {% endif %}>
+                                            {{ cat.name }}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                    <div class="text-danger" id="main_cat_err"></div>
+                                </div>
+                                <div class="col-12 col-lg-6 mb-3">
+                                    <label for="sub_cat" class="form-label">
+                                        <span class="h5 text-secondary">موضوع فرعی</span>
+                                    </label>
+                                    <select name="sub_cat" id="sub_cat" 
+                                    {% if not post.category %}disabled{% endif %} 
+                                        class="form-select form-select-lg text-secondary">
+                                    <option value="">انتخاب کنید</option>
+                                    {% if post.category %}
+                                        {% if post.category.is_subcat %}
+                                            {% for cat in post.category.main.subcats.all %}
+                                                    <option value="{{ cat.id }}" 
+                                                        {% if post.category.id == cat.id %}
+                                                            selected
+                                                        {% endif %}>
+                                                        {{ cat.name }}
+                                                    </option>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for cat in post.category.subcats.all %}
+                                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-6 col-md-3">
+                                    <label for="largeSelect" class="form-label">
+                                        <span class="h5 text-secondary">مدت زمان مطالعه</span>
+                                    </label>
+                                    <input
+                                    name="study_time"
+                                    id="study_time"
+                                    type="number"
+                                    class="form-control"
+                                    placeholder="0"
+                                    aria-describedby="defaultFormControlHelp" min="0" 
+                                    value="{% if post.study_time %}{{ post.study_time }}{% endif %}"/>
+                                    <div id="study_time" class="form-text">
+                                        براساس دقیقه
+                                    </div>
+                                    <div class="text-danger" id="study_time_err"></div>
+                                </div>
+                            </div>
+                        </form>
+        
+                        <div class="row mt-3" id="tags-section">
+                            <div class="col-12 col-xxl-10">
+                                <div class="card shadow-none bg-transparent border border-secondary mb-3">
+                                    <div class="card-body">
+                                    <p class="card-title">
+                                        <span class="h5 text-secondary">تگ ها</span>
+                                        <span class="h5 text-danger">*</span>
+                                    </p>
+
+                                    {% if post.tags %}
+                                        <div class="row">
+                                            {% for tag in post.tags %}
+                                                <div class="col-10 col-md-6 col-lg-5 col-xl-4 col-xxl-3">
+                                                    <p class="border border-secondary rounded my-2 p-2 text-secondary w-100 d-flex justify-content-between">
+                                                        <span style="width: 60%;">
+                                                            <span class="mdi mdi-pound mdi-14px"></span>
+                                                            <span class="tag-name me-1">{{ tag }}</span>
+                                                        </span>
+                                                        <span class="d-flex flex-row-reverse"
+                                                            style="width: 40%;">
+                                                            <span class="mdi mdi-trash-can-outline 
+                                                                mdi-24px text-danger me-2 cursor-pointer remove_tag_btn" title="حذف تگ"
+                                                                data-tag="{{ tag }}"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#confirmModal">
+                                                            </span>
+                                                            <span class="mdi mdi-square-edit-outline
+                                                            mdi-24px text-warning me-1 cursor-pointer edit_tag_btn"
+                                                            data-tag="{{ tag }}" title="ویرایش تگ"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalCenter">
+                                                            </span>
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="my-3 d-none" id="tags-box">
+                                            <span class="h6 mb-0 text-info">
+                                                <span class="mdi mdi-check-circle-outline"></span>
+                                                <span>موارد پیشنهادی:</span>
+                                            </span>
+                                            <span id="tags-items"></span>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="mt-3 px-2">
+                                        <button type="button" 
+                                            class="btn btn-outline-success"
+                                            title="افزودن تگ"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalCenter"
+                                            id="add_tag_btn">
+                                            <span class=" mdi mdi-plus mdi-24px"></span>
+                                        </button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-10">
+                                {% if post.status != 'confirm' %}
+                                    <button type="button" class="btn btn-success mb-2" id="confirm-btn">
+                                        <span class="mdi mdi-file-check-outline mdi-24px ms-2"></span>
+                                        <span>تایید و انتشار</span>
+                                    </button>
+                                {% endif %}
+                                {% if not post.author.is_staff %}
+                                    {% if post.status != 'reject' %}
+                                        <a href="#reason-box" class="btn btn-warning mb-2" id="reject-btn">
+                                            <span class="mdi mdi-file-document-alert-outline mdi-24px ms-2"></span>
+                                            <span>رد کردن</span>
+                                        </a>
+                                    {% endif %}
+                                    {% if request.user.is_staff %}
+                                        <a href="#reason-box" class="btn btn-danger mb-2" id="remove-btn">
+                                            <span class="mdi mdi-file-document-remove-outline mdi-24px ms-2"></span>
+                                            <span>حذف</span>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif request.user.is_superuser %}
+                <button type="button" class="btn btn-primary mb-2" id="active-btn">
+                    <span class="mdi mdi-account-lock-open mdi-36px ms-2"></span>
+                    <span class="h5 mt-2 text-white">فعال سازی حساب کاربری</span>
+                </button>         
+            {% endif %}
+                        
+            {% include "panel/components/reason_box.html" %}
+        </div>
+    </div>
+
+    {% include "panel/posts/add_tag.html" %}
+    {% include "panel/partials/confirm_modal.html" with obj_name='تگ' %}
+</div>
+{% endblock %}
+
+
+{% block script %}
+    <script src="{% static 'panel/js/extended-ui-perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'panel/scripts/post_settings.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $("#add_tag_btn").click(function () {
+                $("#tag_form").prop("action", `{% url 'panel:add_tag' post.id %}`);
+                $("#tag_form")[0].reset();
+                $("#submit-btn").html("افزودن");
+                $("#modalTitle").html("افزودن تگ جدید");
+            });
+
+            $("#confirmBtn").click(function () {
+                $.ajax({
+                    url: `/panel/remove_tag/{{post.id}}`,
+                    data: {
+                        'tag_name': $("#removed_tag").text()
+                    },
+                    success: function (response) {
+                      if(response.success){
+                          $("#confirmModal").modal("hide");
+                          location.reload()
+                      }
+                    },
+                  });
+            });
+
+            $("#active-btn").click(function () {
+                $.ajax({
+                    url: "{% url 'panel:change_status' post.author.id %}",
+                    success: function (response) {
+                        if(response.success){
+                            location.reload()
+                        }
+                    },
+                  });
+            });
+
+            $(".edit_tag_btn").click(function () {
+                $("#tag_form").prop("action", `{% url 'panel:edit_tag' post.id %}`);
+                $("#tag_form")[0].reset();
+                $("#submit-btn").html("ویرایش");
+                $("#modalTitle").html("ویرایش تگ");
+                $("#prev_tag").val($(this).data("tag"));
+                $("#tag_name_input").val($(this).data("tag"));
+            });
+
+            $("#reason-report").keyup(function(){
+                $('#message-error').addClass("d-none")
+            })
+    
+            $("#send-notif").submit(function (event) {
+                event.preventDefault();
+                if($('.send-btn').hasClass('btn-danger')) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'notifs:remove_post' post.id %}",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if(response.success){
+                                Swal.fire({
+                                    title: "موفقیت!",
+                                    text: "پست با موفقیت حذف شد",
+                                    icon: "success",
+                                    confirmButtonText: "باشه",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = response.redirect_url
+                                    }
+                                });
+                            }
+                            else{
+                                $("#message-error").removeClass('d-none');
+                                $("#message-error").text(response.error);
+                            }
+                        },
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'notifs:reject_post' post.id %}",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if(response.success){
+                                Swal.fire({
+                                    title: "موفقیت!",
+                                    text: "پست با موفقیت رد شد",
+                                    icon: "success",
+                                    confirmButtonText: "باشه",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = response.redirect_url
+                                    }
+                                });
+                            }
+                            else{
+                                $("#message-error").removeClass('d-none');
+                                $("#message-error").text(response.error);
+                            }
+                        },
+                    });
+                }
+                
+            });
+        })
+    </script>
+{% endblock %}

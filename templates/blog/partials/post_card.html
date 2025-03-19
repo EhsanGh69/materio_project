@@ -1,0 +1,85 @@
+{% load static %}
+
+<div class="col-lg-6">
+    <div class="d-flex mb-3 bg-light">
+        <div class="w-100 d-flex flex-column justify-content-center px-3">
+            <div class="mb-1 mt-2" style="font-size: 13px;">
+                <a href="{% url 'blog:author_posts' post.author.username %}" 
+                class="text-decoration-none text-dark">
+                    {% if request.resolver_match.url_name != 'author_posts' %}
+                        <img src="
+                            {% if post.author.user_avatar %}
+                                {{ post.author.user_avatar.avatar.url }}
+                            {% else %}
+                                {% static 'panel/img/default_avatar.jpg' %}
+                            {% endif %}
+                        "
+                        style="border-radius: 50%;" 
+                        alt="{{ post.author.username }}" width="40">
+                    {% endif %}
+                    
+                    <span dir="ltr" class="h6">{{ post.author.username }}</span>
+                </a>
+                <span> - </span>
+                <span class="text-muted">{{ post.created_at|timesince }} پیش</span>
+            </div>
+            <p class="mt-3">
+                <a class="h5 text-decoration-none text-dark" 
+                href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
+                    <strong>{{ post.title|truncatewords:5 }}</strong>
+                </a>
+            </p>
+            <p class="mt-2">
+                <span class="post-info" title="پسندها">
+                    <i class="{% if post.like_count > 0 %}fas{% else %}far{% endif %} 
+                    fa-heart text-danger"></i>
+                    {{ post.like_count }}
+                </span>
+                <span class="post-info mx-3" title="نظرات">
+                    <i class="{% if post.post_comments.count > 0 %}fas{% else %}far{% endif %}
+                    fa-comment-alt text-info"></i> 
+                    {{ post.post_comments.count }}
+                </span>
+                <span class="post-info" title="بازدید">
+                    <i class="{% if post.visits.count > 0 %}fas{% else %}far{% endif %}
+                    fa-eye text-primary"></i>
+                    {{ post.visits.count }}
+                </span>
+            </p>
+            <p>
+                <a class="h6 text-decoration-none text-secondary" 
+                href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
+                    {{ post.content|truncatewords:18 }}
+                </a>
+            </p>
+            <p class="mb-0">
+                <a href="{% url 'blog:category_posts' post.category.name %}" 
+                    class="badge badge-info text-decoration-none">
+                    <span style="font-size: 0.9rem;">
+                        <i class="fas fa-tag"></i>
+                        {{ post.category.name }}
+                    </span>
+                </a>
+                &nbsp;
+                <small class="text-muted">خواندن {{ post.study_time }} دقیقه</small>
+            </p>
+        </div>
+
+        <div class="d-flex flex-column">
+            <a href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
+                <img src="
+                    {% if post.image %}
+                        {{ post.image.url }}
+                    {% else %}
+                        {% static 'blog/img/default_image.jpg' %}
+                    {% endif %}" 
+                style="width: 200px; height: 250px; object-fit: cover;"
+                class="rounded-1"
+                alt="{{ post.title }}">
+            </a>
+            <span class="mt-3 text-center">
+                
+            </span>
+        </div>
+    </div>
+</div>

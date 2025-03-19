@@ -1,0 +1,102 @@
+{% load static %}
+{% load jalali_tags %}
+
+{% if post.status == 'confirm' %}
+    <td class="text-truncate">
+        <a href="{% url 'blog:post_detail' post.slug %}" 
+            target="_blank"
+            class="d-flex flex-column text-decoration-none text-secondary" 
+            title="مشاهده پست در سایت">
+            <img src="
+                {% if post.image %}
+                    {{ post.image.url }}
+                {% else %}
+                    {% static 'blog/img/default_image.jpg' %}
+                {% endif %}" 
+            alt="{{ post.title }}" class="rounded mb-2" width="60" />
+            {{ post.title|truncatewords:5 }}
+        </a>
+    </td>
+{% else %}
+    <td class="text-truncate d-flex flex-column">
+        <img src="
+                {% if post.image %}
+                    {{ post.image.url }}
+                {% else %}
+                    {% static 'blog/img/default_image.jpg' %}
+                {% endif %}"
+            alt="{{ post.title }}" class="rounded mb-2" width="60" />
+        
+        {{ post.title|truncatewords:5 }}
+    </td>
+{% endif %}
+
+<td class="text-truncate">
+    <div class="d-flex justify-content-start">
+        <div class="avatar me-3 d-flex flex-column">
+            {% if not post.author.is_active %}
+                <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
+                <small class="text-danger">غیر فعال</small>
+            {% else %}
+                <a href="{% url 'blog:author_posts' post.author.username %}" 
+                target="_blank" rel="noopener noreferrer">
+                    <img src="
+                        {% if post.author.user_avatar %}
+                            {{ post.author.user_avatar.avatar.url }}
+                        {% else %}
+                            {% static 'panel/img/default_avatar.jpg' %}
+                        {% endif %}
+                    " 
+                    alt="{{ post.author.username }}" class="rounded-circle" />
+                </a>
+            {% endif %}
+        </div>
+        <div class="me-2">
+            <h6 class="mb-0 text-truncate">{{ post.author.get_full_name }}</h6>
+            <small class="text-truncate">{{ post.author.username }}</small>
+        </div>
+    </div>
+</td>
+
+{% if post.status == 'confirm' %}
+    <td class="text-truncate text-center">
+        {% if post.category %}{{ post.category }}{% else %}_{% endif %}
+    </td>
+    <td class="text-truncate text-center">{{ post.confirm_date|to_jalali:'%Y/%m/%d' }}</td>
+{% elif post.status == 'check' %}
+    <td class="text-truncate text-center">{{ post.updated_at|to_jalali:'%Y/%m/%d' }}</td>
+{% else %}
+    {% for notif in notifs %}
+        {% if post.title in notif.subject %}
+            <td class="text-truncate text-center">{{ notif.created_at|to_jalali:'%Y/%m/%d' }}</td>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<td class="text-truncate">
+    <button type="button" class="btn btn-light btn-icon rounded-pill 
+        dropdown-toggle hide-arrow waves-effect waves-light" 
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="mdi mdi-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-start">
+        <li>
+            <a class="dropdown-item waves-effect" href="
+            {% if post.status == 'confirm' or post.status == 'reject' %}
+                {% url 'panel:view_post' post.slug %}
+            {% else %}
+                {% url 'panel:post_settings' post.slug %}
+            {% endif %}
+            ">
+                <span class="mdi mdi-text-box-outline ms-3"></span>
+                {% if post.status == 'confirm' %}
+                    <span class="ms-5">مشاهده</span>
+                {% elif post.status == 'check' %}
+                    <span class="ms-5">بررسی</span>
+                {% else %}
+                    <span class="ms-5">بررسی مجدد</span>
+                {% endif %}
+            </a>
+        </li>
+    </ul>
+</td>

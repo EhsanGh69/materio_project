@@ -1,0 +1,80 @@
+{% extends "panel/base.html" %} 
+{% load static %} 
+
+{% block title %}خانه{%endblock %} 
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y" id="home-page">
+  <div class="row mb-5">
+    <div class="divider divider-primary">
+      <div class="divider-text">
+        <span class="badge bg-primary">آمار کلی وبلاگ</span>
+      </div>
+    </div>
+
+    {% include "panel/components/count_card.html" with bg_color='success' icon='account-check' title='کاربران فعال' count=active_users_count %}
+
+    {% include "panel/components/count_card.html" with bg_color='dark' icon='account-cancel' title='کاربران غیرفعال' count=inactive_users_count %}
+
+    {% include "panel/components/count_card.html" with bg_color='primary' icon='file-document-check' title='پست های تایید شده' count=confirm_posts_count %}
+
+    {% include "panel/components/count_card.html" with bg_color='danger' icon='file-document-alert' title='پست های بررسی نشده' count=check_posts_count %}
+
+    {% include "panel/components/count_card.html" with bg_color='warning' icon='comment-alert' title='نظرات تایید نشده' count=notaccept_comments_count %}
+
+    {% include "panel/components/count_card.html" with bg_color='secondary' icon='ticket-account' title='تیکت های پاسخ داده نشده' count=notanswer_tickets_count %}
+
+  
+  <div class="row mb-5">
+    <div class="divider divider-success">
+      <div class="divider-text">
+        <span class="badge bg-success">برترین پست ها</span>
+      </div>
+    </div>
+
+    {% if fav_post %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card bg-primary h-100">
+          <h5 class="card-header text-white h4">
+            <span class="mdi mdi-heart mdi-36px text-danger"></span>
+            <span>محبوب ترین</span>
+          </h5>
+          <div class="card-body">
+            {% include "panel/components/single_post.html" with post=fav_post %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if visit_post %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card bg-warning h-100">
+          <h5 class="card-header text-dark h4">
+            <span class="mdi mdi-eye mdi-36px text-info"></span>
+            <span>پر بازدیدترین</span>
+          </h5>
+          <div class="card-body">
+            {% include "panel/components/single_post.html" with post=visit_post %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if hot_post %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card bg-danger h-100">
+          <h5 class="card-header text-white h4">
+            <span class="mdi mdi-fire mdi-36px text-warning"></span>
+            <span>داغ ترین</span>
+          </h5>
+          <div class="card-body">
+            {% include "panel/components/single_post.html" with post=hot_post %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    
+  </div>
+</div>
+{% endblock %}

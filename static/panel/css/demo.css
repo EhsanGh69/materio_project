@@ -1,0 +1,184 @@
+/*
+* demo.css
+* File include item demo only specific css only
+******************************************************************************/
+
+#layout-menu {
+  width: 280px;
+}
+
+.menu-inner {
+  overflow: hidden !important;
+}
+
+.menu .app-brand.demo {
+  height: 64px;
+}
+
+.dark-style .menu .app-brand.demo {
+  height: 64px;
+}
+
+.app-brand-logo.demo svg {
+  width: 30px;
+  height: 24px;
+}
+
+.app-brand-text.demo {
+  font-size: 1.25rem;
+}
+
+/* ! For .layout-navbar-fixed added fix padding top tpo .layout-page */
+.layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
+  padding-top: 64px !important;
+}
+
+/* Navbar page z-index issue solution */
+.content-wrapper .navbar {
+  z-index: auto;
+}
+
+/*
+* Content
+******************************************************************************/
+
+.demo-blocks > * {
+  display: block !important;
+}
+
+.demo-inline-spacing > * {
+  margin: 1rem 0.375rem 0 0 !important;
+}
+
+/* ? .demo-vertical-spacing class is used to have vertical margins between elements. To remove margin-top from the first-child, use .demo-only-element class with .demo-vertical-spacing class. For example, we have used this class in forms-input-groups.html file. */
+.demo-vertical-spacing > * {
+  margin-top: 1.25rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.demo-vertical-spacing-lg > * {
+  margin-top: 1.875rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing-lg.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.demo-vertical-spacing-xl > * {
+  margin-top: 5rem !important;
+  margin-bottom: 0 !important;
+}
+.demo-vertical-spacing-xl.demo-only-element > :first-child {
+  margin-top: 0 !important;
+}
+
+.rtl-only {
+  display: none !important;
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+[dir="rtl"] .rtl-only {
+  display: block !important;
+}
+
+/* Dropdown buttons going out of small screens */
+@media (max-width: 576px) {
+  #dropdown-variation-demo .btn-group .text-truncate {
+    width: 300px;
+    position: relative;
+  }
+  #dropdown-variation-demo .btn-group .text-truncate::after {
+    position: absolute;
+    top: 45%;
+    right: 0.65rem;
+  }
+}
+/*
+* Layout demo
+******************************************************************************/
+
+.layout-demo-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  margin-top: 1.25rem;
+}
+.layout-demo-placeholder img {
+  width: 900px;
+}
+.layout-demo-info {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+/******************************************My Styles******************************************/
+
+table.table th.text-truncate {
+  font-size: 18px;
+}
+
+.divider span.badge {
+  font-size: 1.7rem;
+}
+
+.image-container {
+  overflow: auto;
+}
+
+.float-image {
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  width: 300px;
+  height: 300px;
+}
+
+#create-post input#id_title {
+  font-size: 30px;
+  height: 80px;
+  background-color: #f5f5f5;
+}
+
+/* '../../vendor/fonts' */
+@font-face {
+	font-family: 'Tanha';
+	src: url('../vendor/fonts/Farsi-Digits/Tanha-FD.eot');
+	/* IE9 Compat Modes */
+	src: url('../vendor/fonts/Farsi-Digits/Tanha-FD.eot?#iefix') format('embedded-opentype'),
+		/* IE6-IE8 */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.woff2') format('woff2'),
+		/* Modern Browsers */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.woff') format('woff'),
+		/* Modern Browsers */
+		url('../vendor/fonts/Farsi-Digits/Tanha-FD.ttf') format('truetype');
+	/* Safari, Android, iOS */
+	font-weight: normal;
+	font-style: normal;
+	text-rendering: optimizeLegibility;
+	font-display: auto;
+}
+
+.django-ckeditor-widget{
+  width: 100% !important;
+}
+
+.cke-custom-class {
+  font-family: "Tanha" !important;
+  font-size: 20px !important;
+  color: #333;
+  background-color: #f5f5f5;
+  padding: 10px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}

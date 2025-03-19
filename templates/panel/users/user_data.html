@@ -1,0 +1,98 @@
+{% load static %}
+
+<div class="d-flex justify-content-between p-2">
+    <div class="d-flex align-items-center">
+        <div class="avatar me-3">
+          <img src="
+          {% if user.user_avatar %}
+            {{ user.user_avatar.avatar.url }}
+          {% else %}
+            {% static 'panel/img/default_avatar.jpg' %}
+          {% endif %}
+          " 
+          alt="{{ user.username }}" class="rounded-circle" />
+        </div>
+        <div class="me-2">
+          <h6 class="mb-0 text-truncate">{{ user.get_full_name }}</h6>
+          <small class="text-truncate">{{ user.username }}</small>
+        </div>
+    </div>
+
+    <div>
+        {% if not user.is_superuser %}
+            <button type="button" class="btn btn-light btn-icon rounded-pill 
+                dropdown-toggle hide-arrow waves-effect waves-light" 
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-start">
+                <li>
+                    <a href="{% url 'panel:user_details' user.username %}" 
+                    class="dropdown-item text-info">
+                    <span class="mdi mdi-card-account-details mdi-24px"></span>
+                    <span class="ms-3">مشاهده جزئیات</span>
+                    </a>
+                </li>
+
+                <li>
+                    <button class="dropdown-item text-danger" 
+                    onclick="getUserId({{user.id}})"
+                    data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    <span class="mdi mdi-account-remove mdi-24px ms-2"></span>
+                    <span style="margin-left: 4.8rem;">حذف</span>
+                    </button>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-2 me-3 d-md-flex align-items-center justify-content-around">
+  <div class="d-flex align-items-center">
+    {% with user_perms=user.get_all_permissions %}
+      {% if user.is_superuser %}
+        <i class="mdi mdi-account-tie mdi-24px text-danger ms-3"></i>
+        <span>مدیر</span>
+      {% elif not user.is_superuser and user.is_staff %}
+        {% if user.is_active %}
+          <i class="mdi mdi-account-tag mdi-24px text-success ms-3"></i>
+        {% else %}
+          <i class="mdi mdi-account-lock mdi-24px text-danger ms-3"></i>
+        {% endif %}
+        <span>ادمین</span>
+      {% elif user_perms %}
+        {% if user.is_active %}
+          <i class="mdi mdi-account-key mdi-24px text-info ms-3"></i>
+        {% else %}
+          <i class="mdi mdi-account-lock mdi-24px text-danger ms-3"></i>
+        {% endif %}
+        <span>
+          {% if 'blog.view_post' in user_perms %}<span>مدیریت پست ها</span><br>{% endif %}
+          {% if 'blog.change_comment' in user_perms %}<span>مدیریت نظرات کاربران</span><br>{% endif %}
+          {% if 'notifs.view_notification' in user_perms %}<span>مدیریت اعلان ها و تیکت ها</span>{% endif %}
+        </span>
+      {% else %}
+        {% if user.is_active %}
+          <i class="mdi mdi-account mdi-36px text-primary ms-3"></i>
+        {% else %}
+          <i class="mdi mdi-account-lock mdi-24px text-danger ms-3"></i>
+        {% endif %}
+        <span>کاربر عادی</span>
+      {% endif %}
+    {% endwith %}
+  </div>
+  <span class="h6"><span class="mdi mdi-email"></span>{{ user.email }}</span>
+  <br><br>
+  <span class="h6"><span class="mdi mdi-phone"></span>{{ user.phone_number }}</span>
+</div>
+
+<div class="mt-2 me-3">
+  {% if user.is_staff and not user.is_active %}
+    <span class="badge bg-label-warning rounded-pill">تعلیق</span>
+  {% elif not user.is_staff and not user.is_active %}
+    <span class="badge bg-label-danger rounded-pill">غیر فعال</span>
+  {% else %}
+    <span class="badge bg-label-success rounded-pill">فعال</span>
+  {% endif %}
+</div>
+    

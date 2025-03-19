@@ -1,0 +1,259 @@
+{% extends "panel/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}افزودن کاربر جدید{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row gy-4">
+        <div class="col-12">
+            <div class="card">
+                <h3 class="card-header">
+                    {% if request.resolver_match.url_name == 'update_user' %}
+                        <span class="mdi mdi-account-edit mdi-36px text-info"></span>
+                        <span>ویرایش کاربر</span>
+                    {% else %}
+                        <span class="mdi mdi-account-plus mdi-36px text-success"></span>
+                        <span>افزودن کاربر جدید</span>
+                    {% endif %}
+                </h3>
+                <div class="card-body p-5">
+                    <form method="post" id="create-user-form" autocomplete="off" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row mb-5">
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                <div class="form-floating form-floating-outline">
+                                    {{ form.username|add_class:"form-control"|attr:"placeholder:نام کاربری را وارد کنید"|attr:"autofocus" }}
+                                  <label>{{form.username.label}}</label>
+                                    {% if form.username.errors %}
+                                        {% for error in form.username.errors %}
+                                            <p class="text-danger">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if request.resolver_match.url_name == 'create_user' %}
+                            <div class="row mb-5">
+                                <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                    <div class="form-password-toggle">
+                                        <div class="input-group input-group-merge">
+                                            <span class="cursor-pointer border border-2 p-3 pb-0 border-start-0 rounded-end"><i class="mdi mdi-eye-off-outline"></i></span>
+                                            <div class="form-floating form-floating-outline">
+                                                {{ form.password|add_class:"form-control rounded-0 rounded-start"|attr:"aria-describedby:password"|attr:"placeholder:رمز عبور خود وارد کنید"|attr:"autofocus" }}
+                                                <label>{{ form.password.label }}</label>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            <span>رمز عبور نباید شبیه نام کاربری باشد</span><br>
+                                            <span>رمز عبور می‌بایست حداقل از ۸ کاراکتر شامل حروف و اعداد تشکیل شده باشد</span>
+                                        </small>
+                                        {% if form.password.errors %}
+                                            {% for error in form.password.errors %}
+                                                <p class="text-danger">{{ error }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                    <div class="form-password-toggle">
+                                        <div class="input-group input-group-merge">
+                                        <span class="cursor-pointer border border-2 p-3 pb-0 border-start-0 rounded-end"><i class="mdi mdi-eye-off-outline"></i></span>
+                                        <div class="form-floating form-floating-outline">
+                                            {{ form.confirm_password|add_class:"form-control rounded-0 rounded-start"|attr:"aria-describedby:password"|attr:"placeholder:رمز عبور خود را تأیید کنید"|attr:"autofocus" }}
+                                            <label>{{ form.confirm_password.label }}</label>
+                                        </div>
+                                        </div>
+                                        {% if form.confirm_password.errors %}
+                                            {% for error in form.confirm_password.errors %}
+                                                <p class="text-danger">{{ error }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row mb-5">
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                <div class="form-floating form-floating-outline">
+                                    {{ form.email|add_class:"form-control"|attr:"placeholder:آدرس ایمیل را وارد کنید" }}
+                                    <label>{{ form.email.label }}</label>
+                                    {% if form.email.errors %}
+                                        {% for error in form.email.errors %}
+                                            <p class="text-danger">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6 mt-3 mt-xxl-0">
+                                <div class="form-floating form-floating-outline mb-3">
+                                    {{ form.phone_number|add_class:"form-control"|attr:"placeholder:شماره همراه خود را وارد کنید" }}
+                                    <label>{{ form.phone_number.label }}</label>
+                                    {% if form.phone_number.errors %}
+                                        {% for error in form.phone_number.errors %}
+                                            <p class="text-danger">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                <div class="form-floating form-floating-outline mb-3">
+                                    {{ form.first_name|add_class:"form-control"|attr:"placeholder:نام خود را وارد کنید" }}
+                                    <label>{{ form.first_name.label }} (اختیاری)</label>
+                                    {% if form.first_name.errors %}
+                                        {% for error in form.first_name.errors %}
+                                            <p class="text-danger">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                <div class="form-floating form-floating-outline mb-3">
+                                    {{ form.last_name|add_class:"form-control"|attr:"placeholder:نام خانوادگی همراه خود را وارد کنید" }}
+                                    <label for="email">{{ form.last_name.label }} (اختیاری)</label>
+                                    {% if form.last_name.errors %}
+                                      {% for error in form.last_name.errors %}
+                                          <p class="text-danger">{{ error }}</p>
+                                      {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                <div class="card shadow-none bg-transparent border border-secondary mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">
+                                            <span class="mdi mdi-account-key mdi-36px text-primary"></span>
+                                            <span>دسترسی ها</span>
+                                        </h5>
+                                        <div class="form-floating form-floating-outline">
+                                            <div class="form-check d-flex">
+                                                <input class="form-check-input" type="checkbox" value="admin" id="admin-check">
+                                                <label class="form-check-label me-5" style="font-size: medium;">ادمین</label>
+                                            </div>
+                                            <div class="form-check d-flex">
+                                                <input class="form-check-input perm-check" type="checkbox" value="posts_manager">
+                                                <label class="form-check-label me-5" style="font-size: medium;">مدیریت پست ها</label>
+                                            </div>
+                                            <div class="form-check d-flex">
+                                                <input class="form-check-input perm-check" type="checkbox" value="comments_manager">
+                                                <label class="form-check-label me-5" style="font-size: medium;">مدیریت نظرات کاربران</label>
+                                            </div>
+                                            <div class="form-check d-flex">
+                                                <input class="form-check-input perm-check" type="checkbox" value="notifs_manager">
+                                                <label class="form-check-label me-5" style="font-size: medium;">مدیریت اعلان ها و تیکت ها</label>
+                                            </div>
+                                        </div>
+                                    
+                                        <select multiple class="form-select h-px-100 d-none" id="selected-roles"
+                                         name="roles">
+                                         {% if request.resolver_match.url_name == 'update_user' and user_roles %}
+                                            {% for role in user_roles %}
+                                                <option value="{{ role }}" selected></option>
+                                            {% endfor %}
+                                         {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+                                {% if request.resolver_match.url_name == 'update_user' %}
+                                    <button type="submit" class="btn btn-info">
+                                        <span class="mdi mdi-account-check mdi-24px"></span>
+                                        <span class="h5 pt-3 text-white">ویرایش کاربر</span>
+                                    </button>
+                                    <a href="{% url 'panel:user_details' object.username %}" 
+                                        class="btn btn-outline-secondary me-3">
+                                        <span class="h5 pt-3">انصراف</span>
+                                        <span class="mdi mdi-chevron-left mdi-36px"></span>
+                                    </a>
+                                {% else %}
+                                    <button type="submit" class="btn btn-success">
+                                        <span class="mdi mdi-account-check mdi-36px"></span>
+                                        <span class="h5 pt-3 text-white">ایجاد کاربر</span>
+                                    </button>
+                                    <a href="{% url 'panel:users' %}" class="btn btn-outline-secondary me-3">
+                                        <span class="h5 pt-3">انصراف</span>
+                                        <span class="mdi mdi-chevron-left mdi-36px"></span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){ 
+
+        const urlName = "{{ request.resolver_match.url_name }}"
+
+        if(urlName === 'update_user') {
+            const selectedRoles = $("#selected-roles option").map(function(){
+                return $(this).val()
+            }).get()
+
+            if(selectedRoles.includes('admin')){
+                $("#admin-check").prop('checked', true)
+                $(".perm-check").each(function(){
+                    $(this).prop('checked', true).attr('disabled', true)
+                })
+            }else {
+                $(".perm-check").each(function() {
+                    if (selectedRoles.includes($(this).val())) {
+                        $(this).prop("checked", true);
+                    } else {
+                        $(this).prop("checked", false);
+                    }
+                });
+            }
+        }
+
+        $("#admin-check").change(function(){
+            const selectedRoles = $("#selected-roles")
+            if($(this).is(":checked")){
+                selectedRoles.find("option").remove();
+                selectedRoles.append(new Option('', 'admin', true, true))
+                $(".perm-check").each(function(){
+                    $(this).prop('checked', true).attr('disabled', true)
+                })
+            }
+            else {
+                selectedRoles.find("option").remove();
+                $(".perm-check").each(function(){
+                    $(this).prop('checked', false).attr('disabled', false)
+                })
+            }
+        })
+
+        $(".perm-check").change(function(){
+            const selectedRoles = $("#selected-roles")
+            const value = $(this).val()
+
+            if($(this).is(":checked")){
+                selectedRoles.append(new Option('', value, true, true))
+            }
+            else {
+                selectedRoles.find(`option[value='${value}']`).remove()
+            }
+        })
+    })
+</script>
+{% endblock %}

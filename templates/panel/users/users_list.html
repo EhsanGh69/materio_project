@@ -1,0 +1,88 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}لیست کاربران{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y border" style="height: 85vh;">
+    <div class="row gy-4">
+      <!-- Data Tables -->
+      <div class="col-12">
+        {% include "panel/components/search_sort.html" with search=True filter=True %}
+        <div class="card" id="users-list">
+          <!-- Load By AJAX -->
+        </div>
+      </div>
+      <!--/ Data Tables -->
+    </div>
+</div>
+{% include "panel/partials/confirm_modal.html" %}
+{% endblock %}
+
+{% block script %}
+  <script>
+    const confirmBtn = document.querySelector('#confirmBtn')
+    const getUserId = (id) => confirmBtn.attributes.href.value = `/panel/remove_user/${id}`
+
+    function load_users(page=1, query='', filter=''){
+      $.ajax({
+        url: '{% url "panel:paginate_users" %}',
+        data: {
+          'page': page,
+          'q': query,
+          'filter': filter
+        },
+        dataType: "html",
+        success: function(data){
+          $("#users-list").html(data)
+        },
+        error: function(xhr, status, error) {
+          console.error("Error loading users:", error);
+        }
+      })
+    }
+
+    $(document).ready(function(){
+      load_users(1)
+
+      $('#search_input').keyup(function(e){
+        setTimeout(() => {
+            e.preventDefault()
+            const filter = $('#filter_select').val();
+            const query = $(this).val();
+            console.log(filter)
+            if (query.trim() !== "") {
+              if(filter !== 'None')
+                load_users(1, query, filter)
+              else
+                  load_users(1, query, '')
+            }else{
+              if(filter !== 'None')
+                load_users(1, '', filter)
+              else
+                load_users(1)
+            }
+        }, 300)
+      })
+
+      $('#filter_select').change(function(e){
+        setTimeout(() => {
+            const filter = $(this).val();
+            const query = $('#search_input').val();
+            if(filter !== 'None') {
+              if (query.trim() !== "")
+                load_users(1, query, filter)
+              else
+                load_users(1, '', filter)
+            }
+            else{
+              if (query.trim() !== "")
+                load_users(1, query)
+              else
+                load_users(1)
+            }
+        }, 300)
+      })
+    })
+  </script>
+{% endblock %}

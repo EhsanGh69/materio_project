@@ -1,0 +1,234 @@
+{% extends "panel/base.html" %}
+{% load static %}
+
+{% block title %}پست ها{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    {% include "panel/components/search_sort.html" with search=True sort=True %}
+    <div class="row gy-4">
+        <div class="col-12">
+            <div class="nav-align-top mb-4">
+                <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link active"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#confirm_posts"
+                        aria-controls="navs-pills-justified-messages"
+                        aria-selected="false"
+                        title="پست های تایید شده"
+                        data-status="confirm">
+                            <span class="mdi mdi-checkbox-marked-circle mdi-24px text-success ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">تایید شده</span>
+                            <span style="font-size: 1.2rem;" id="confirm_count" 
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-success me-1">
+                            </span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#check_posts"
+                        aria-controls="navs-pills-justified-home"
+                        aria-selected="true"
+                        title="پست های بررسی نشده"
+                        data-status="check">
+                            <span class="mdi mdi-help-circle text-warning mdi-24px ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">بررسی نشده</span>
+                            <span style="font-size: 1.2rem;" id="check_count"
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-warning me-1">
+                            </span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button
+                        type="button"
+                        class="nav-link"
+                        role="tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#reject_posts"
+                        aria-controls="navs-pills-justified-profile"
+                        aria-selected="false"
+                        title="پست های رد شده"
+                        data-status="reject">
+                            <span class="mdi mdi-close-circle text-danger mdi-24px ms-1"></span>
+                            <span class="d-none d-sm-block" style="font-size: 1.2rem;">رد شده</span>
+                            <span style="font-size: 1.2rem;" id="reject_count"
+                                class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger me-1">
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" data-status="confirm" 
+                    id="confirm_posts" role="tabpanel">
+                        
+                        <div class="card" id="confirm">
+                            <!-- load by AJAX -->
+                        </div>
+                        <h3 class="alert alert-danger text-center d-none" id="not-confirm">
+                            پست تایید شده ایی وجود ندارد
+                        </h3>
+                        
+                    </div>
+                    <div class="tab-pane fade" id="check_posts" role="tabpanel" data-status="check">
+                        <div class="card" id="check">
+                            <!-- load by AJAX -->
+                        </div>
+                        <h3 class="alert alert-danger text-center d-none" id="not-check">
+                            پست بررسی نشده ایی وجود ندارد
+                        </h3>
+                    </div>
+                    <div class="tab-pane fade" id="reject_posts" role="tabpanel" data-status="reject">
+                        <div class="card" id="reject">
+                            <!-- load by AJAX -->
+                        </div>
+                        <h3 class="alert alert-danger text-center d-none" id="not-reject">
+                            پست رد شده ایی وجود ندارد
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function get_status_count(){
+            $.ajax({
+                url: '{% url "panel:get_status_count" %}',
+                success: function(data){
+                    $('#confirm_count').text(data.confirm_count)
+                    $('#check_count').text(data.check_count)
+                    $('#reject_count').text(data.reject_count)
+                    
+                    if(!data.confirm_count){
+                        $('#not-confirm').removeClass('d-none')
+                        $('#confirm').addClass('d-none')
+                    }else{
+                        $('#not-confirm').addClass('d-none')
+                        $('#confirm').removeClass('d-none')
+                    }
+
+                    if(!data.check_count){
+                        $('#not-check').removeClass('d-none')
+                        $('#check').addClass('d-none')
+                    }else{
+                        $('#not-check').addClass('d-none')
+                        $('#check').removeClass('d-none')
+                    }
+
+                    if(!data.reject_count){
+                        $('#not-reject').removeClass('d-none')
+                        $('#reject').addClass('d-none')
+                    }else{
+                        $('#not-reject').addClass('d-none')
+                        $('#reject').removeClass('d-none')
+                    }
+                }
+            })
+        }
+
+        function load_posts(status, page=1){
+            $.ajax({
+                url: '{% url "panel:paginate_posts" %}',
+                data: {
+                    'page': page,
+                    'status': status,
+                    'q': '',
+                    'field': '-created_at'
+                },
+                success: function(data){
+                    $('#' + status).html(data)
+                    get_status_count()
+                }
+            })
+        }
+
+        function search_posts(status, query, page=1){
+            const field = $('#sort_select').val()
+            $.ajax({
+                url: '{% url "panel:search_sort_posts" %}',
+                data: {
+                    'page': page,
+                    'status': status,
+                    'q': query,
+                    'field': field === 'None' ? '-created_at' : field
+                },
+                success: function(data){
+                    $('#' + status).html(data)
+                    get_status_count()
+                }
+            })
+        }
+
+        function sort_posts(status, field, page=1){
+            $.ajax({
+                url: '{% url "panel:search_sort_posts" %}',
+                data: {
+                    'page': page,
+                    'status': status,
+                    'field': field,
+                    'q': $('#search_input').val(),
+                },
+                success: function(data){
+                    $('#' + status).html(data)
+                    get_status_count()
+                }
+            })
+        }
+
+        $(document).ready(function(){
+            load_posts('confirm')
+            get_status_count()
+
+            $('.nav-link').click(function(){
+                const button = $(this)
+                const status = button.data('status')
+                const query = $("#search_input").val();
+                if (query.trim() !== "") {
+                    search_posts(status, query);
+                    get_status_count()
+                } else {
+                    load_posts(status);
+                    get_status_count()
+                }
+            })
+
+            $('#search_input').keyup(function(e){
+                setTimeout(() => {
+                    e.preventDefault()
+                    const activeTab = $(".nav-link.active").data('status')
+                    const query = $(this).val();
+                    if (query.trim() !== "") {
+                        search_posts(activeTab, query);
+                    } else {
+                        load_posts(activeTab);
+                    }
+                    get_status_count()
+                }, 300)
+                get_status_count()
+            })
+
+            $('#sort_select').change(function(e){
+                setTimeout(() => {
+                    const field = $(this).val();
+                    const activeTab = $(".nav-link.active").data('status')
+                    if(field !== 'None')
+                        sort_posts(activeTab, field)
+                    else
+                        sort_posts(activeTab, '-created_at')
+
+                }, 300)
+            })
+        })
+    </script>
+{% endblock %}

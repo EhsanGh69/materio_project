@@ -1,0 +1,50 @@
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">ارسال تیکت جدید</h4>
+            </div>
+            <form method="post" id="send_ticket_form" 
+            autocomplete="off">
+                <div class="modal-body">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input 
+                                    type="text" 
+                                    name="title" 
+                                    class="form-control" 
+                                    maxlength="100"
+                                    placeholder=""
+                                    id="title"
+                                />
+                                <label for="tag_name_input">موضوع تیکت</label>
+                            </div>
+                            <div id="title_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <textarea name="body" id="body" class="form-control h-px-100"></textarea>
+                                <label for="tag_name_input">متن تیکت</label>
+                            </div>
+                            <div id="body_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        انصراف
+                    </button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">
+                        ارسال
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

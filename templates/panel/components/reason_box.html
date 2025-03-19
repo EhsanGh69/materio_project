@@ -1,0 +1,31 @@
+<div class="row d-none" id="reason-box">
+    <div class="col-10">
+        <div class="card shadow-none bg-transparent border border-secondary mb-3">
+          <div class="card-body">
+            <p class="card-title">
+                <span class="mdi mdi-account-question-outline mdi-24px"></span>
+                <span class="h6 text-secondary">علت ردشدن یا حذف این پست را برای نویسنده ارسال کنید</span>
+                <span class="h6 text-danger">*</span>
+            </p>
+            <form method="post" id="send-notif">
+                {% csrf_token %}
+                <label for="largeSelect" class="form-label">
+                    <span class="h6 text-secondary"></span>
+                </label>
+                <textarea class="form-control h-px-100" id="reason-report" name="message"></textarea>
+                <div class="text-danger d-none" id="message-error"></div>
+                <button type="submit" class="btn px-2 mt-2 send-btn">
+                    <span class="mdi mdi-24px"
+                    id="send-btn-icon"></span>
+                    <span class="me-2" id="send-btn-txt"></span>
+                </button>
+            </form>
+
+            <button type="button" class="btn btn-secondary px-2 mt-2 cancel-btn">
+                <span class="mdi mdi-share-outline mdi-24px"></span>
+                <span class="me-2">انصراف</span>
+            </button>
+          </div>
+        </div>
+    </div>
+</div>

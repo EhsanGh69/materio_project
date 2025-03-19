@@ -1,0 +1,77 @@
+{% extends "blog/blog_base.html" %}
+{% load static %}
+
+{% block title %}{{ auth.username }}{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center rounded justify-content-center
+                            bg-light py-2 px-4 mb-3">
+                            <div class="px-4">
+                                <a href="{% url 'blog:author_posts' auth.username %}" 
+                                    class="text-decoration-none text-dark d-flex flex-column">
+                                    <img src="
+                                        {% if auth.user_avatar %}
+                                            {{ auth.user_avatar.avatar.url }}
+                                        {% else %}
+                                            {% static 'panel/img/default_avatar.jpg' %}
+                                        {% endif %}
+                                    "
+                                    style="border-radius: 50%;" 
+                                    alt="{{ auth.username }}" width="100">
+                                    <strong dir="ltr" class="h4 mt-2 mr-3">@{{ auth.username }}</strong>
+                                    <small dir="ltr" class="h6 mt-2 text-secondary mr-3">
+                                        {{ auth.get_full_name }}
+                                    </small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="post-list">
+                    {% include "blog/components/posts_loop.html" %}
+                </div>
+                {% if num_pages > 1 %}
+                    <div class=" text-center">
+                        <button class="btn btn-outline-secondary" id="show-more"
+                         data-page="1" data-num-pages="{{ num_pages }}">
+                            مشاهده بیشتر...
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('#show-more').click(function(){
+            const button = $(this);
+            let page = button.data('page') + 1
+            const query = button.data('query')
+            const num_pages = button.data('num-pages')
+
+            $.ajax({
+                url: '{% url "blog:show_more_auth_posts" auth.username %}',
+                data: {
+                    'page': page
+                },
+                success: function(data){
+                    $('#post-list').append(data)
+                    button.data('page', page)
+
+                    if(page === num_pages) {
+                        button.addClass('d-none')
+                    }
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}{{ cat_name }}{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center rounded justify-content-between 
+                            bg-light py-2 px-4 mb-3">
+                            <div class="text-center py-2 px-4 mb-3">
+                                <h3 class="m-0">
+                                    <i class="fas fa-tag"></i>
+                                    <span>{{ cat_name }}</span>
+                                </h3>
+                            </div>
+                            <a class="text-secondary font-weight-medium text-decoration-none"
+                               href="{% url 'blog:all_categories' %}">
+                               <span>همه موضوعات</span>
+                               <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="post-list">
+                    {% include "blog/components/posts_loop.html" %}
+                </div>
+                {% if num_pages > 1 %}
+                    <div class=" text-center">
+                        <button class="btn btn-outline-secondary" id="show-more"
+                         data-page="1" data-num-pages="{{ num_pages }}">
+                            مشاهده بیشتر...
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('#show-more').click(function(){
+            const button = $(this);
+            let page = button.data('page') + 1
+            const query = button.data('query')
+            const num_pages = button.data('num-pages')
+
+            $.ajax({
+                url: '{% url "blog:show_more_cat_posts" cat_name %}',
+                data: {
+                    'page': page
+                },
+                success: function(data){
+                    $('#post-list').append(data)
+                    button.data('page', page)
+
+                    if(page === num_pages) {
+                        button.addClass('d-none')
+                    }
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

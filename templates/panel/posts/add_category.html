@@ -1,0 +1,69 @@
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalTitle"></h4>
+            </div>
+            <form method="post" action="" id="myForm" autocomplete="off">
+                <div class="modal-body">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <div class="form-floating form-floating-outline">
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    class="form-control" 
+                                    maxlength="100" 
+                                    placeholder=""
+                                    id="id_name"
+                                />
+                                <label for="id_name">نام موضوع</label>
+                            </div>
+                            <div id="nameError" class="text-danger"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-4 mt-2 d-flex">
+                            <div class="form-check mr-1">
+                                <input 
+                                    type="checkbox" 
+                                    name="is_subcat"
+                                    class="form-check-input" 
+                                    id="id_is_subcat"
+                                />
+                            </div>
+                            &nbsp;
+                            <label for="id_is_subcat" class="form-check-label">
+                                به عنوان موضوع فرعی در نظر گرفته شود
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-4 mt-2">
+                            <select name="main" id="id_main" disabled class="form-select">
+                                <option value="" selected="">موضوع اصلی</option>
+                                {% for main_cat in main_cats %}
+                                    <option value="{{ main_cat.id }}">{{ main_cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="mainError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        انصراف
+                    </button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light" 
+                    id="submit-btn">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

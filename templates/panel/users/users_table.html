@@ -1,0 +1,95 @@
+<div class="table-responsive d-none d-lg-block">
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
+    {% if page_obj %}
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-truncate">کاربر</th>
+                    <th class="text-truncate">ایمیل</th>
+                    <th class="text-truncate">سطح دسترسی</th>
+                    <th class="text-truncate">شماره تماس</th>
+                    <th class="text-truncate">وضعیت</th>
+                    <th class="text-truncate"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in page_obj %}
+                    <tr>
+                        {% include "panel/users/user_td.html" %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning text-danger text-center h3">
+            {% if query %}
+                <span class="mdi mdi-account-search mdi-36px"></span>
+                <span>هیچ کاربری مطابق جستجوی شما وجود ندارد</span>
+            {% else %}
+                <span class="mdi mdi-account-off mdi-36px"></span>
+                <span>کاربری وجود ندارد</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<div class="table-responsive d-lg-none">
+    {% if query %}
+        <h5 class="p-3">
+            <span>نتیجه جستجو برای: </span>
+            <i>«{{ query }}»</i>
+        </h5>
+    {% endif %}
+    {% if page_obj %}
+        <table class="table">
+            <tbody>
+                {% for user in page_obj %}
+                    <tr class="d-flex flex-column">
+                        {% include "panel/users/user_data.html" %}
+                    </tr>
+                    <hr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning text-danger text-center h3">
+            <span class="mdi mdi-account-search mdi-36px"></span>
+            {% if query %}
+                <span>هیچ کاربری مطابق جستجوی شما وجود ندارد</span>
+            {% else %}
+                <span>کاربری وجود ندارد</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% include "panel/components/pagination.html" %}
+
+<script>
+    $(document).ready(function(){
+        const query = "{{ query }}"
+        const filter = "{{ filter }}"
+
+        $('.next-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            load_users(currentPage + 1, query, filter)
+        })
+
+        $('.prev-btn').click(function(){
+            const currentPage = $(this).data('current-page')
+            if (currentPage > 1){
+                load_users(currentPage - 1, query, filter)
+            }
+        })
+
+        $('.page-counter').click(function(){
+            const page = $(this).data('page')
+            load_users(page, query, filter)
+        })
+    })
+</script>

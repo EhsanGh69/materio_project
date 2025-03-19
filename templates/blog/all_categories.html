@@ -1,0 +1,61 @@
+{% extends "blog/blog_base.html" %}
+
+{% block title %}همه دسته بندی ها{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="text-center bg-light py-2 px-4 mb-3">
+                            <h3 class="m-0">
+                                <i class="fas fa-list"></i>
+                                <span>موضوعات</span>
+                            </h3>
+                        </div>
+                    </div>
+                    {% for main_cat in main_cats %}
+                        <div class="col-lg-4 mb-2">
+                            <div class="w-100 d-flex flex-column justify-content-center px-3 bg-light">
+                                <h3 class="d-inline text-center my-2">
+                                    <a href="{% url 'blog:category_posts' main_cat.name %}">
+                                        <span class="badge badge-primary">
+                                            <i class="fas fa-tags"></i>
+                                            {{ main_cat.name }}
+                                        </span>
+                                    </a>
+                                </h3>
+                                <ul class="list-unstyled" id="cat-list">
+                                    {% if main_cat.subcats.all %}
+                                        {% with subcats=main_cat.subcats.all %}
+                                            {% for cat in subcats %}
+                                                <li>
+                                                    <a href="{% url 'blog:category_posts' cat.name %}" 
+                                                        class="text-decoration-none text-dark">
+                                                        <i class="fas fa-tag"></i>
+                                                        {{ cat.name }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        {% endwith %}
+                                    {% else %}
+                                        <li class="text-danger">
+                                            <i class="fas fa-times"></i>
+                                            بدون موضوع فرعی
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 alert alert-danger text-center">
+                            <i class="far fa-times-circle"></i>
+                            <span>در حال حاضر موضوعی وجود ندارد</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% load static %}
+
+<div class="col">
+    <div class="card shadow-none bg-transparent mb-3 border 
+    {% if accept %}border-success{% else %}border-warning{% endif %}">
+        <div class="card-header border-bottom pb-0 pt-2">
+            <a href="{% url 'blog:post_detail' item.main_comment.post.slug %}" 
+                target="_blank"
+                class="d-flex text-decoration-none text-secondary" 
+                title="مشاهده پست در سایت">
+                <img src="
+                    {% if item.main_comment.post.image %}
+                        {{ item.main_comment.post.image.url }}
+                    {% else %}
+                        {% static 'blog/img/default_image.jpg' %}
+                    {% endif %}" 
+                alt="{{ item.main_comment.post.title }}" class="rounded mb-2" width="60" />
+                <span class="me-2">
+                    {{ item.main_comment.post.title|truncatewords:5 }}
+                </span>
+            </a>
+        </div>
+        <div class="card-body mt-0">
+            <div class="bg-light text-dark p-2 rounded-1">
+                {% include 'panel/comments/single_comment.html' with comment=item.main_comment %}
+                <br>
+                <span class="bg-secondary p-1 rounded-1 text-white">
+                    <span class="mdi mdi-reply-circle mdi-20px"></span>
+                    <small class="me-2">پاسخ ها</small>
+                </span>
+                {% for answer in item.answers %}
+                    <div class="bg-white text-dark p-2 rounded-1 mt-2 me-5">
+                        {% include 'panel/comments/single_comment.html' with comment=answer %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
