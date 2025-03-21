@@ -340,6 +340,8 @@ def post_settings(request: HttpRequest, slug):
         else:
             main_obj = get_object_or_404(Category, pk=main_cat)
             post.category = main_obj
+
+        post_status = post.status
         
         post.study_time = study_time
         post.status = 'confirm'
@@ -351,7 +353,15 @@ def post_settings(request: HttpRequest, slug):
         if extra_notifs:
             for obj in extra_notifs:
                 obj.delete()
-        sweetify.success(request, "پست با موفقیت تایید شد")
+
+        if post.author.is_staff:
+            post.is_draft = False
+            post.save()
+
+        if post_status == 'confirm':
+            sweetify.success(request, "تغییرات با موفقیت ذخیره شد")
+        else:
+            sweetify.success(request, "پست با موفقیت منتشر شد")
         return JsonResponse({'success': True, 'redirect_url': reverse("panel:view_post", args=[post.slug])})
     else:
         return render(request, 'panel/posts/post_settings.html', {

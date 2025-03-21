@@ -49,7 +49,7 @@
             <p>
                 <a class="h6 text-decoration-none text-secondary" 
                 href="{% url 'blog:post_detail' post.slug %}" title="{{ post.title }}">
-                    {{ post.content|truncatewords:18 }}
+                    {{ post.content|truncatewords:18|safe }}
                 </a>
             </p>
             <p class="mb-0">
@@ -73,8 +73,8 @@
                     {% else %}
                         {% static 'blog/img/default_image.jpg' %}
                     {% endif %}" 
-                style="width: 200px; height: 250px; object-fit: cover;"
-                class="rounded-1"
+                style="height: 250px; object-fit: cover;"
+                class="rounded-1 w-100"
                 alt="{{ post.title }}">
             </a>
             <span class="mt-3 text-center">

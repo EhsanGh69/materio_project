@@ -9,18 +9,18 @@
         <div class="col-12 px-3">
             <button
                 type="button"
-                class="btn btn-outline-success"
+                class="btn btn-success"
                 data-bs-toggle="modal"
                 data-bs-target="#modalCenter"
                 id="create-btn">
-                <span class="mdi mdi-plus mdi-24px"></span>
-                <strong>موضوع جدید</strong>
+                <span class="mdi mdi-plus mdi-36px"></span>
+                <strong style="font-size: 1.2rem;">موضوع جدید</strong>
             </button>
         </div>
         {% for main_cat in main_cats %}
             <div class="col-12 col-md-6 col-xxl-4 mb-3">
                 <div class="demo-inline-spacing">
-                    <ul class="list-group p-0">
+                    <ul class="list-group bg-white p-0">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <h4>{{ main_cat.name }}</h4>
                             <span>
@@ -39,7 +39,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#confirmModal"
                                     data-obj="main"
-                                    onclick="getUserId({{main_cat.id}})"
+                                    onclick="getCatId({{main_cat.id}})"
                                     title="حذف موضوع">
                                     <span class="mdi mdi-trash-can mdi-24px"></span>
                                 </button>

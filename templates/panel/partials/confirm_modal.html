@@ -17,7 +17,7 @@
             {% else %}
               <h3>آیا از حذف این {{ obj_name }} اطمینان دارید؟</h3>
               {% if obj_name == 'موضوع' %}
-                <h5 id="notice" class="text-bg-danger p-1 rounded-1"></h5>
+                <h5 id="notice" class="text-bg-danger p-1 rounded-1 d-none"></h5>
               {% elif obj_name == 'تگ' %}
                 <span class="d-none" id="removed_tag"></span>
               {% elif obj_name == 'نظر' %}

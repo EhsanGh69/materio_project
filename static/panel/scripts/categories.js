@@ -1,5 +1,5 @@
 const confirmBtn = document.querySelector("#confirmBtn");
-const getCatId = (id) => (confirmBtn.attributes.href.value = `/panel/remove_cat/${id}`);
+const getCatId = (id) => confirmBtn.attributes.href.value = `/panel/remove_cat/${id}`;
 
 $(document).ready(function () {
 
@@ -15,6 +15,7 @@ $(document).ready(function () {
     $("#notice").html("");
     const catType = $(this).attr("data-obj");
     if (catType === "main") {
+      $("#notice").removeClass("d-none")
       $("#notice").html(
         '<span class="mdi mdi-alert mdi-24px"></span>' +
           "در صورت حذف این موضوع اصلی همه موضوعات فرعی آن نیز حذف خواهند شد"
