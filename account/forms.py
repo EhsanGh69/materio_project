@@ -65,12 +65,12 @@ class UserRegister(forms.Form):
         widget=forms.EmailInput(),
         required=False,
         label='آدرس ایمیل',
-        validators=[
-            validators.RegexValidator(
-                regex=r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$",
-                message='آدرس ایمیل وارد شده معتبر نمی‌باشد'
-            )
-        ]
+        # validators=[
+        #     validators.RegexValidator(
+        #         regex=r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$",
+        #         message='آدرس ایمیل وارد شده معتبر نمی‌باشد'
+        #     )
+        # ]
     )
 
     first_name = forms.CharField(

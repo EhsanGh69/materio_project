@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
-from django.db.models import Q
+from django.db.models import Q, CharField
+from django.db.models.functions import Cast
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.models import Permission
 
@@ -179,9 +180,17 @@ def users_filter(users, query):
 
 
 def posts_filter(posts, query):
-    return posts.filter(
+    # return posts.filter(
+    #         Q(title__icontains=query) | Q(content__icontains=query) |
+    #         Q(tags__contains=[query]) | Q(category__name__icontains=query) |
+    #         Q(author__username__icontains=query) | Q(author__first_name__icontains=query) |
+    #         Q(author__last_name__icontains=query)
+    #     )
+
+    # for sqlite db
+    return posts.annotate(tags_text=Cast('tags', CharField())).filter(
             Q(title__icontains=query) | Q(content__icontains=query) |
-            Q(tags__contains=[query]) | Q(category__name__icontains=query) |
+            Q(tags__icontains=query) | Q(category__name__icontains=query) |
             Q(author__username__icontains=query) | Q(author__first_name__icontains=query) |
             Q(author__last_name__icontains=query)
         )

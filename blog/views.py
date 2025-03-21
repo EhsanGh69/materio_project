@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpRequest, Http404, JsonResponse
-from django.db.models import Count, Q
+from django.db.models import Count, Q, CharField
+from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 
@@ -215,13 +216,19 @@ def tag_posts(request: HttpRequest, tag):
 
 def search_posts(request: HttpRequest):
     query = request.GET.get('q')
+    page_number = request.GET.get('page')
     posts = Post.objects.filter(status='confirm', is_draft=False).order_by('-created_at')
-    results = posts.filter(
+    # results = posts.filter(
+    #         Q(title__icontains=query) | Q(content__icontains=query) |
+    #         Q(tags__contains=[query]) | Q(category__name__icontains=query)
+    #     )
+
+    # for sqlite db
+    results = posts.annotate(tags_text=Cast('tags', CharField())).filter(
             Q(title__icontains=query) | Q(content__icontains=query) |
-            Q(tags__contains=[query]) | Q(category__name__icontains=query)
+            Q(tags__icontains=query) | Q(category__name__icontains=query)
         )
     paginator = Paginator(results, 4)
-    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     if 'show_more' in request.path:

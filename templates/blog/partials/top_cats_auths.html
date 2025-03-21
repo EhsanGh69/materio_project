@@ -56,9 +56,9 @@
                     {% for auth in top_auths %}
                         {% for user, count in auth.items %}
                             <a href="{% url 'blog:author_posts' user.username %}" 
-                                class="mb-2 font-weight-bold text-decoration-none">
+                                class="font-weight-bold text-decoration-none">
                                 <h5 class="d-inline">
-                                    <span class="badge badge-warning">
+                                    <span class="badge badge-warning mb-2">
                                         <img src="
                                             {% if user.user_avatar %}
                                                 {{ user.user_avatar.avatar.url }}
