@@ -3,7 +3,7 @@
 {% block title %}تیکت های من{% endblock %}
 
 {% block content %}
-    {% if titckets_count > 0 %}
+    {% if tickets_count > 0 %}
         <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row mb-3">
                 <div class="col-12 d-lg-none mb-2">
@@ -19,7 +19,7 @@
                     <button class="btn btn-primary ms-2" id="all-btn">
                         <span class="mdi mdi-check-all mdi-24px ms-2"></span>
                         <strong>همه</strong>
-                        <span class="badge rounded-pill bg-dark me-2">{{ titckets_count }}</span>
+                        <span class="badge rounded-pill bg-dark me-2">{{ tickets_count }}</span>
                     </button>
     
                     <button class="btn btn-outline-success" id="answered-btn">

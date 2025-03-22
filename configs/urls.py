@@ -13,7 +13,7 @@ urlpatterns = [
     path('notifs/', include('notifs.urls')),
     path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
-    path('activate/<uidb64>/<token>/', account_activate, name='activate'),
+    path('activate/<uid64>/<token>/', account_activate, name='activate'),
     path('logout/', logout_user, name='logout'),
     path('reset_password/', ResetPassword.as_view(), name='reset_password'),
     path('reset_password_confirm/<uidb64>/<token>/', 

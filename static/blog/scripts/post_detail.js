@@ -114,7 +114,9 @@ $(document).ready(function () {
         if (response.success) {
           Swal.fire({
             title: "",
-            text: "نظر شما با موفقیت ارسال شد و پس از تایید ادمین در سایت قرار خواهد گرفت",
+            text: 
+            response.has_perm ? "نظر شما با موفقیت ارسال شد"
+            : "نظر شما با موفقیت ارسال شد و پس از تایید ادمین در سایت قرار خواهد گرفت",
             icon: "success",
             confirmButtonText: "باشه",
           }).then((result) => {

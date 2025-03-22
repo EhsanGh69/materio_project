@@ -165,11 +165,11 @@ def persuit_ticket(request: HttpRequest, post_id):
 
 @login_required
 def my_tickets(request: HttpRequest):
-    titckets = Ticket.objects.filter(sender=request.user, isAnswer=False)
+    tickets = Ticket.objects.filter(sender=request.user, isAnswer=False)
     return render(request, 'panel/account/my_tickets.html', {
-        "titckets_count": titckets.count(),
-        "answered_count": titckets.filter(answered=True).count(),
-        "checking_count": titckets.filter(answered=False).count(),
+        "tickets_count": tickets.count(),
+        "answered_count": tickets.filter(answered=True).count(),
+        "checking_count": tickets.filter(answered=False).count(),
     })
 
 

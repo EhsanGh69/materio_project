@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from django.core.paginator import Paginator
 from sweetify.views import SweetifySuccessMixin, sweetify
 
@@ -41,11 +41,10 @@ class Register(SweetifySuccessMixin, FormView):
         user = User(username=username, password=password, phone_number=phone_number, email=email,
                                    first_name=first_name, last_name=last_name, is_active=False)
         user.save()
-        UserAvatar.objects.create(user=user)
         
         current_site = get_current_site(self.request)
         mail_subject = "فعال سازی حساب کاربری"
-        message = render_to_string('account/active_account_email.html', {
+        message = render_to_string('auth/active_account_email.html', {
             'username': user.username,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -57,9 +56,9 @@ class Register(SweetifySuccessMixin, FormView):
         return super().form_valid(form)
     
 
-def account_activate(request, uidb64, token):
+def account_activate(request, uid64, token):
     try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uid64))
         user = User.objects.get(pk=uid)
     except(Exception):
         user = None
