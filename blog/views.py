@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 
 from account.models import User
 from .models import Post, Category, Comment, UserLike, PostVisit
-from utils.tools import get_top_cats, get_top_auths, get_codenames
+from utils.tools import get_top_cats, get_top_auths, get_user_roles
 
 
 def index(request: HttpRequest):
@@ -131,19 +131,15 @@ def post_detail(request: HttpRequest, slug):
 def create_comment(request: HttpRequest, post_id):
     post = get_object_or_404(Post, pk=post_id)
     user = request.user
-
-    has_perm = user.is_staff or\
-    request.user.has_perms(get_codenames("posts_manager", True)) or\
-    request.user.has_perms(get_codenames("comments_manager", True)) or\
-    request.user.has_perms(get_codenames("notifs_manager", True))
+    has_perm = bool(get_user_roles(user.get_all_permissions()))
     
     if request.method == 'POST':
         message = request.POST.get('message')
         try:
             if has_perm:
-                Comment.objects.create(creator=request.user, post=post, body=message, is_accept=True)
+                Comment.objects.create(creator=user, post=post, body=message, is_accept=True)
             else:
-                Comment.objects.create(creator=request.user, post=post, body=message)
+                Comment.objects.create(creator=user, post=post, body=message)
             return JsonResponse({'success': True, 'has_perm': has_perm})
         except Exception:
             return JsonResponse({'success': False})
@@ -154,15 +150,21 @@ def create_comment(request: HttpRequest, post_id):
 @login_required
 def create_answer(request: HttpRequest, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
+    user = request.user
+    has_perm = bool(get_user_roles(user.get_all_permissions()))
 
     if request.method == 'POST':
         answer = request.POST.get('message')
         post_id = request.POST.get('post_id')
         post = get_object_or_404(Post, pk=post_id) 
         try:
-            Comment.objects.create(creator=request.user, post=post, body=answer, 
+            if has_perm:
+                Comment.objects.create(creator=user, post=post, body=answer, 
+                                   is_answer=True, main_comment=comment, is_accept=True)
+            else:
+                Comment.objects.create(creator=user, post=post, body=answer, 
                                    is_answer=True, main_comment=comment)
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True, 'has_perm': has_perm})
         except Exception:
             return JsonResponse({'success': False})
     else:

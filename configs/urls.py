@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 
-from account.views import Login, Register, logout_user, ResetPassword, account_activate
+from account.views import Login, Register, logout_user, ResetPassword, account_activate, sent_activate_email
 from .views import custom_404, custom_403, custom_500
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
     path('activate/<uid64>/<token>/', account_activate, name='activate'),
+    path('sent_activate_email/', sent_activate_email, name='sent_activate_email'),
     path('logout/', logout_user, name='logout'),
     path('reset_password/', ResetPassword.as_view(), name='reset_password'),
     path('reset_password_confirm/<uidb64>/<token>/', 

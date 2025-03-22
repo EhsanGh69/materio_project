@@ -1,11 +1,13 @@
 {% extends "auth/auth_base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}بازیابی رمز عبور{% endblock %}
+{% block title %}ارسال ایمیل فعال سازی{% endblock %}
 
 {% block card_content %}
     <div class="alert alert-info">
-        <h4>رمز عبور شما با موفقیت بازیابی شد.</h4>
+        <h4>
+            لینک فعال سازی حساب کاربری به آدرس ایمیل شما ارسال شد
+        </h4>
         <h4>
             برای ورود 
             <a href="{% url 'login' %}">اینجا</a>

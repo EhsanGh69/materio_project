@@ -36,7 +36,13 @@
                 <p class="d-flex flex-column">
                   <a href="{% url 'blog:author_posts' post.author.username %}" 
                   class="text-decoration-none text-dark">
-                    <img src="{{ post.author.user_avatar.avatar.url }}"
+                    <img src="
+                      {% if post.author.user_avatar %}
+                        {{ post.author.user_avatar.avatar.url }}
+                      {% else %}
+                        {% static 'panel/img/default_avatar.jpg' %}
+                      {% endif %}
+                    "
                     style="border-radius: 50%;" 
                     alt="{{ post.author.username }}" width="40">
                     <span dir="ltr">{{ post.author.username }}</span>

@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="d-flex justify-content-between">
     <div class="d-flex justify-content-start">
         <div class="avatar d-flex flex-column">
@@ -5,7 +7,13 @@
                 <span class="mdi mdi-account-cancel mdi-36px text-danger"></span>
                 <small class="text-danger">غیر فعال</small>
             {% else %}
-                <img src="{{ comment.creator.user_avatar.avatar.url }}" 
+                <img src="{{ comment.creator.user_avatar.avatar.url }}
+                    {% if comment.creator.user_avatar %}
+                        {{ comment.creator.user_avatar.avatar.url }}
+                    {% else %}
+                        {% static 'panel/img/default_avatar.jpg' %}
+                    {% endif %}
+                " 
                     alt="{{ comment.creator.username }}" 
                     class="rounded-circle" />
             {% endif %}
@@ -19,7 +27,6 @@
             </small>
         </div>
     </div>
-    
     
     <button type="button" class="btn btn-warning btn-icon rounded-pill 
         dropdown-toggle hide-arrow waves-effect waves-light p-0" 

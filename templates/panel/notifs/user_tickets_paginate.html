@@ -1,3 +1,4 @@
+{% load static %}
 {% load jalali_tags %}
 
 {% for ticket in page_obj %}
@@ -16,7 +17,13 @@
                             <small class="text-danger">غیر فعال</small>
                         {% else %}
                             <span class="avatar d-flex flex-column">
-                                <img src="{{ ticket.sender.user_avatar.avatar.url }}" 
+                                <img src="
+                                    {% if ticket.sender.user_avatar %}
+                                        {{ ticket.sender.user_avatar.avatar.url }}
+                                    {% else %}
+                                        {% static 'panel/img/default_avatar.jpg' %}
+                                    {% endif %}
+                                " 
                                     alt="{{ ticket.sender.username }}" 
                                     class="rounded-circle" />
                             </span>

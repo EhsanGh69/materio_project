@@ -1,3 +1,4 @@
+{% load static %}
 {% load jalali_tags %}
 
 {% for notif in page_obj %}
@@ -17,7 +18,13 @@
                                 <small class="text-danger">غیر فعال</small>
                             {% else %}
                                 <span class="avatar d-flex flex-column">
-                                    <img src="{{ notif.reciever.user_avatar.avatar.url }}" 
+                                    <img src="
+                                        {% if notif.reciever.user_avatar %}
+                                            {{ notif.reciever.user_avatar.avatar.url }}
+                                        {% else %}
+                                            {% static 'panel/img/default_avatar.jpg' %}
+                                        {% endif %}
+                                    " 
                                         alt="{{ notif.reciever.username }}" 
                                         class="rounded-circle" />
                                 </span>

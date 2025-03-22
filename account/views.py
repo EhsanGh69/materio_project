@@ -28,8 +28,8 @@ from notifs.models import Notification, Ticket
 class Register(SweetifySuccessMixin, FormView):
     template_name = 'auth/register.html'
     form_class = UserRegister
-    success_url = reverse_lazy('login')
-    success_message = "لینک فعال سازی به ایمیل شما ارسال شد"
+    success_url = reverse_lazy('sent_activate_email')
+    # success_message = "لینک فعال سازی به ایمیل شما ارسال شد"
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
@@ -71,6 +71,10 @@ def account_activate(request, uid64, token):
     else:
         sweetify.error(request, "لینک فعال سازی نامعتبر می باشد")
         return redirect("register")
+    
+
+def sent_activate_email(request):
+    return render(request, 'auth/sent_activate_email.html')
 
 
 class Login(FormView):

@@ -81,11 +81,16 @@ $(document).ready(function () {
         if (response.success) {
           Swal.fire({
             title: "",
-            text: "نظر شما با موفقیت ارسال شد و پس از تایید ادمین در سایت قرار خواهد گرفت",
+            text: 
+            response.has_perm ? "نظر شما با موفقیت ارسال شد"
+            : "نظر شما با موفقیت ارسال شد و پس از تایید ادمین در سایت قرار خواهد گرفت",
             icon: "success",
             confirmButtonText: "باشه",
           }).then((result) => {
-            $(".answer-form").addClass("d-none");
+            if (result.isConfirmed) {
+              $(".answer-form").addClass("d-none");
+              location.reload();
+            }
           });
         } else {
           Swal.fire({
@@ -96,7 +101,6 @@ $(document).ready(function () {
           }).then((result) => {
             if (result.isConfirmed) {
               $(".answer-form").addClass("d-none");
-              location.reload();
             }
           });
         }
@@ -132,7 +136,9 @@ $(document).ready(function () {
             icon: "error",
             confirmButtonText: "باشه",
           }).then((result) => {
-            $("#comment-form").addClass("d-none");
+            if (result.isConfirmed) {
+              $("#comment-form").addClass("d-none");
+            }
           });
         }
       },
